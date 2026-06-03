@@ -50,3 +50,48 @@ export const markOneRead = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ error: 'INTERNAL', message: 'Failed to mark as read' });
   }
 };
+
+export const registerPushToken = async (req: AuthRequest, res: Response) => {
+  try {
+    const { token, platform } = req.body;
+    if (!token) {
+      return res.status(400).json({ error: 'MISSING_TOKEN', message: 'Token is required' });
+    }
+
+    const existing = await prisma.pushToken.findUnique({ where: { token } });
+    if (existing) {
+      if (existing.userId !== req.userId) {
+        await prisma.pushToken.update({ where: { id: existing.id }, data: { userId: req.userId! } });
+      }
+      return res.json({ message: 'Token already registered' });
+    }
+
+    await prisma.pushToken.create({
+      data: {
+        userId: req.userId!,
+        token,
+        platform: platform || 'web',
+      },
+    });
+
+    return res.status(201).json({ message: 'Token registered' });
+  } catch (error) {
+    console.error('Register push token error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to register token' });
+  }
+};
+
+export const unregisterPushToken = async (req: AuthRequest, res: Response) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ error: 'MISSING_TOKEN', message: 'Token is required' });
+    }
+
+    await prisma.pushToken.deleteMany({ where: { token, userId: req.userId! } });
+    return res.json({ message: 'Token unregistered' });
+  } catch (error) {
+    console.error('Unregister push token error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to unregister token' });
+  }
+};

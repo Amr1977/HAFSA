@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/authStore';
-import { api } from '../../lib/api';
+import { api, setToken } from '../../lib/api';
 import { signInWithGoogle } from '../../lib/googleAuth';
 
 export default function Register() {
@@ -29,8 +29,9 @@ export default function Register() {
         role: form.role,
         language: form.language,
       });
-      const user = await api.auth.getMe();
+      setToken(result.accessToken);
       localStorage.setItem('auth_token', result.accessToken);
+      const user = await api.auth.getMe();
       login(result.accessToken, user);
       navigate('/profile/setup');
     } catch (err: any) {
@@ -55,8 +56,8 @@ export default function Register() {
 
   return (
     <div className="max-w-md mx-auto mt-16">
-      <div className="bg-white p-8 rounded-xl shadow-sm border border-[#E5E7EB]">
-        <h1 className="text-2xl font-bold text-[#1B4332] mb-6 text-center">
+      <div className="bg-[var(--color-surface)] p-8 rounded-xl shadow-sm border border-[var(--color-border)]">
+        <h1 className="text-2xl font-bold text-[var(--color-primary)] mb-6 text-center">
           {t('auth.registerTitle')}
         </h1>
 
@@ -69,7 +70,7 @@ export default function Register() {
         <button
           onClick={handleGoogle}
           disabled={googleLoading}
-          className="w-full py-3 border border-[#E5E7EB] rounded-lg font-medium flex items-center justify-center gap-3 hover:bg-gray-50 disabled:opacity-50 transition-colors mb-6"
+          className="w-full py-3 border border-[var(--color-border)] rounded-lg font-medium flex items-center justify-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors mb-6"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -82,36 +83,36 @@ export default function Register() {
 
         <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#E5E7EB]" />
+            <div className="w-full border-t border-[var(--color-border)]" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-4 text-[#6B7280]">أو</span>
+            <span className="bg-[var(--color-surface)] px-4 text-[var(--color-muted)]">أو</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-[#6B7280] mb-2">
-              {t('auth.phone')}
-            </label>
-            <input
-              type="tel"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1B4332]"
+              <label className="block text-sm font-medium text-[var(--color-muted)] mb-2">
+                {t('auth.phone')}
+              </label>
+              <input
+                type="tel"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                className="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-primary)]"
               placeholder="+966501234567"
               required
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-[#6B7280] mb-2">
-              {t('auth.role')}
-            </label>
-            <select
-              value={form.role}
-              onChange={(e) => setForm({ ...form, role: e.target.value })}
-              className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1B4332] bg-white"
+              <label className="block text-sm font-medium text-[var(--color-muted)] mb-2">
+                {t('auth.role')}
+              </label>
+              <select
+                value={form.role}
+                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                className="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-primary)] bg-[var(--color-surface)]"
             >
               <option value="GROOM">{t('auth.role_groom')}</option>
               <option value="GUARDIAN">{t('auth.role_guardian')}</option>
@@ -122,15 +123,15 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[#1B4332] text-white rounded-lg font-medium hover:bg-[#2D6A4F] disabled:opacity-50 transition-colors"
+              className="w-full py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:bg-[var(--color-primary-light)] disabled:opacity-50 transition-colors"
           >
             {loading ? t('common.loading') : t('nav.register')}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-[#6B7280]">
+        <p className="mt-4 text-center text-sm text-[var(--color-muted)]">
           {t('auth.loginTitle')}؟{' '}
-          <Link to="/login" className="text-[#1B4332] font-medium hover:underline">
+          <Link to="/login" className="text-[var(--color-primary)] font-medium hover:underline">
             {t('nav.login')}
           </Link>
         </p>

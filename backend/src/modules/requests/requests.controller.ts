@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { prisma } from '../../config/database';
 import { AuthRequest } from '../../middleware/auth';
+import { notifyContactRequest, notifyRequestAccepted } from '../../services/notification.service';
 
 const p = (req: AuthRequest) => req.params as { id: string };
 
@@ -33,6 +34,11 @@ export const sendRequest = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    const senderProfile = await prisma.profile.findUnique({
+      where: { userId: req.userId! },
+      select: { displayName: true },
+    });
+
     const request = await prisma.contactRequest.create({
       data: {
         senderId: req.userId!,
@@ -50,6 +56,8 @@ export const sendRequest = async (req: AuthRequest, res: Response) => {
       where: { id: profileId },
       data: { requestCount: { increment: 1 } },
     });
+
+    notifyContactRequest(profile.userId, senderProfile?.displayName || 'مستخدم', req.userId);
 
     return res.status(201).json(request);
   } catch (error) {
@@ -126,6 +134,11 @@ export const acceptRequest = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    const receiverProfile = await prisma.profile.findUnique({
+      where: { userId: req.userId! },
+      select: { displayName: true },
+    });
+
     const updated = await prisma.contactRequest.update({
       where: { id: params.id },
       data: { status: 'ACCEPTED' },
@@ -144,6 +157,8 @@ export const acceptRequest = async (req: AuthRequest, res: Response) => {
         },
       },
     });
+
+    notifyRequestAccepted(request.senderId, receiverProfile?.displayName || 'مستخدم');
 
     return res.json({ request: updated, conversation });
   } catch (error) {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
+import { photoUrl } from '../../lib/api';
 
 export default function Browse() {
   const { t } = useTranslation();
@@ -102,7 +103,7 @@ export default function Browse() {
             >
               {profile.photos?.[0] && (
                 <img
-                  src={profile.photos[0].url}
+                  src={photoUrl(profile.photos[0].url)}
                   alt={profile.displayName}
                   className="w-full h-48 object-cover"
                 />

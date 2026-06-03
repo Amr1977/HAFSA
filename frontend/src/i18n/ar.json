@@ -25,6 +25,7 @@
     "role_groom": "راغب في الزواج",
     "role_guardian": "ولي أمر",
     "role_both": "كلاهما",
+    "role": "الدور",
     "verifyOtp": "تأكيد رمز التحقق",
     "sendOtp": "إرسال رمز التحقق"
   },
@@ -32,6 +33,7 @@
     "create": "إنشاء ملف شخصي",
     "edit": "تعديل الملف الشخصي",
     "my": "ملفي الشخصي",
+    "basicInfo": "المعلومات الأساسية",
     "displayName": "الاسم أو الكنية",
     "age": "العمر",
     "nationality": "الجنسية",
@@ -117,7 +119,13 @@
     "title": "الرسائل",
     "noConversations": "لا توجد محادثات",
     "typeMessage": "اكتب رسالتك...",
-    "send": "إرسال"
+    "send": "إرسال",
+    "noMessages": "لا توجد رسائل بعد، ابدأ المحادثة"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "empty": "لا توجد إشعارات",
+    "markAllRead": "تحديد الكل كمقروء"
   },
   "settings": {
     "title": "الإعدادات",
@@ -126,7 +134,66 @@
     "currentPlan": "خطتك الحالية",
     "upgrade": "ترقية الاشتراك",
     "free": "مجاني",
-    "premium": "مميز"
+    "premium": "مميز",
+    "viewFullProfile": "عرض الملف كاملاً",
+    "profileVisibility": "ظهور الملف الشخصي",
+    "visible": "ملفك مرئي للآخرين",
+    "hidden": "ملفك مخفي عن الآخرين",
+    "status": "الحالة",
+    "deleteConfirm": "هل أنت متأكد من حذف الملف الشخصي؟ لا يمكن التراجع عن هذا الإجراء.",
+    "noProfile": "ليس لديك ملف شخصي بعد"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "لوحة التحكم",
+      "totalUsers": "إجمالي المستخدمين",
+      "totalProfiles": "الملفات الشخصية",
+      "pendingProfiles": "بانتظار المراجعة",
+      "premiumUsers": "مستخدمين مميزين",
+      "manageUsers": "إدارة المستخدمين",
+      "manageUsersDesc": "عرض وإدارة المستخدمين",
+      "reviewProfiles": "الملفات الشخصية",
+      "reviewProfilesDesc": "مراجعة واعتماد الملفات",
+      "reports": "البلاغات",
+      "manageReportsDesc": "إدارة بلاغات المستخدمين"
+    },
+    "users": {
+      "title": "إدارة المستخدمين",
+      "id": "المعرف",
+      "phone": "الهاتف",
+      "role": "الدور",
+      "subscription": "الاشتراك",
+      "banColumn": "حظر",
+      "verifyColumn": "توثيق",
+      "ban": "حظر",
+      "unban": "رفع الحظر",
+      "verified": "موثق",
+      "verify": "توثيق"
+    },
+    "profiles": {
+      "title": "مراجعة الملفات الشخصية",
+      "noPending": "لا توجد ملفات بانتظار المراجعة",
+      "ageNationality": "{{age}} سنة • {{nationality}}",
+      "selfIntroduction": "التعريف الذاتي",
+      "approve": "اعتماد",
+      "reject": "رفض"
+    },
+    "reports": {
+      "title": "البلاغات",
+      "noReports": "لا توجد بلاغات",
+      "resolve": "حل البلاغ"
+    }
+  },
+  "social": {
+    "anonymous": "مستخدم",
+    "back": "العودة إلى المنشورات",
+    "like": "إعجاب",
+    "comment": "تعليق",
+    "commentsTitle": "التعليقات",
+    "writeComment": "اكتب تعليقاً...",
+    "commentButton": "تعليق",
+    "noComments": "لا توجد تعليقات بعد. كن أول من يعلق!",
+    "delete": "حذف"
   },
   "common": {
     "loading": "جار التحميل...",
@@ -137,6 +204,7 @@
     "confirm": "تأكيد",
     "back": "رجوع",
     "next": "التالي",
-    "previous": "السابق"
+    "previous": "السابق",
+    "month": "شهر"
   }
 }

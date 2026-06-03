@@ -75,16 +75,22 @@ export default function MyProfile() {
           <p className="text-[#4A4A4A] leading-relaxed">{profile.selfIntroduction}</p>
         </div>
 
-        {profile.status === 'DRAFT' && (
-          <div className="flex gap-3">
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate(`/profile/setup?edit=${profile.id}`)}
+            className="px-6 py-2 border border-[#1B4332] text-[#1B4332] rounded-lg hover:bg-gray-50"
+          >
+            تعديل الملف
+          </button>
+          {profile.status === 'DRAFT' && (
             <button
               onClick={() => api.profile.submit(profile.id).then(() => window.location.reload())}
               className="px-6 py-2 bg-[#1B4332] text-white rounded-lg hover:bg-[#2D6A4F]"
             >
               {t('profile.submit')}
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
         <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
           <p className="text-sm text-[#6B7280]">

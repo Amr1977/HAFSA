@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
+import { requestPushPermission } from './lib/firebase';
 import Layout from './components/Layout';
 import Landing from './pages/Landing';
 import Login from './pages/auth/Login';
@@ -17,6 +18,8 @@ import Conversation from './pages/messages/Conversation';
 import Notifications from './pages/Notifications';
 import Settings from './pages/settings/Settings';
 import Subscription from './pages/settings/Subscription';
+import SocialFeed from './pages/social/SocialFeed';
+import PostDetail from './pages/social/PostDetail';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminProfiles from './pages/admin/AdminProfiles';
@@ -41,11 +44,22 @@ function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles?
 }
 
 export default function App() {
-  const { fetchMe } = useAuthStore();
+  const { fetchMe, isAuthenticated } = useAuthStore();
+  const askedPush = useRef(false);
 
   useEffect(() => {
     fetchMe();
   }, [fetchMe]);
+
+  useEffect(() => {
+    if (isAuthenticated && !askedPush.current) {
+      askedPush.current = true;
+      requestPushPermission();
+    }
+    if (!isAuthenticated) {
+      askedPush.current = false;
+    }
+  }, [isAuthenticated]);
 
   return (
     <Routes>
@@ -62,6 +76,8 @@ export default function App() {
         <Route path="requests/sent" element={<ProtectedRoute><SentRequests /></ProtectedRoute>} />
         <Route path="messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="messages/:id" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
+        <Route path="social" element={<ProtectedRoute><SocialFeed /></ProtectedRoute>} />
+        <Route path="social/post/:id" element={<ProtectedRoute><PostDetail /></ProtectedRoute>} />
         <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="settings/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />

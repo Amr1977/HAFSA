@@ -68,6 +68,13 @@ enum SubscriptionPlan {
   PREMIUM
 }
 
+enum PostPrivacy {
+  PUBLIC
+  PRIVATE
+  CONNECTIONS
+  SELECTED
+}
+
 model User {
   id                String           @id @default(cuid())
   firebaseUid       String           @unique
@@ -91,6 +98,24 @@ model User {
   notifications     Notification[]
   reports           Report[]         @relation("Reporter")
   reportedIn        Report[]         @relation("Reported")
+  posts             Post[]
+  postLikes         PostLike[]
+  postComments      PostComment[]
+  postPrivacy       PostPrivacyUser[]
+  followers         Follow[]         @relation("Follower")
+  following         Follow[]         @relation("Following")
+  pushTokens        PushToken[]
+}
+
+model PushToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  platform  String   @default("web")
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Profile {
@@ -229,6 +254,63 @@ model Report {
   details     String?  @db.Text
   status      String   @default("PENDING")
   createdAt   DateTime @default(now())
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  mediaUrls String[]
+  privacy   PostPrivacy @default(PUBLIC)
+  allowedUsers PostPrivacyUser[]
+  likes     PostLike[]
+  comments  PostComment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PostPrivacyUser {
+  id     String @id @default(cuid())
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([postId, userId])
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+}
+
+model PostComment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  follower    User     @relation("Follower", fields: [followerId], references: [id])
+  followingId String
+  following   User     @relation("Following", fields: [followingId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
 }
 
 model AdminLog {

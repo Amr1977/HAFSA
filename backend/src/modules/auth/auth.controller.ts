@@ -131,7 +131,11 @@ export const getMe = async (req: AuthRequest, res: Response) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
-      include: { profile: true },
+      include: {
+        profile: {
+          include: { photos: { orderBy: { order: 'asc' }, take: 1 } },
+        },
+      },
     });
 
     if (!user) {
@@ -152,6 +156,7 @@ export const getMe = async (req: AuthRequest, res: Response) => {
       isBanned: user.isBanned,
       hasProfile: !!user.profile,
       profileId: user.profile?.id,
+      profilePhoto: user.profile?.photos?.[0]?.url || null,
       createdAt: user.createdAt,
     });
   } catch (error) {

@@ -1,4 +1,51 @@
 import { prisma } from '../config/database';
+import { getIO } from './socket';
+import { adminMessaging } from '../config/firebase-admin';
+
+interface NotificationPayload {
+  userId: string;
+  type: string;
+  titleAr: string;
+  titleEn: string;
+  bodyAr: string;
+  bodyEn: string;
+  data?: any;
+}
+
+const sendPushNotification = async (userId: string, payload: NotificationPayload) => {
+  try {
+    const tokens = await prisma.pushToken.findMany({ where: { userId }, select: { token: true } });
+    if (tokens.length === 0) return;
+
+    const registrationTokens = tokens.map(t => t.token);
+    const message = {
+      notification: {
+        title: payload.titleAr,
+        body: payload.bodyAr,
+      },
+      data: {
+        type: payload.type,
+        ...(payload.data ? Object.fromEntries(
+          Object.entries(payload.data).map(([k, v]) => [k, String(v)])
+        ) : {}),
+      },
+      tokens: registrationTokens,
+    };
+
+    const response = await adminMessaging.sendEachForMulticast(message);
+    const invalidTokens: string[] = [];
+    response.responses.forEach((resp, idx) => {
+      if (!resp.success && resp.error?.code === 'messaging/invalid-registration-token') {
+        invalidTokens.push(registrationTokens[idx]);
+      }
+    });
+    if (invalidTokens.length > 0) {
+      await prisma.pushToken.deleteMany({ where: { token: { in: invalidTokens } } });
+    }
+  } catch (error) {
+    console.error('Send push notification error:', error);
+  }
+};
 
 interface NotificationPayload {
   userId: string;
@@ -23,13 +70,21 @@ export const createNotification = async (payload: NotificationPayload) => {
         data: payload.data || {},
       },
     });
+
+    const io = getIO();
+    if (io) {
+      io.to(`user:${payload.userId}`).emit('new_notification', notification);
+    }
+
+    sendPushNotification(payload.userId, payload);
+
     return notification;
   } catch (error) {
     console.error('Create notification error:', error);
   }
 };
 
-export const notifyContactRequest = async (receiverId: string, senderName: string) => {
+export const notifyContactRequest = async (receiverId: string, senderName: string, senderId?: string) => {
   return createNotification({
     userId: receiverId,
     type: 'contact_request',
@@ -37,6 +92,7 @@ export const notifyContactRequest = async (receiverId: string, senderName: strin
     titleEn: 'New Contact Request',
     bodyAr: `لديك طلب تواصل جديد من ${senderName}`,
     bodyEn: `You have a new contact request from ${senderName}`,
+    data: { senderName, senderId },
   });
 };
 
@@ -48,10 +104,11 @@ export const notifyRequestAccepted = async (senderId: string, receiverName: stri
     titleEn: 'Contact Request Accepted',
     bodyAr: `تم قبول طلب التواصل من ${receiverName}`,
     bodyEn: `Your contact request was accepted by ${receiverName}`,
+    data: { receiverName },
   });
 };
 
-export const notifyNewMessage = async (userId: string, senderName: string) => {
+export const notifyNewMessage = async (userId: string, senderName: string, conversationId: string) => {
   return createNotification({
     userId,
     type: 'new_message',
@@ -59,6 +116,7 @@ export const notifyNewMessage = async (userId: string, senderName: string) => {
     titleEn: 'New Message',
     bodyAr: `رسالة جديدة من ${senderName}`,
     bodyEn: `New message from ${senderName}`,
+    data: { senderName, conversationId },
   });
 };
 
@@ -81,5 +139,53 @@ export const notifyProfileRejected = async (userId: string, reason: string) => {
     titleEn: 'Profile Not Approved',
     bodyAr: `لم يتم اعتماد ملفك الشخصي: ${reason}`,
     bodyEn: `Your profile was not approved: ${reason}`,
+  });
+};
+
+export const notifyProfileView = async (profileOwnerId: string, viewerName: string) => {
+  return createNotification({
+    userId: profileOwnerId,
+    type: 'profile_view',
+    titleAr: 'تمت مشاهدة ملفك',
+    titleEn: 'Profile Viewed',
+    bodyAr: `تمت مشاهدة ملفك الشخصي بواسطة ${viewerName}`,
+    bodyEn: `Your profile was viewed by ${viewerName}`,
+    data: { viewerName },
+  });
+};
+
+export const notifyPostLike = async (postOwnerId: string, likerName: string, postId: string) => {
+  return createNotification({
+    userId: postOwnerId,
+    type: 'post_like',
+    titleAr: 'إعجاب بمنشورك',
+    titleEn: 'Post Liked',
+    bodyAr: `أعجب ${likerName} بمنشورك`,
+    bodyEn: `${likerName} liked your post`,
+    data: { likerName, postId },
+  });
+};
+
+export const notifyPostComment = async (postOwnerId: string, commenterName: string, postId: string) => {
+  return createNotification({
+    userId: postOwnerId,
+    type: 'post_comment',
+    titleAr: 'تعليق على منشورك',
+    titleEn: 'New Comment',
+    bodyAr: `علق ${commenterName} على منشورك`,
+    bodyEn: `${commenterName} commented on your post`,
+    data: { commenterName, postId },
+  });
+};
+
+export const notifyNewFollower = async (followedUserId: string, followerName: string) => {
+  return createNotification({
+    userId: followedUserId,
+    type: 'new_follower',
+    titleAr: 'متابع جديد',
+    titleEn: 'New Follower',
+    bodyAr: `بدأ ${followerName} بمتابعتك`,
+    bodyEn: `${followerName} started following you`,
+    data: { followerName },
   });
 };

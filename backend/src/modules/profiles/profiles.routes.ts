@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authenticate } from '../../middleware/auth';
-import { requireGroom } from '../../middleware/roleGuard';
+import { requireRole } from '../../middleware/roleGuard';
+import { upload } from '../../config/upload';
 import {
   createProfile,
   getProfile,
@@ -10,19 +11,21 @@ import {
   deletePhoto,
   submitForReview,
   getMyProfile,
+  toggleVisibility,
 } from './profiles.controller';
 
 const router = Router();
 
 router.use(authenticate);
 
-router.post('/', requireGroom, createProfile);
+router.post('/', requireRole('GROOM', 'GUARDIAN', 'BOTH', 'ADMIN'), createProfile);
 router.get('/my', getMyProfile);
 router.get('/:id', getProfile);
 router.put('/:id', updateProfile);
 router.delete('/:id', deleteProfile);
-router.post('/:id/photos', uploadPhoto);
+router.post('/:id/photos', upload.single('photo'), uploadPhoto);
 router.delete('/:id/photos/:photoId', deletePhoto);
+router.put('/:id/visibility', toggleVisibility);
 router.post('/:id/submit', submitForReview);
 
 export default router;

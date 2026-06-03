@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { prisma } from '../../config/database';
 import { AuthRequest } from '../../middleware/auth';
 import { Prisma } from '@prisma/client';
+import { notifyProfileView } from '../../services/notification.service';
 
 export const browseProfiles = async (req: AuthRequest, res: Response) => {
   try {
@@ -98,6 +99,16 @@ export const getProfileDetail = async (req: AuthRequest, res: Response) => {
       where: { id: profile.id },
       data: { viewCount: { increment: 1 } },
     });
+
+    if (profile.userId !== req.userId) {
+      const viewerProfile = await prisma.profile.findUnique({
+        where: { userId: req.userId! },
+        select: { displayName: true },
+      });
+      if (viewerProfile?.displayName) {
+        notifyProfileView(profile.userId, viewerProfile.displayName);
+      }
+    }
 
     return res.json(profile);
   } catch (error) {

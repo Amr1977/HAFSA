@@ -1,45 +1,84 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
+import { photoUrl } from '../../lib/api';
 import { useAuthStore } from '../../stores/authStore';
 
 const STEPS = ['basic', 'marital', 'islamic', 'intro', 'requirements', 'photos', 'review'];
 
+const EMPTY_FORM = {
+  displayName: '',
+  age: 25,
+  nationality: '',
+  countryOfResidence: '',
+  city: '',
+  education: '',
+  occupation: '',
+  maritalStatus: 'SINGLE',
+  marriageNumber: 'FIRST',
+  hasChildren: false,
+  numberOfChildren: 0,
+  madhab: 'HANAFI',
+  prayerCommitment: 'ALWAYS',
+  quranMemorization: 'SOME_SURAHS',
+  religiousDescription: '',
+  selfIntroduction: '',
+  wifeAgeMin: 18,
+  wifeAgeMax: 35,
+  wifeNationality: '',
+  wifeCountry: '',
+  wifeEducation: '',
+  wifeMaritalStatus: 'any',
+  wifeHasChildren: 'no_preference',
+  wifeReligiousLevel: '',
+  photos: [],
+};
+
 export default function ProfileSetup() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { setUser } = useAuthStore();
+  const editId = searchParams.get('edit');
   const [step, setStep] = useState(0);
-  const [form, setForm] = useState<any>({
-    displayName: '',
-    age: 25,
-    nationality: '',
-    countryOfResidence: '',
-    city: '',
-    education: '',
-    occupation: '',
-    maritalStatus: 'SINGLE',
-    marriageNumber: 'FIRST',
-    hasChildren: false,
-    numberOfChildren: 0,
-    madhab: 'HANAFI',
-    prayerCommitment: 'ALWAYS',
-    quranMemorization: 'SOME_SURAHS',
-    religiousDescription: '',
-    selfIntroduction: '',
-    wifeAgeMin: 18,
-    wifeAgeMax: 35,
-    wifeNationality: '',
-    wifeCountry: '',
-    wifeEducation: '',
-    wifeMaritalStatus: 'any',
-    wifeHasChildren: 'no_preference',
-    wifeReligiousLevel: '',
-    photos: [],
-  });
+  const [form, setForm] = useState<any>({ ...EMPTY_FORM });
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(!!editId);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!editId) return;
+    api.profile.getMy().then((p: any) => {
+      setForm({
+        displayName: p.displayName || '',
+        age: p.age || 25,
+        nationality: p.nationality || '',
+        countryOfResidence: p.countryOfResidence || '',
+        city: p.city || '',
+        education: p.education || '',
+        occupation: p.occupation || '',
+        maritalStatus: p.maritalStatus || 'SINGLE',
+        marriageNumber: p.marriageNumber || 'FIRST',
+        hasChildren: p.hasChildren || false,
+        numberOfChildren: p.numberOfChildren || 0,
+        madhab: p.madhab || 'HANAFI',
+        prayerCommitment: p.prayerCommitment || 'ALWAYS',
+        quranMemorization: p.quranMemorization || 'SOME_SURAHS',
+        religiousDescription: p.religiousDescription || '',
+        selfIntroduction: p.selfIntroduction || '',
+        wifeAgeMin: p.wifeAgeMin || 18,
+        wifeAgeMax: p.wifeAgeMax || 35,
+        wifeNationality: p.wifeNationality || '',
+        wifeCountry: p.wifeCountry || '',
+        wifeEducation: p.wifeEducation || '',
+        wifeMaritalStatus: p.wifeMaritalStatus || 'any',
+        wifeHasChildren: p.wifeHasChildren || 'no_preference',
+        wifeReligiousLevel: p.wifeReligiousLevel || '',
+        photos: (p.photos || []).map((ph: any) => photoUrl(ph.url)),
+      });
+    }).catch(() => {}).finally(() => setInitialLoading(false));
+  }, [editId]);
 
   const update = (field: string, value: any) => setForm({ ...form, [field]: value });
 
@@ -47,8 +86,41 @@ export default function ProfileSetup() {
     setLoading(true);
     setError('');
     try {
-      const profile = await api.profile.create(form);
-      await api.profile.submit(profile.id);
+      const API_BASE = import.meta.env.VITE_API_URL || '/api';
+      const token = localStorage.getItem('auth_token');
+
+      let profile;
+      if (editId) {
+        const { photos: formPhotos, ...data } = form;
+        profile = await api.profile.update(editId, data);
+        for (const photo of formPhotos) {
+          if (photo.startsWith('data:')) {
+            const blob = await fetch(photo).then(r => r.blob());
+            const fd = new FormData();
+            fd.append('photo', blob, 'photo.jpg');
+            await fetch(`${API_BASE}/profiles/${profile.id}/photos`, {
+              method: 'POST',
+              headers: { Authorization: `Bearer ${token}` },
+              body: fd,
+            });
+          }
+        }
+      } else {
+        profile = await api.profile.create(form);
+        for (const photo of form.photos) {
+          if (photo.startsWith('data:')) {
+            const blob = await fetch(photo).then(r => r.blob());
+            const fd = new FormData();
+            fd.append('photo', blob, 'photo.jpg');
+            await fetch(`${API_BASE}/profiles/${profile.id}/photos`, {
+              method: 'POST',
+              headers: { Authorization: `Bearer ${token}` },
+              body: fd,
+            });
+          }
+        }
+        await api.profile.submit(profile.id);
+      }
       const user = await api.auth.getMe();
       setUser(user);
       navigate('/profile/my');
@@ -216,6 +288,51 @@ export default function ProfileSetup() {
           </div>
         );
 
+      case 'photos':
+        return (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-[#1B4332]">إضافة الصور</h2>
+            <p className="text-sm text-[#6B7280]">أضف صوراً لملفك الشخصي (اختياري - حد أقصى 6)</p>
+            <div className="grid grid-cols-3 gap-4">
+              {form.photos.map((photo: string, i: number) => (
+                <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-[#E5E7EB]">
+                  <img src={photo} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => {
+                      const updated = form.photos.filter((_: any, j: number) => j !== i);
+                      update('photos', updated);
+                    }}
+                    className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              {form.photos.length < 6 && (
+                <label className="aspect-square rounded-lg border-2 border-dashed border-[#E5E7EB] flex items-center justify-center cursor-pointer hover:border-[#1B4332] transition-colors">
+                  <span className="text-3xl text-[#6B7280]">+</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                          update('photos', [...form.photos, ev.target?.result]);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+            <p className="text-xs text-[#6B7280]">{form.photos.length} / 6 صور</p>
+          </div>
+        );
+
       case 'review':
         return (
           <div className="space-y-4">
@@ -242,9 +359,21 @@ export default function ProfileSetup() {
     }
   };
 
+  if (initialLoading) return <div className="text-center py-8">{t('common.loading')}</div>;
+
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white p-8 rounded-xl shadow-sm border border-[#E5E7EB]">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-bold text-[#1B4332]">
+            {editId ? 'تعديل الملف الشخصي' : 'إنشاء الملف الشخصي'}
+          </h1>
+          {editId && (
+            <button onClick={() => navigate('/profile/my')} className="text-sm text-[#6B7280] hover:text-[#1B4332]">
+              العودة إلى الملف
+            </button>
+          )}
+        </div>
         {/* Progress bar */}
         <div className="flex gap-1 mb-8">
           {STEPS.map((_, i) => (

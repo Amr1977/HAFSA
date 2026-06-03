@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
 
 export default function AdminUsers() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState<any[]>([]);
 
   const fetchUsers = async () => {
@@ -27,17 +29,17 @@ export default function AdminUsers() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-[#1B4332] mb-6">إدارة المستخدمين</h1>
+      <h1 className="text-2xl font-bold text-[#1B4332] mb-6">{t('admin.users.title')}</h1>
       <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">المعرف</th>
-              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">الهاتف</th>
-              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">الدور</th>
-              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">الاشتراك</th>
-              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">حظر</th>
-              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">توثيق</th>
+              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">{t('admin.users.id')}</th>
+              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">{t('admin.users.phone')}</th>
+              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">{t('admin.users.role')}</th>
+              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">{t('admin.users.subscription')}</th>
+              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">{t('admin.users.banColumn')}</th>
+              <th className="text-right p-4 text-sm font-medium text-[#6B7280]">{t('admin.users.verifyColumn')}</th>
             </tr>
           </thead>
           <tbody>
@@ -48,19 +50,17 @@ export default function AdminUsers() {
                 <td className="p-4 text-sm">{u.role}</td>
                 <td className="p-4 text-sm">{u.subscriptionPlan}</td>
                 <td className="p-4">
-                  <button
-                    onClick={() => toggleBan(u.id)}
+                  <button onClick={() => toggleBan(u.id)}
                     className={`px-3 py-1 rounded text-sm ${u.isBanned ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
                   >
-                    {u.isBanned ? 'رفع الحظر' : 'حظر'}
+                    {u.isBanned ? t('admin.users.unban') : t('admin.users.ban')}
                   </button>
                 </td>
                 <td className="p-4">
-                  <button
-                    onClick={() => toggleVerify(u.id)}
+                  <button onClick={() => toggleVerify(u.id)}
                     className={`px-3 py-1 rounded text-sm ${u.isVerified ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}
                   >
-                    {u.isVerified ? 'موثق' : 'توثيق'}
+                    {u.isVerified ? t('admin.users.verified') : t('admin.users.verify')}
                   </button>
                 </td>
               </tr>

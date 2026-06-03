@@ -25,6 +25,7 @@
     "role_groom": "Seeking Marriage",
     "role_guardian": "Guardian",
     "role_both": "Both",
+    "role": "Role",
     "verifyOtp": "Verify OTP",
     "sendOtp": "Send Verification Code"
   },
@@ -32,6 +33,7 @@
     "create": "Create Profile",
     "edit": "Edit Profile",
     "my": "My Profile",
+    "basicInfo": "Basic Information",
     "displayName": "Display Name",
     "age": "Age",
     "nationality": "Nationality",
@@ -117,7 +119,13 @@
     "title": "Messages",
     "noConversations": "No conversations",
     "typeMessage": "Type your message...",
-    "send": "Send"
+    "send": "Send",
+    "noMessages": "No messages yet, start the conversation"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "markAllRead": "Mark all as read"
   },
   "settings": {
     "title": "Settings",
@@ -126,7 +134,66 @@
     "currentPlan": "Current Plan",
     "upgrade": "Upgrade",
     "free": "Free",
-    "premium": "Premium"
+    "premium": "Premium",
+    "viewFullProfile": "View full profile",
+    "profileVisibility": "Profile visibility",
+    "visible": "Your profile is visible to others",
+    "hidden": "Your profile is hidden from others",
+    "status": "Status",
+    "deleteConfirm": "Are you sure you want to delete your profile? This action cannot be undone.",
+    "noProfile": "You don't have a profile yet"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Dashboard",
+      "totalUsers": "Total Users",
+      "totalProfiles": "Total Profiles",
+      "pendingProfiles": "Pending Review",
+      "premiumUsers": "Premium Users",
+      "manageUsers": "Manage Users",
+      "manageUsersDesc": "View and manage users",
+      "reviewProfiles": "Review Profiles",
+      "reviewProfilesDesc": "Review and approve profiles",
+      "reports": "Reports",
+      "manageReportsDesc": "Manage user reports"
+    },
+    "users": {
+      "title": "User Management",
+      "id": "ID",
+      "phone": "Phone",
+      "role": "Role",
+      "subscription": "Subscription",
+      "banColumn": "Ban",
+      "verifyColumn": "Verify",
+      "ban": "Ban",
+      "unban": "Unban",
+      "verified": "Verified",
+      "verify": "Verify"
+    },
+    "profiles": {
+      "title": "Review Profiles",
+      "noPending": "No profiles pending review",
+      "ageNationality": "{{age}} years • {{nationality}}",
+      "selfIntroduction": "Self Introduction",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "reports": {
+      "title": "Reports",
+      "noReports": "No reports",
+      "resolve": "Resolve"
+    }
+  },
+  "social": {
+    "anonymous": "User",
+    "back": "Back to posts",
+    "like": "Like",
+    "comment": "Comment",
+    "commentsTitle": "Comments",
+    "writeComment": "Write a comment...",
+    "commentButton": "Comment",
+    "noComments": "No comments yet. Be the first to comment!",
+    "delete": "Delete"
   },
   "common": {
     "loading": "Loading...",
@@ -137,6 +204,7 @@
     "confirm": "Confirm",
     "back": "Back",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "month": "month"
   }
 }

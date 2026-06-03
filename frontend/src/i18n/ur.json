@@ -20,6 +20,7 @@
     "phone": "فون نمبر",
     "email": "ای میل",
     "password": "پاس ورڈ",
+    "role": "کردار",
     "loginTitle": "حفصہ میں لاگ ان",
     "registerTitle": "نیا اکاؤنٹ بنائیں",
     "role_groom": "شادی کے خواہشمند",
@@ -29,7 +30,10 @@
     "sendOtp": "تصدیقی کوڈ بھیجیں"
   },
   "profile": {
+    "create": "پروفائل بنائیں",
+    "edit": "پروفائل میں ترمیم کریں",
     "my": "میری پروفائل",
+    "basicInfo": "بنیادی معلومات",
     "displayName": "نام یا عرفیت",
     "age": "عمر",
     "nationality": "قومیت",
@@ -37,12 +41,22 @@
     "city": "شہر",
     "education": "تعلیم",
     "occupation": "پیشہ",
+    "maritalStatus": {
+      "SINGLE": "مجرد",
+      "MARRIED_SEEKING_SECOND": "شادی شدہ دوسری چاہتا ہے",
+      "MARRIED_SEEKING_THIRD": "شادی شدہ تیسری چاہتا ہے",
+      "MARRIED_SEEKING_FOURTH": "شادی شدہ چوتھی چاہتا ہے",
+      "DIVORCED": "طلاق یافتہ",
+      "WIDOWED": "بیوہ"
+    },
     "marriageNumber": {
       "FIRST": "پہلی شادی",
       "SECOND": "دوسری شادی",
       "THIRD": "تیسری شادی",
       "FOURTH": "چوتھی شادی"
     },
+    "hasChildren": "بچے ہیں؟",
+    "numberOfChildren": "بچوں کی تعداد",
     "madhab": {
       "HANAFI": "حنفی",
       "MALIKI": "مالکی",
@@ -65,14 +79,30 @@
       "FATIHA_ONLY": "صرف فاتحہ",
       "NONE": "نہیں"
     },
-    "submit": "جائزہ کے لیے جمع کروائیں"
+    "selfIntroduction": "تعارف",
+    "wifeRequirements": "بیوی کے لئے شرائط",
+    "wifeAgeRange": "بیوی کی عمر کی حد",
+    "wifeNationality": "قومیت",
+    "wifeEducation": "تعلیم",
+    "wifeMaritalStatus": "ازدواجی حیثیت",
+    "wifeReligiousLevel": "مذہبی سطح",
+    "submit": "جائزہ کے لیے جمع کروائیں",
+    "status": {
+      "DRAFT": "مسودہ",
+      "PENDING_AI_REVIEW": "زیر جائزہ",
+      "APPROVED": "شائع شدہ",
+      "REJECTED": "مسترد",
+      "SUSPENDED": "معطل"
+    }
   },
   "browse": {
     "title": "پروفائلز براؤز کریں",
     "filters": "فلٹر",
+    "search": "تلاش...",
     "sendRequest": "درخواست بھیجیں",
     "aiSuggestions": "AI تجاویز",
-    "noResults": "کوئی نتیجہ نہیں ملا"
+    "noResults": "کوئی نتیجہ نہیں ملا",
+    "premiumFeature": "یہ فیچر صرف پریمیم صارفین کے لیے ہے"
   },
   "requests": {
     "sent": "بھیجی گئی درخواستیں",
@@ -80,18 +110,90 @@
     "accept": "قبول کریں",
     "reject": "مسترد کریں",
     "pending": "زیر التوا",
-    "noRequests": "کوئی درخواست نہیں"
+    "accepted": "قبول شدہ",
+    "rejected": "مسترد شدہ",
+    "noRequests": "کوئی درخواست نہیں",
+    "limitReached": "مفت حد مکمل (3 درخواستیں/ماہ)"
   },
   "messages": {
     "title": "پیغامات",
     "noConversations": "کوئی گفتگو نہیں",
     "typeMessage": "اپنا پیغام لکھیں...",
-    "send": "بھیجیں"
+    "send": "بھیجیں",
+    "noMessages": "ابھی تک کوئی پیغام نہیں، گفتگو شروع کریں"
+  },
+  "notifications": {
+    "title": "اطلاعات",
+    "empty": "کوئی اطلاع نہیں",
+    "markAllRead": "سب کو پڑھا ہوا نشان زد کریں"
   },
   "settings": {
     "title": "ترتیبات",
     "language": "زبان",
-    "subscription": "سبسکرپشن"
+    "subscription": "سبسکرپشن",
+    "currentPlan": "موجودہ منصوبہ",
+    "upgrade": "اپ گریڈ کریں",
+    "free": "مفت",
+    "premium": "پریمیم",
+    "viewFullProfile": "مکمل پروفائل دیکھیں",
+    "profileVisibility": "پروفائل کی نمائش",
+    "visible": "آپ کا پروفائل دوسروں کو نظر آتا ہے",
+    "hidden": "آپ کا پروفائل دوسروں سے پوشیدہ ہے",
+    "status": "حیثیت",
+    "deleteConfirm": "کیا آپ واقعی اپنا پروفائل حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں کیا جا سکتا۔",
+    "noProfile": "آپ کا ابھی تک کوئی پروفائل نہیں ہے"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "ڈیش بورڈ",
+      "totalUsers": "کل صارفین",
+      "totalProfiles": "کل پروفائلز",
+      "pendingProfiles": "زیر جائزہ",
+      "premiumUsers": "پریمیم صارفین",
+      "manageUsers": "صارفین کا انتظام",
+      "manageUsersDesc": "صارفین دیکھیں اور ان کا انتظام کریں",
+      "reviewProfiles": "پروفائلز کا جائزہ",
+      "reviewProfilesDesc": "پروفائلز کا جائزہ لیں اور منظور کریں",
+      "reports": "رپورٹس",
+      "manageReportsDesc": "صارفین کی رپورٹس کا انتظام کریں"
+    },
+    "users": {
+      "title": "صارفین کا انتظام",
+      "id": "شناخت",
+      "phone": "فون",
+      "role": "کردار",
+      "subscription": "سبسکرپشن",
+      "banColumn": "پابندی",
+      "verifyColumn": "تصدیق",
+      "ban": "پابندی",
+      "unban": "پابندی ختم کریں",
+      "verified": "تصدیق شدہ",
+      "verify": "تصدیق کریں"
+    },
+    "profiles": {
+      "title": "پروفائلز کا جائزہ",
+      "noPending": "کوئی پروفائل زیر جائزہ نہیں",
+      "ageNationality": "{{age}} سال • {{nationality}}",
+      "selfIntroduction": "تعارف",
+      "approve": "منظور کریں",
+      "reject": "مسترد کریں"
+    },
+    "reports": {
+      "title": "رپورٹس",
+      "noReports": "کوئی رپورٹ نہیں",
+      "resolve": "حل کریں"
+    }
+  },
+  "social": {
+    "anonymous": "صارف",
+    "back": "پوسٹس پر واپس جائیں",
+    "like": "پسند",
+    "comment": "تبصرہ",
+    "commentsTitle": "تبصرے",
+    "writeComment": "تبصرہ لکھیں...",
+    "commentButton": "تبصرہ کریں",
+    "noComments": "ابھی تک کوئی تبصرہ نہیں۔ پہلا تبصرہ کریں!",
+    "delete": "حذف کریں"
   },
   "common": {
     "loading": "لوڈ ہو رہا ہے...",
@@ -102,6 +204,7 @@
     "confirm": "تصدیق کریں",
     "back": "واپس",
     "next": "اگلا",
-    "previous": "پچھلا"
+    "previous": "پچھلا",
+    "month": "ماہ"
   }
 }

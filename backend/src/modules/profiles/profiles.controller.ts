@@ -101,10 +101,11 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    const { photos, ...profileData } = req.body;
     const updated = await prisma.profile.update({
       where: { id: params.id },
       data: {
-        ...req.body,
+        ...profileData,
         status: 'DRAFT',
       },
       include: { photos: true },
@@ -159,7 +160,20 @@ export const uploadPhoto = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const { url, cloudinaryId } = req.body;
+    let url = req.body.url;
+    let cloudinaryId = req.body.cloudinaryId;
+
+    if (!url && req.file) {
+      url = `/uploads/${req.file.filename}`;
+    }
+
+    if (!url) {
+      return res.status(400).json({
+        error: 'NO_PHOTO',
+        messageAr: 'يرجى اختيار صورة',
+        messageEn: 'Please select a photo',
+      });
+    }
 
     const photo = await prisma.profilePhoto.create({
       data: {
@@ -249,6 +263,34 @@ export const submitForReview = async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error('Submit for review error:', error);
     return res.status(500).json({ error: 'INTERNAL', message: 'Failed to submit for review' });
+  }
+};
+
+export const toggleVisibility = async (req: AuthRequest, res: Response) => {
+  try {
+    const params = p(req);
+    const profile = await prisma.profile.findUnique({ where: { id: params.id } });
+    if (!profile || profile.userId !== req.userId) {
+      return res.status(403).json({
+        error: 'FORBIDDEN',
+        messageAr: 'لا يمكنك تعديل هذا الملف',
+        messageEn: 'You cannot edit this profile',
+      });
+    }
+
+    const visible = req.body.visible === true;
+    const updated = await prisma.profile.update({
+      where: { id: params.id },
+      data: {
+        status: visible ? 'APPROVED' : 'DRAFT',
+        publishedAt: visible ? new Date() : null,
+      },
+    });
+
+    return res.json(updated);
+  } catch (error) {
+    console.error('Toggle visibility error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to toggle visibility' });
   }
 };
 

@@ -16,6 +16,7 @@ interface User {
   isBanned: boolean;
   hasProfile: boolean;
   profileId?: string;
+  profilePhoto?: string | null;
 }
 
 interface AuthState {

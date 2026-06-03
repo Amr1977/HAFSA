@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
+import { photoUrl } from '../../lib/api';
 
 export default function ProfileDetail() {
   const { t } = useTranslation();
@@ -44,7 +45,7 @@ export default function ProfileDetail() {
 
       <div className="bg-white rounded-xl shadow-sm border border-[#E5E7EB] overflow-hidden">
         {profile.photos?.[0] && (
-          <img src={profile.photos[0].url} alt="" className="w-full h-64 object-cover" />
+          <img src={photoUrl(profile.photos[0].url)} alt="" className="w-full h-64 object-cover" />
         )}
 
         <div className="p-6">

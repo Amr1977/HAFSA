@@ -1,6 +1,6 @@
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from './firebase';
-import { api } from './api';
+import { api, setToken } from './api';
 import { useAuthStore } from '../stores/authStore';
 
 const provider = new GoogleAuthProvider();
@@ -16,8 +16,9 @@ export const signInWithGoogle = async (role?: string) => {
     role: role || 'GROOM',
   });
 
-  const userData = await api.auth.getMe();
+  setToken(res.accessToken);
   localStorage.setItem('auth_token', res.accessToken);
+  const userData = await api.auth.getMe();
   useAuthStore.getState().login(res.accessToken, userData);
 
   return userData;

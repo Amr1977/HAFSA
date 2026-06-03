@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
 
 export default function AdminReports() {
+  const { t } = useTranslation();
   const [reports, setReports] = useState<any[]>([]);
 
   useEffect(() => {
@@ -17,10 +19,10 @@ export default function AdminReports() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-[#1B4332] mb-6">البلاغات</h1>
+      <h1 className="text-2xl font-bold text-[#1B4332] mb-6">{t('admin.reports.title')}</h1>
 
       {reports.length === 0 ? (
-        <div className="text-center py-16 text-[#6B7280]">لا توجد بلاغات</div>
+        <div className="text-center py-16 text-[#6B7280]">{t('admin.reports.noReports')}</div>
       ) : (
         <div className="space-y-4">
           {reports.map((r: any) => (
@@ -38,11 +40,8 @@ export default function AdminReports() {
                 {new Date(r.createdAt).toLocaleDateString('ar-SA')}
               </p>
               {r.status === 'PENDING' && (
-                <button
-                  onClick={() => resolve(r.id)}
-                  className="px-4 py-2 bg-[#1B4332] text-white rounded-lg text-sm hover:bg-[#2D6A4F]"
-                >
-                  حل البلاغ
+                <button onClick={() => resolve(r.id)} className="px-4 py-2 bg-[#1B4332] text-white rounded-lg text-sm hover:bg-[#2D6A4F]">
+                  {t('admin.reports.resolve')}
                 </button>
               )}
             </div>

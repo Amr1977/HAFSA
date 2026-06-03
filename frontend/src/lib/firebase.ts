@@ -3,6 +3,8 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { api } from './api';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,13 +22,45 @@ function initFirebase() {
     const db = getFirestore(app);
     const storage = getStorage(app);
     const analytics = typeof window !== 'undefined' ? getAnalytics(app) : undefined;
-    return { app, auth, db, storage, analytics };
+    const messaging = typeof window !== 'undefined' ? getMessaging(app) : undefined;
+    return { app, auth, db, storage, analytics, messaging };
   } catch (e) {
     console.warn('Firebase initialization failed', e);
-    return { app: null as any, auth: null as any, db: null as any, storage: null as any, analytics: undefined };
+    return { app: null as any, auth: null as any, db: null as any, storage: null as any, analytics: undefined, messaging: undefined };
   }
 }
 
-const { app, auth, db, storage, analytics } = initFirebase();
+const { app, auth, db, storage, analytics, messaging } = initFirebase();
 
-export { app, auth, db, storage, analytics };
+export const requestPushPermission = async () => {
+  if (!messaging) return;
+  try {
+    const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY;
+    if (!vapidKey) {
+      console.warn('VITE_FIREBASE_VAPID_KEY not set, skipping push registration');
+      return;
+    }
+
+    if ('Notification' in window) {
+      if (Notification.permission === 'denied') return;
+      if (Notification.permission !== 'granted') {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') return;
+      }
+    }
+
+    const currentToken = await getToken(messaging, { vapidKey });
+    if (currentToken) {
+      api.post('/notifications/push-token', { token: currentToken, platform: 'web' }).catch(() => {});
+    }
+  } catch (e) {
+    console.warn('Push notification registration failed:', e);
+  }
+};
+
+export const onForegroundMessage = (handler: (payload: any) => void) => {
+  if (!messaging) return;
+  onMessage(messaging, handler);
+};
+
+export { app, auth, db, storage, analytics, messaging };

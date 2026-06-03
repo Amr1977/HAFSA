@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { prisma } from '../../config/database';
 import { AuthRequest } from '../../middleware/auth';
+import { notifyNewMessage } from '../../services/notification.service';
 
 const p = (req: AuthRequest) => req.params as { id: string };
 
@@ -99,6 +100,17 @@ export const sendMessage = async (req: AuthRequest, res: Response) => {
     await prisma.conversation.update({
       where: { id: params.id },
       data: { lastMessageAt: new Date() },
+    });
+
+    const senderProfile = await prisma.profile.findUnique({
+      where: { userId: req.userId! },
+      select: { displayName: true },
+    });
+
+    conversation.participants.forEach((p: any) => {
+      if (p.userId !== req.userId) {
+        notifyNewMessage(p.userId, senderProfile?.displayName || 'مستخدم', params.id);
+      }
     });
 
     return res.status(201).json(message);

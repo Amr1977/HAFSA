@@ -1,45 +1,393 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/authStore';
 import { changeLanguage } from '../../i18n';
+import { api } from '../../lib/api';
+
+type Section = 'language' | 'subscription' | 'profile' | null;
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
+  const navigate = useNavigate();
+
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [openSection, setOpenSection] = useState<Section>(null);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState<any>('');
+  const [saving, setSaving] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  useEffect(() => {
+    api.profile.getMy()
+      .then(setProfile)
+      .catch(() => setProfile(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const showMsg = (type: 'success' | 'error', text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 3000);
+  };
+
+  const startEdit = (field: string, currentValue: any) => {
+    setEditingField(field);
+    setEditValue(currentValue ?? '');
+  };
+
+  const cancelEdit = () => {
+    setEditingField(null);
+    setEditValue('');
+  };
+
+  const saveField = async (field: string) => {
+    if (!profile) return;
+    setSaving(true);
+    try {
+      const updated = await api.profile.update(profile.id, { [field]: editValue });
+      setProfile(updated);
+      setEditingField(null);
+      showMsg('success', 'تم الحفظ');
+    } catch (err: any) {
+      showMsg('error', err.message || 'فشل الحفظ');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const toggleVisibility = async (visible: boolean) => {
+    if (!profile) return;
+    setSaving(true);
+    try {
+      const updated = await api.profile.toggleVisibility(profile.id, visible);
+      setProfile(updated);
+      showMsg('success', visible ? 'تم إظهار الملف الشخصي' : 'تم إخفاء الملف الشخصي');
+    } catch (err: any) {
+      showMsg('error', err.message || 'فشل تغيير الحالة');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!profile) return;
+    setDeleting(true);
+    try {
+      await api.profile.delete(profile.id);
+      setProfile(null);
+      setDeleteConfirm(false);
+      showMsg('success', 'تم حذف الملف الشخصي');
+    } catch (err: any) {
+      showMsg('error', err.message || 'فشل الحذف');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const isVisible = profile?.status === 'APPROVED';
+
+  const fieldLabels: Record<string, string> = {
+    displayName: t('profile.displayName'),
+    age: t('profile.age'),
+    nationality: t('profile.nationality'),
+    countryOfResidence: t('profile.country') || 'بلد الإقامة',
+    city: t('profile.city'),
+    education: t('profile.education'),
+    occupation: t('profile.occupation'),
+    selfIntroduction: t('profile.selfIntroduction'),
+  };
+
+  const toggleSection = (s: Section) => {
+    setOpenSection(openSection === s ? null : s);
+    setEditingField(null);
+  };
+
+  const renderField = (field: string, value: any, type: 'text' | 'textarea' = 'text') => {
+    const isEditing = editingField === field;
+    return (
+      <div className="flex items-center justify-between py-2.5 border-b border-[var(--color-border)] last:border-0">
+        <div className="flex-1 min-w-0 ml-4">
+          <p className="text-xs text-[var(--color-muted)] mb-0.5">{fieldLabels[field] || field}</p>
+          {isEditing ? (
+            <div className="flex gap-2">
+              {type === 'textarea' ? (
+                <textarea
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  className="flex-1 px-3 py-1.5 text-sm border border-[var(--color-primary)] rounded-lg focus:outline-none resize-none"
+                  rows={3}
+                />
+              ) : (
+                <input
+                  type={field === 'age' ? 'number' : 'text'}
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  className="flex-1 px-3 py-1.5 text-sm border border-[var(--color-primary)] rounded-lg focus:outline-none"
+                />
+              )}
+              <button
+                onClick={() => saveField(field)}
+                disabled={saving}
+                className="px-3 py-1.5 text-sm bg-[var(--color-primary)] text-white rounded-lg hover:opacity-90 disabled:opacity-50"
+              >
+                {saving ? '...' : t('common.save')}
+              </button>
+              <button
+                onClick={cancelEdit}
+                className="px-3 py-1.5 text-sm border border-[var(--color-border)] rounded-lg hover:bg-gray-50"
+              >
+                {t('common.cancel')}
+              </button>
+            </div>
+          ) : (
+            <p className="font-medium text-[var(--color-text)] text-sm truncate">{value || '—'}</p>
+          )}
+        </div>
+        {!isEditing && (
+          <button
+            onClick={() => startEdit(field, value)}
+            className="text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors flex-shrink-0"
+            title="تعديل"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+          </button>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-[#1B4332] mb-6">{t('settings.title')}</h1>
+      <h1 className="text-2xl font-bold text-[var(--color-primary)] mb-6">{t('settings.title')}</h1>
 
-      <div className="space-y-4">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-[#E5E7EB]">
-          <h2 className="font-semibold text-[#1B4332] mb-4">{t('settings.language')}</h2>
-          <select
-            value={i18n.language}
-            onChange={(e) => changeLanguage(e.target.value)}
-            className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white"
+      {message && (
+        <div className={`mb-4 px-4 py-3 rounded-lg text-sm font-medium ${
+          message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+        }`}>
+          {message.text}
+        </div>
+      )}
+
+      <div className="space-y-2">
+
+        {/* Language */}
+        <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] overflow-hidden">
+          <button
+            onClick={() => toggleSection('language')}
+            className="w-full flex items-center justify-between p-4 text-left hover:bg-black/[0.02] transition-colors"
           >
-            <option value="ar">العربية</option>
-            <option value="en">English</option>
-            <option value="ur">اردو</option>
-            <option value="fr">Français</option>
-          </select>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[var(--color-primary-pale)] flex items-center justify-center">
+                <svg className="w-5 h-5 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-semibold text-[var(--color-text)] text-sm">{t('settings.language')}</p>
+                <p className="text-xs text-[var(--color-muted)]">{i18n.language === 'ar' ? 'العربية' : i18n.language === 'en' ? 'English' : i18n.language === 'ur' ? 'اردو' : 'Français'}</p>
+              </div>
+            </div>
+            <svg className={`w-5 h-5 text-[var(--color-muted)] transition-transform ${openSection === 'language' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {openSection === 'language' && (
+            <div className="px-4 pb-4">
+              <select
+                value={i18n.language}
+                onChange={(e) => changeLanguage(e.target.value)}
+                className="w-full px-4 py-2.5 border border-[var(--color-border)] rounded-lg bg-[var(--color-bg)] text-sm focus:outline-none focus:border-[var(--color-primary)]"
+              >
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+                <option value="ur">اردو</option>
+                <option value="fr">Français</option>
+              </select>
+            </div>
+          )}
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-[#E5E7EB]">
-          <h2 className="font-semibold text-[#1B4332] mb-4">{t('settings.subscription')}</h2>
-          <p className="text-[#6B7280] mb-3">
-            {t('settings.currentPlan')}: <span className="font-medium text-[#1B4332]">
-              {user?.subscriptionPlan === 'PREMIUM' ? t('settings.premium') : t('settings.free')}
-            </span>
-          </p>
-          <Link
-            to="/settings/subscription"
-            className="inline-block px-4 py-2 bg-[#1B4332] text-white rounded-lg text-sm hover:bg-[#2D6A4F]"
+        {/* Subscription */}
+        <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] overflow-hidden">
+          <button
+            onClick={() => toggleSection('subscription')}
+            className="w-full flex items-center justify-between p-4 text-left hover:bg-black/[0.02] transition-colors"
           >
-            {t('settings.upgrade')}
-          </Link>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[var(--color-primary-pale)] flex items-center justify-center">
+                <svg className="w-5 h-5 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-semibold text-[var(--color-text)] text-sm">{t('settings.subscription')}</p>
+                <p className="text-xs text-[var(--color-muted)]">
+                  {t('settings.currentPlan')}: {user?.subscriptionPlan === 'PREMIUM' ? t('settings.premium') : t('settings.free')}
+                </p>
+              </div>
+            </div>
+            <svg className={`w-5 h-5 text-[var(--color-muted)] transition-transform ${openSection === 'subscription' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {openSection === 'subscription' && (
+            <div className="px-4 pb-4">
+              <Link
+                to="/settings/subscription"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg text-sm hover:opacity-90 transition-opacity"
+              >
+                {t('settings.upgrade')}
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+          )}
         </div>
+
+        {/* Profile Settings */}
+        {profile && (
+          <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] overflow-hidden">
+            <button
+              onClick={() => toggleSection('profile')}
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-black/[0.02] transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[var(--color-primary-pale)] flex items-center justify-center">
+                  <svg className="w-5 h-5 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-semibold text-[var(--color-text)] text-sm">{t('profile.my')}</p>
+                  <p className="text-xs text-[var(--color-muted)]">{profile.displayName}</p>
+                </div>
+              </div>
+              <svg className={`w-5 h-5 text-[var(--color-muted)] transition-transform ${openSection === 'profile' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {openSection === 'profile' && (
+              <div className="px-4 pb-4 space-y-4">
+                {/* Profile fields */}
+                <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                  {renderField('displayName', profile.displayName)}
+                  {renderField('age', profile.age)}
+                  {renderField('nationality', profile.nationality)}
+                  {renderField('countryOfResidence', profile.countryOfResidence)}
+                  {renderField('city', profile.city)}
+                  {renderField('education', profile.education)}
+                  {renderField('occupation', profile.occupation)}
+                  {renderField('selfIntroduction', profile.selfIntroduction, 'textarea')}
+                </div>
+
+                {/* Full profile link */}
+                <Link
+                  to="/profile/my"
+                  className="flex items-center justify-between w-full px-4 py-3 bg-[var(--color-bg)] rounded-lg text-sm hover:bg-black/[0.02] transition-colors"
+                >
+                  <span className="font-medium text-[var(--color-text)]">{t('settings.viewFullProfile') || 'عرض الملف كاملاً'}</span>
+                  <svg className="w-4 h-4 text-[var(--color-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+
+                {/* Visibility toggle */}
+                <div className="flex items-center justify-between bg-[var(--color-bg)] rounded-lg px-4 py-3">
+                  <div>
+                    <p className="text-sm font-medium text-[var(--color-text)]">{t('settings.profileVisibility') || 'ظهور الملف الشخصي'}</p>
+                    <p className="text-xs text-[var(--color-muted)] mt-0.5">
+                      {isVisible
+                        ? (t('settings.visible') || 'ملفك مرئي للآخرين')
+                        : (t('settings.hidden') || 'ملفك مخفي عن الآخرين')}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => toggleVisibility(!isVisible)}
+                    disabled={saving}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${
+                      isVisible ? 'bg-[var(--color-primary)]' : 'bg-gray-300'
+                    } ${saving ? 'opacity-50' : ''}`}
+                  >
+                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                      isVisible ? 'translate-x-5' : ''
+                    }`} />
+                  </button>
+                </div>
+
+                {/* Status badge */}
+                <div className="bg-[var(--color-bg)] rounded-lg px-4 py-3">
+                  <p className="text-sm text-[var(--color-muted)]">
+                    {t('settings.status') || 'الحالة'}:{' '}
+                    <span className={`font-medium ${
+                      profile.status === 'APPROVED' ? 'text-green-600' :
+                      profile.status === 'DRAFT' ? 'text-yellow-600' :
+                      profile.status === 'REJECTED' ? 'text-red-600' : ''
+                    }`}>
+                      {t(`profile.status.${profile.status}`)}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Delete profile */}
+                <div className="pt-2 border-t border-[var(--color-border)]">
+                  {deleteConfirm ? (
+                    <div className="bg-red-50 rounded-lg p-4 space-y-3">
+                      <p className="text-sm text-red-700 font-medium">
+                        {t('settings.deleteConfirm') || 'هل أنت متأكد من حذف الملف الشخصي؟ لا يمكن التراجع عن هذا الإجراء.'}
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleDelete}
+                          disabled={deleting}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 disabled:opacity-50"
+                        >
+                          {deleting ? '...' : t('common.confirm')}
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(false)}
+                          className="px-4 py-2 border border-[var(--color-border)] rounded-lg text-sm hover:bg-gray-50"
+                        >
+                          {t('common.cancel')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setDeleteConfirm(true)}
+                      className="flex items-center gap-2 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      {t('common.delete') + ' ' + (t('profile.my') || 'الملف الشخصي')}
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* No profile state */}
+        {!loading && !profile && (
+          <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-6 text-center">
+            <p className="text-[var(--color-muted)] mb-4">{t('settings.noProfile') || 'ليس لديك ملف شخصي بعد'}</p>
+            <button
+              onClick={() => navigate('/profile/setup')}
+              className="px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg text-sm hover:opacity-90"
+            >
+              {t('profile.create')}
+            </button>
+          </div>
+        )}
+
       </div>
     </div>
   );

@@ -20,6 +20,7 @@
     "phone": "Numéro de téléphone",
     "email": "Email",
     "password": "Mot de passe",
+    "role": "Rôle",
     "loginTitle": "Connexion à Hafsa",
     "registerTitle": "Créer un compte",
     "role_groom": "Cherche à se marier",
@@ -29,7 +30,10 @@
     "sendOtp": "Envoyer le code"
   },
   "profile": {
+    "create": "Créer un profil",
+    "edit": "Modifier le profil",
     "my": "Mon profil",
+    "basicInfo": "Informations de base",
     "displayName": "Nom",
     "age": "Âge",
     "nationality": "Nationalité",
@@ -37,6 +41,22 @@
     "city": "Ville",
     "education": "Éducation",
     "occupation": "Profession",
+    "maritalStatus": {
+      "SINGLE": "Célibataire",
+      "MARRIED_SEEKING_SECOND": "Marié cherche une seconde",
+      "MARRIED_SEEKING_THIRD": "Marié cherche une troisième",
+      "MARRIED_SEEKING_FOURTH": "Marié cherche une quatrième",
+      "DIVORCED": "Divorcé",
+      "WIDOWED": "Veuf"
+    },
+    "marriageNumber": {
+      "FIRST": "Premier mariage",
+      "SECOND": "Deuxième mariage",
+      "THIRD": "Troisième mariage",
+      "FOURTH": "Quatrième mariage"
+    },
+    "hasChildren": "A des enfants ?",
+    "numberOfChildren": "Nombre d'enfants",
     "madhab": {
       "HANAFI": "Hanafi",
       "MALIKI": "Maliki",
@@ -59,14 +79,30 @@
       "FATIHA_ONLY": "Fatiha seulement",
       "NONE": "Aucune"
     },
-    "submit": "Soumettre"
+    "selfIntroduction": "Présentation",
+    "wifeRequirements": "Critères de l'épouse",
+    "wifeAgeRange": "Tranche d'âge",
+    "wifeNationality": "Nationalité",
+    "wifeEducation": "Éducation",
+    "wifeMaritalStatus": "Situation matrimoniale",
+    "wifeReligiousLevel": "Niveau religieux",
+    "submit": "Soumettre",
+    "status": {
+      "DRAFT": "Brouillon",
+      "PENDING_AI_REVIEW": "En cours d'examen",
+      "APPROVED": "Publié",
+      "REJECTED": "Refusé",
+      "SUSPENDED": "Suspendu"
+    }
   },
   "browse": {
     "title": "Parcourir les profils",
     "filters": "Filtres",
+    "search": "Rechercher...",
     "sendRequest": "Envoyer une demande",
     "aiSuggestions": "Suggestions IA",
-    "noResults": "Aucun résultat"
+    "noResults": "Aucun résultat",
+    "premiumFeature": "Cette fonctionnalité est disponible pour les abonnés premium"
   },
   "requests": {
     "sent": "Demandes envoyées",
@@ -74,18 +110,90 @@
     "accept": "Accepter",
     "reject": "Refuser",
     "pending": "En attente",
-    "noRequests": "Aucune demande"
+    "accepted": "Accepté",
+    "rejected": "Refusé",
+    "noRequests": "Aucune demande",
+    "limitReached": "Limite gratuite atteinte (3 demandes/mois)"
   },
   "messages": {
     "title": "Messages",
     "noConversations": "Aucune conversation",
     "typeMessage": "Écrivez votre message...",
-    "send": "Envoyer"
+    "send": "Envoyer",
+    "noMessages": "Pas encore de messages, commencez la conversation"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "Aucune notification",
+    "markAllRead": "Tout marquer comme lu"
   },
   "settings": {
     "title": "Paramètres",
     "language": "Langue",
-    "subscription": "Abonnement"
+    "subscription": "Abonnement",
+    "currentPlan": "Forfait actuel",
+    "upgrade": "Améliorer",
+    "free": "Gratuit",
+    "premium": "Premium",
+    "viewFullProfile": "Voir le profil complet",
+    "profileVisibility": "Visibilité du profil",
+    "visible": "Votre profil est visible par les autres",
+    "hidden": "Votre profil est caché des autres",
+    "status": "Statut",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer votre profil ? Cette action est irréversible.",
+    "noProfile": "Vous n'avez pas encore de profil"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Tableau de bord",
+      "totalUsers": "Utilisateurs totaux",
+      "totalProfiles": "Profils totaux",
+      "pendingProfiles": "En attente de révision",
+      "premiumUsers": "Utilisateurs Premium",
+      "manageUsers": "Gérer les utilisateurs",
+      "manageUsersDesc": "Voir et gérer les utilisateurs",
+      "reviewProfiles": "Réviser les profils",
+      "reviewProfilesDesc": "Réviser et approuver les profils",
+      "reports": "Signalements",
+      "manageReportsDesc": "Gérer les signalements"
+    },
+    "users": {
+      "title": "Gestion des utilisateurs",
+      "id": "ID",
+      "phone": "Téléphone",
+      "role": "Rôle",
+      "subscription": "Abonnement",
+      "banColumn": "Bannir",
+      "verifyColumn": "Vérifier",
+      "ban": "Bannir",
+      "unban": "Débannir",
+      "verified": "Vérifié",
+      "verify": "Vérifier"
+    },
+    "profiles": {
+      "title": "Réviser les profils",
+      "noPending": "Aucun profil en attente",
+      "ageNationality": "{{age}} ans • {{nationality}}",
+      "selfIntroduction": "Auto-présentation",
+      "approve": "Approuver",
+      "reject": "Rejeter"
+    },
+    "reports": {
+      "title": "Signalements",
+      "noReports": "Aucun signalement",
+      "resolve": "Résoudre"
+    }
+  },
+  "social": {
+    "anonymous": "Utilisateur",
+    "back": "Retour aux publications",
+    "like": "J'aime",
+    "comment": "Commentaire",
+    "commentsTitle": "Commentaires",
+    "writeComment": "Écrire un commentaire...",
+    "commentButton": "Commenter",
+    "noComments": "Pas encore de commentaires. Soyez le premier !",
+    "delete": "Supprimer"
   },
   "common": {
     "loading": "Chargement...",
@@ -96,6 +204,7 @@
     "confirm": "Confirmer",
     "back": "Retour",
     "next": "Suivant",
-    "previous": "Précédent"
+    "previous": "Précédent",
+    "month": "mois"
   }
 }

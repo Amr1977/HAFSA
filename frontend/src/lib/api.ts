@@ -1,4 +1,12 @@
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const PHOTO_BASE = API_BASE.replace(/\/api\/?$/, '');
+
+export const photoUrl = (url: string | null | undefined): string => {
+  if (!url) return '';
+  if (url.startsWith('/uploads/')) return `${PHOTO_BASE}${url}`;
+  if (url.startsWith('data:')) return url;
+  return url;
+};
 
 let token: string | null = null;
 
@@ -77,6 +85,7 @@ export const api = {
     update: (id: string, data: any) => api.put(`/profiles/${id}`, data),
     delete: (id: string) => api.delete(`/profiles/${id}`),
     submit: (id: string) => api.post(`/profiles/${id}/submit`),
+    toggleVisibility: (id: string, visible: boolean) => api.put(`/profiles/${id}/visibility`, { visible }),
     uploadPhoto: (id: string, data: any) => api.post(`/profiles/${id}/photos`, data),
     deletePhoto: (profileId: string, photoId: string) =>
       api.delete(`/profiles/${profileId}/photos/${photoId}`),
@@ -119,6 +128,23 @@ export const api = {
   payments: {
     plans: () => api.get('/payments/plans'),
     createCheckout: (planId: string) => api.post('/payments/create-checkout', { planId }),
+  },
+
+  // Social
+  social: {
+    createPost: (data: any) => api.post('/social/posts', data),
+    getFeed: (params?: string) => api.get(`/social/feed${params ? `?${params}` : ''}`),
+    getExplore: (params?: string) => api.get(`/social/explore${params ? `?${params}` : ''}`),
+    getPost: (id: string) => api.get(`/social/posts/${id}`),
+    deletePost: (id: string) => api.delete(`/social/posts/${id}`),
+    toggleLike: (id: string) => api.post(`/social/posts/${id}/like`),
+    addComment: (id: string, content: string) => api.post(`/social/posts/${id}/comments`, { content }),
+    deleteComment: (postId: string, commentId: string) => api.delete(`/social/posts/${postId}/comments/${commentId}`),
+    toggleFollow: (userId: string) => api.post(`/social/follow/${userId}`),
+    getFollowers: (userId?: string) => api.get(userId ? `/social/followers/${userId}` : '/social/followers'),
+    getFollowing: (userId?: string) => api.get(userId ? `/social/following/${userId}` : '/social/following'),
+    getUserPosts: (userId: string, params?: string) => api.get(`/social/user/${userId}/posts${params ? `?${params}` : ''}`),
+    getReputation: (userId?: string) => api.get(userId ? `/social/user/${userId}/reputation` : '/social/reputation'),
   },
 
   // Admin
