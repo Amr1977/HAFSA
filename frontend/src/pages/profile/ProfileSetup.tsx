@@ -5,25 +5,52 @@ import { api } from '../../lib/api';
 import { photoUrl } from '../../lib/api';
 import { useAuthStore } from '../../stores/authStore';
 
-const STEPS = ['basic', 'marital', 'islamic', 'intro', 'requirements', 'photos', 'review'];
+const STEPS = ['basic', 'personal', 'marital', 'family', 'islamic', 'requirements', 'photos', 'review'];
 
 const EMPTY_FORM = {
   displayName: '',
   age: 25,
+  dateOfBirth: '',
+  weight: 0,
+  height: 0,
+  skinColor: '',
+  beard: '',
+  sports: '',
+  healthIssues: '',
   nationality: '',
   countryOfResidence: '',
   city: '',
   education: '',
+  educationLevel: '',
   occupation: '',
+  workType: '',
+  incomeLevel: '',
   maritalStatus: 'SINGLE',
   marriageNumber: 'FIRST',
+  lastDivorceDate: '',
   hasChildren: false,
   numberOfChildren: 0,
+  childrenDetails: '',
+  childrenCustody: '',
+  wantsPolygamy: false,
+  wantsChildren: true,
+  fatherOccupation: '',
+  motherOccupation: '',
+  siblingsCount: 0,
+  siblingsEducation: '',
+  originGovernorate: '',
+  residenceGovernorate: '',
+  areaType: '',
+  marriedResidence: '',
+  housingType: '',
+  housingPrivacy: '',
   madhab: 'HANAFI',
   prayerCommitment: 'ALWAYS',
   quranMemorization: 'SOME_SURAHS',
   religiousDescription: '',
+  smoking: '',
   selfIntroduction: '',
+  additionalNotes: '',
   wifeAgeMin: 18,
   wifeAgeMax: 35,
   wifeNationality: '',
@@ -32,6 +59,13 @@ const EMPTY_FORM = {
   wifeMaritalStatus: 'any',
   wifeHasChildren: 'no_preference',
   wifeReligiousLevel: '',
+  wifePreferredSkinColor: '',
+  wifePreferredHijab: '',
+  wifePreferredWork: '',
+  wifeAcceptDivorcedWithChildren: '',
+  wifeAcceptDivorcedChildrenCustody: '',
+  wifeAcceptOtherCity: false,
+  wifeFurnishApartment: '',
   photos: [],
 };
 
@@ -53,20 +87,47 @@ export default function ProfileSetup() {
       setForm({
         displayName: p.displayName || '',
         age: p.age || 25,
+        dateOfBirth: p.dateOfBirth || '',
+        weight: p.weight || 0,
+        height: p.height || 0,
+        skinColor: p.skinColor || '',
+        beard: p.beard || '',
+        sports: p.sports || '',
+        healthIssues: p.healthIssues || '',
         nationality: p.nationality || '',
         countryOfResidence: p.countryOfResidence || '',
         city: p.city || '',
         education: p.education || '',
+        educationLevel: p.educationLevel || '',
         occupation: p.occupation || '',
+        workType: p.workType || '',
+        incomeLevel: p.incomeLevel || '',
         maritalStatus: p.maritalStatus || 'SINGLE',
         marriageNumber: p.marriageNumber || 'FIRST',
+        lastDivorceDate: p.lastDivorceDate || '',
         hasChildren: p.hasChildren || false,
         numberOfChildren: p.numberOfChildren || 0,
+        childrenDetails: p.childrenDetails || '',
+        childrenCustody: p.childrenCustody || '',
+        wantsPolygamy: p.wantsPolygamy || false,
+        wantsChildren: p.wantsChildren ?? true,
+        fatherOccupation: p.fatherOccupation || '',
+        motherOccupation: p.motherOccupation || '',
+        siblingsCount: p.siblingsCount || 0,
+        siblingsEducation: p.siblingsEducation || '',
+        originGovernorate: p.originGovernorate || '',
+        residenceGovernorate: p.residenceGovernorate || '',
+        areaType: p.areaType || '',
+        marriedResidence: p.marriedResidence || '',
+        housingType: p.housingType || '',
+        housingPrivacy: p.housingPrivacy || '',
         madhab: p.madhab || 'HANAFI',
         prayerCommitment: p.prayerCommitment || 'ALWAYS',
         quranMemorization: p.quranMemorization || 'SOME_SURAHS',
         religiousDescription: p.religiousDescription || '',
+        smoking: p.smoking || '',
         selfIntroduction: p.selfIntroduction || '',
+        additionalNotes: p.additionalNotes || '',
         wifeAgeMin: p.wifeAgeMin || 18,
         wifeAgeMax: p.wifeAgeMax || 35,
         wifeNationality: p.wifeNationality || '',
@@ -75,6 +136,13 @@ export default function ProfileSetup() {
         wifeMaritalStatus: p.wifeMaritalStatus || 'any',
         wifeHasChildren: p.wifeHasChildren || 'no_preference',
         wifeReligiousLevel: p.wifeReligiousLevel || '',
+        wifePreferredSkinColor: p.wifePreferredSkinColor || '',
+        wifePreferredHijab: p.wifePreferredHijab || '',
+        wifePreferredWork: p.wifePreferredWork || '',
+        wifeAcceptDivorcedWithChildren: p.wifeAcceptDivorcedWithChildren || '',
+        wifeAcceptDivorcedChildrenCustody: p.wifeAcceptDivorcedChildrenCustody || '',
+        wifeAcceptOtherCity: p.wifeAcceptOtherCity || false,
+        wifeFurnishApartment: p.wifeFurnishApartment || '',
         photos: (p.photos || []).map((ph: any) => photoUrl(ph.url)),
       });
     }).catch(() => {}).finally(() => setInitialLoading(false));
@@ -136,34 +204,89 @@ export default function ProfileSetup() {
       case 'basic':
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-[#1B4332]">{t('profile.basicInfo')}</h2>
+            <h2 className="text-xl font-semibold text-[#1B4332]">المعلومات الأساسية</h2>
             <div>
               <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.displayName')}</label>
               <input type="text" value={form.displayName} onChange={(e) => update('displayName', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1B4332]" required />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.age')}</label>
-              <input type="number" value={form.age} onChange={(e) => update('age', parseInt(e.target.value))} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1B4332]" min={18} max={100} required />
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-[#6B7280] mb-1">السن</label>
+                <input type="number" value={form.age} onChange={(e) => update('age', parseInt(e.target.value))} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" min={18} max={100} required />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-[#6B7280] mb-1">تاريخ الميلاد</label>
+                <input type="date" value={form.dateOfBirth} onChange={(e) => update('dateOfBirth', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+              </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.nationality')}</label>
-              <input type="text" value={form.nationality} onChange={(e) => update('nationality', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1B4332]" required />
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">الجنسية</label>
+              <input type="text" value={form.nationality} onChange={(e) => update('nationality', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.country')}</label>
-              <input type="text" value={form.countryOfResidence} onChange={(e) => update('countryOfResidence', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1B4332]" required />
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">بلد الإقامة</label>
+              <input type="text" value={form.countryOfResidence} onChange={(e) => update('countryOfResidence', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.city')}</label>
-              <input type="text" value={form.city} onChange={(e) => update('city', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1B4332]" required />
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">المدينة</label>
+              <input type="text" value={form.city} onChange={(e) => update('city', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" required />
+            </div>
+          </div>
+        );
+
+      case 'personal':
+        return (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-[#1B4332]">المواصفات الشخصية</h2>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-[#6B7280] mb-1">الوزن (كجم)</label>
+                <input type="number" value={form.weight} onChange={(e) => update('weight', parseInt(e.target.value))} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-[#6B7280] mb-1">الطول (سم)</label>
+                <input type="number" value={form.height} onChange={(e) => update('height', parseInt(e.target.value))} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+              </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.education')}</label>
-              <input type="text" value={form.education} onChange={(e) => update('education', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1B4332]" required />
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">لون البشرة</label>
+              <input type="text" value={form.skinColor} onChange={(e) => update('skinColor', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="مثال: أبيض، خمري， آدم..." />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.occupation')}</label>
-              <input type="text" value={form.occupation} onChange={(e) => update('occupation', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1B4332]" required />
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">اللحية</label>
+              <input type="text" value={form.beard} onChange={(e) => update('beard', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="مثال: بدون， خفيفة， كثة..." />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">الرياضة</label>
+              <input type="text" value={form.sports} onChange={(e) => update('sports', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">هل تعاني من أي أمراض أو إعاقات؟</label>
+              <input type="text" value={form.healthIssues} onChange={(e) => update('healthIssues', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="لا الحمد لله" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">التدخين</label>
+              <input type="text" value={form.smoking} onChange={(e) => update('smoking', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="لا أدخن" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">المؤهل الدراسي</label>
+              <input type="text" value={form.education} onChange={(e) => update('education', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="مثال: كلية، جامعة، متوسط..." />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">اسم المؤهل</label>
+              <input type="text" value={form.educationLevel} onChange={(e) => update('educationLevel', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="مثال: بكالريوس تجارة" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">العمل الفعلي</label>
+              <input type="text" value={form.occupation} onChange={(e) => update('occupation', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">نوع العمل</label>
+              <input type="text" value={form.workType} onChange={(e) => update('workType', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="خاص / عام / حر" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">مستوى الدخل</label>
+              <input type="text" value={form.incomeLevel} onChange={(e) => update('incomeLevel', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
             </div>
           </div>
         );
@@ -173,7 +296,7 @@ export default function ProfileSetup() {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-[#1B4332]">الحالة الاجتماعية</h2>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.maritalStatus')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">الحالة الاجتماعية</label>
               <select value={form.maritalStatus} onChange={(e) => update('maritalStatus', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white">
                 {Object.entries(t('profile.maritalStatus', { returnObjects: true }) as Record<string, string>).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
@@ -181,25 +304,104 @@ export default function ProfileSetup() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.marriageNumber')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">عدد مرات الزواج</label>
               <select value={form.marriageNumber} onChange={(e) => update('marriageNumber', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white">
                 {Object.entries(t('profile.marriageNumber', { returnObjects: true }) as Record<string, string>).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
                 ))}
               </select>
             </div>
+            {(form.maritalStatus === 'DIVORCED' || form.maritalStatus === 'WIDOWED') && (
+              <div>
+                <label className="block text-sm font-medium text-[#6B7280] mb-1">تاريخ آخر طلاق</label>
+                <input type="text" value={form.lastDivorceDate} onChange={(e) => update('lastDivorceDate', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="منذ عام" />
+              </div>
+            )}
             <div>
               <label className="flex items-center gap-2">
                 <input type="checkbox" checked={form.hasChildren} onChange={(e) => update('hasChildren', e.target.checked)} className="rounded" />
-                <span className="text-sm">{t('profile.hasChildren')}</span>
+                <span className="text-sm">هل لديه أطفال؟</span>
               </label>
             </div>
             {form.hasChildren && (
-              <div>
-                <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.numberOfChildren')}</label>
-                <input type="number" value={form.numberOfChildren} onChange={(e) => update('numberOfChildren', parseInt(e.target.value))} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" min={0} />
-              </div>
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-[#6B7280] mb-1">عدد الأطفال</label>
+                  <input type="number" value={form.numberOfChildren} onChange={(e) => update('numberOfChildren', parseInt(e.target.value))} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" min={0} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#6B7280] mb-1">تفاصيل الأبناء (الأعمار، الجنس)</label>
+                  <textarea value={form.childrenDetails} onChange={(e) => update('childrenDetails', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg h-20" placeholder="ولد وبنت عندها ٦ سنين والولد 5 سنين" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#6B7280] mb-1">حضانة الأبناء بعد الزواج</label>
+                  <input type="text" value={form.childrenCustody} onChange={(e) => update('childrenCustody', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="مع الأم" />
+                </div>
+              </>
             )}
+            <div>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" checked={form.wantsPolygamy} onChange={(e) => update('wantsPolygamy', e.target.checked)} className="rounded" />
+                <span className="text-sm">هل ترغب في التعدد؟</span>
+              </label>
+            </div>
+            <div>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" checked={form.wantsChildren} onChange={(e) => update('wantsChildren', e.target.checked)} className="rounded" />
+                <span className="text-sm">هل لديك رغبة في الإنجاب؟</span>
+              </label>
+            </div>
+          </div>
+        );
+
+      case 'family':
+        return (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-[#1B4332]">بيانات الأسرة والسكن</h2>
+            <h3 className="font-medium text-[#1B4332] text-sm mt-2">بيانات الأسرة</h3>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">عمل الوالد</label>
+              <input type="text" value={form.fatherOccupation} onChange={(e) => update('fatherOccupation', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="متوفي / موظف / ..." />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">عمل الوالدة</label>
+              <input type="text" value={form.motherOccupation} onChange={(e) => update('motherOccupation', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="ربة منزل" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">عدد الأخوة والأخوات</label>
+              <input type="number" value={form.siblingsCount} onChange={(e) => update('siblingsCount', parseInt(e.target.value))} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" min={0} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">مؤهلاتهم</label>
+              <input type="text" value={form.siblingsEducation} onChange={(e) => update('siblingsEducation', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="عليا ومتوسط" />
+            </div>
+
+            <hr className="border-[#E5E7EB]" />
+            <h3 className="font-medium text-[#1B4332] text-sm">بيانات السكن</h3>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">محافظة المنشأ</label>
+              <input type="text" value={form.originGovernorate} onChange={(e) => update('originGovernorate', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">محافظة الإقامة</label>
+              <input type="text" value={form.residenceGovernorate} onChange={(e) => update('residenceGovernorate', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">المنطقة</label>
+              <input type="text" value={form.areaType} onChange={(e) => update('areaType', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="متوسطة / راقية / ..." />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">أين سكن الزوجية؟</label>
+              <input type="text" value={form.marriedResidence} onChange={(e) => update('marriedResidence', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="السعودية والدقهلية" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">نوع السكن</label>
+              <input type="text" value={form.housingType} onChange={(e) => update('housingType', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="إيجار / ملك" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">بيت عائلة أم منفصل؟</label>
+              <input type="text" value={form.housingPrivacy} onChange={(e) => update('housingPrivacy', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+            </div>
           </div>
         );
 
@@ -208,7 +410,7 @@ export default function ProfileSetup() {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-[#1B4332]">الملف الإسلامي</h2>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.madhab')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">المذهب</label>
               <select value={form.madhab} onChange={(e) => update('madhab', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white">
                 {Object.entries(t('profile.madhab', { returnObjects: true }) as Record<string, string>).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
@@ -216,7 +418,7 @@ export default function ProfileSetup() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.prayer')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">الالتزام بالصلاة</label>
               <select value={form.prayerCommitment} onChange={(e) => update('prayerCommitment', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white">
                 {Object.entries(t('profile.prayer', { returnObjects: true }) as Record<string, string>).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
@@ -224,7 +426,7 @@ export default function ProfileSetup() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.quran')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">حفظ القرآن</label>
               <select value={form.quranMemorization} onChange={(e) => update('quranMemorization', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white">
                 {Object.entries(t('profile.quran', { returnObjects: true }) as Record<string, string>).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
@@ -235,17 +437,14 @@ export default function ProfileSetup() {
               <label className="block text-sm font-medium text-[#6B7280] mb-1">وصف الالتزام الديني</label>
               <textarea value={form.religiousDescription} onChange={(e) => update('religiousDescription', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg h-24" />
             </div>
-          </div>
-        );
-
-      case 'intro':
-        return (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-[#1B4332]">{t('profile.selfIntroduction')}</h2>
             <div>
               <label className="block text-sm font-medium text-[#6B7280] mb-1">التعريف الذاتي</label>
-              <textarea value={form.selfIntroduction} onChange={(e) => update('selfIntroduction', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg h-40" required minLength={100} />
+              <textarea value={form.selfIntroduction} onChange={(e) => update('selfIntroduction', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg h-32" minLength={100} />
               <p className="text-xs text-[#6B7280] mt-1">الحد الأدنى 100 حرف</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">إضافات وملاحظات</label>
+              <textarea value={form.additionalNotes} onChange={(e) => update('additionalNotes', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg h-24" />
             </div>
           </div>
         );
@@ -253,7 +452,7 @@ export default function ProfileSetup() {
       case 'requirements':
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-[#1B4332]">{t('profile.wifeRequirements')}</h2>
+            <h2 className="text-xl font-semibold text-[#1B4332]">مواصفات شريكة الحياة</h2>
             <div className="flex gap-4">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-[#6B7280] mb-1">السن من</label>
@@ -265,15 +464,31 @@ export default function ProfileSetup() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.wifeNationality')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">الجنسية</label>
               <input type="text" value={form.wifeNationality} onChange={(e) => update('wifeNationality', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="اترك فارغاً للجميع" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.wifeEducation')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">بلد الإقامة</label>
+              <input type="text" value={form.wifeCountry} onChange={(e) => update('wifeCountry', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="اترك فارغاً للجميع" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">لون البشرة المفضل</label>
+              <input type="text" value={form.wifePreferredSkinColor} onChange={(e) => update('wifePreferredSkinColor', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="بيضاء / خمرية / ..." />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">الحجاب</label>
+              <input type="text" value={form.wifePreferredHijab} onChange={(e) => update('wifePreferredHijab', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="خمار / نقاب / لبس محتشم" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">المستوى التعليمي</label>
               <input type="text" value={form.wifeEducation} onChange={(e) => update('wifeEducation', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.wifeMaritalStatus')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">العمل</label>
+              <input type="text" value={form.wifePreferredWork} onChange={(e) => update('wifePreferredWork', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="لا تعمل / أي عمل / ..." />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">الحالة الاجتماعية</label>
               <select value={form.wifeMaritalStatus} onChange={(e) => update('wifeMaritalStatus', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white">
                 <option value="any">لا فرق</option>
                 <option value="virgin">بكر</option>
@@ -282,8 +497,30 @@ export default function ProfileSetup() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.wifeReligiousLevel')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">هل تقبل بمطلقة أو أرملة معها أطفال؟</label>
+              <input type="text" value={form.wifeAcceptDivorcedWithChildren} onChange={(e) => update('wifeAcceptDivorcedWithChildren', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="لا. رزقها الله أفضل مني" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">هل تقبل بمطلقة أطفالها في حضانة والدهم؟</label>
+              <input type="text" value={form.wifeAcceptDivorcedChildrenCustody} onChange={(e) => update('wifeAcceptDivorcedChildrenCustody', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+            </div>
+            <div>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" checked={form.wifeAcceptOtherCity} onChange={(e) => update('wifeAcceptOtherCity', e.target.checked)} className="rounded" />
+                <span className="text-sm">هل تقبل الزواج من محافظة أخرى؟</span>
+              </label>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">المستوى الديني المطلوب</label>
               <input type="text" value={form.wifeReligiousLevel} onChange={(e) => update('wifeReligiousLevel', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">تجهيز الشقة والمهر</label>
+              <input type="text" value={form.wifeFurnishApartment} onChange={(e) => update('wifeFurnishApartment', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" placeholder="نعم عادي / لا / ..." />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">المواصفات العامة المطلوبة</label>
+              <textarea value={form.wifeAdditionalNotes} onChange={(e) => update('wifeAdditionalNotes', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg h-24" placeholder="أبحث عن إنسانة تفهمني وافهمها..." />
             </div>
           </div>
         );
@@ -342,14 +579,17 @@ export default function ProfileSetup() {
                 سيتم مراجعة ملفك الشخصي آلياً بواسطة الذكاء الاصطناعي قبل النشر
               </p>
             </div>
-            <div className="space-y-2">
-              <p><strong>الاسم:</strong> {form.displayName}</p>
-              <p><strong>العمر:</strong> {form.age}</p>
-              <p><strong>الجنسية:</strong> {form.nationality}</p>
-              <p><strong>البلد:</strong> {form.countryOfResidence}</p>
-              <p><strong>المدينة:</strong> {form.city}</p>
-              <p><strong>المهنة:</strong> {form.occupation}</p>
-              <p><strong>المذهب:</strong> {form.madhab}</p>
+            <div className="space-y-2 text-sm">
+              <p><strong className="text-[#6B7280]">الاسم:</strong> {form.displayName}</p>
+              <p><strong className="text-[#6B7280]">السن:</strong> {form.age}</p>
+              <p><strong className="text-[#6B7280]">الجنسية:</strong> {form.nationality}</p>
+              <p><strong className="text-[#6B7280]">البلد:</strong> {form.countryOfResidence}</p>
+              <p><strong className="text-[#6B7280]">المدينة:</strong> {form.city}</p>
+              <p><strong className="text-[#6B7280]">المؤهل:</strong> {form.education} - {form.educationLevel}</p>
+              <p><strong className="text-[#6B7280]">العمل:</strong> {form.occupation} ({form.workType})</p>
+              <p><strong className="text-[#6B7280]">الوزن/الطول:</strong> {form.weight} كجم / {form.height} سم</p>
+              <p><strong className="text-[#6B7280]">الحالة الاجتماعية:</strong> {form.maritalStatus === 'SINGLE' ? 'أعزب' : form.maritalStatus === 'DIVORCED' ? 'مطلق' : form.maritalStatus === 'WIDOWED' ? 'أرمل' : form.maritalStatus}</p>
+              <p><strong className="text-[#6B7280]">المذهب:</strong> {form.madhab}</p>
             </div>
           </div>
         );

@@ -58,22 +58,87 @@ export default function ProfileDetail() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-3 mb-6">
             <div>
               <p className="text-sm text-[#6B7280]">المدينة</p>
               <p className="font-medium">{profile.city}, {profile.countryOfResidence}</p>
             </div>
             <div>
-              <p className="text-sm text-[#6B7280]">المهنة</p>
-              <p className="font-medium">{profile.occupation}</p>
+              <p className="text-sm text-[#6B7280]">الوزن/الطول</p>
+              <p className="font-medium">{profile.weight || '—'} كجم / {profile.height || '—'} سم</p>
+            </div>
+            <div>
+              <p className="text-sm text-[#6B7280]">لون البشرة</p>
+              <p className="font-medium">{profile.skinColor || '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-[#6B7280]">اللحية</p>
+              <p className="font-medium">{profile.beard || '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-[#6B7280]">الرياضة</p>
+              <p className="font-medium">{profile.sports || '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-[#6B7280]">التدخين</p>
+              <p className="font-medium">{profile.smoking || '—'}</p>
             </div>
             <div>
               <p className="text-sm text-[#6B7280]">التعليم</p>
-              <p className="font-medium">{profile.education}</p>
+              <p className="font-medium">{profile.education} {profile.educationLevel ? `- ${profile.educationLevel}` : ''}</p>
+            </div>
+            <div>
+              <p className="text-sm text-[#6B7280]">المهنة</p>
+              <p className="font-medium">{profile.occupation}{profile.workType ? ` (${profile.workType})` : ''}</p>
+            </div>
+            <div>
+              <p className="text-sm text-[#6B7280]">مستوى الدخل</p>
+              <p className="font-medium">{profile.incomeLevel || '—'}</p>
             </div>
             <div>
               <p className="text-sm text-[#6B7280]">المذهب</p>
               <p className="font-medium">{t(`profile.madhab.${profile.madhab}`)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-[#6B7280]">محافظة المنشأ</p>
+              <p className="font-medium">{profile.originGovernorate || '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-[#6B7280]">محافظة الإقامة</p>
+              <p className="font-medium">{profile.residenceGovernorate || '—'}</p>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="font-semibold text-[#1B4332] mb-2">بيانات الأسرة</h3>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div><span className="text-[#6B7280]">عمل الوالد:</span> {profile.fatherOccupation || '—'}</div>
+              <div><span className="text-[#6B7280]">عمل الوالدة:</span> {profile.motherOccupation || '—'}</div>
+              <div><span className="text-[#6B7280]">عدد الأخوة:</span> {profile.siblingsCount || '—'}</div>
+              <div><span className="text-[#6B7280]">مؤهلاتهم:</span> {profile.siblingsEducation || '—'}</div>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="font-semibold text-[#1B4332] mb-2">بيانات السكن</h3>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div><span className="text-[#6B7280]">المنطقة:</span> {profile.areaType || '—'}</div>
+              <div><span className="text-[#6B7280]">سكن الزوجية:</span> {profile.marriedResidence || '—'}</div>
+              <div><span className="text-[#6B7280]">نوع السكن:</span> {profile.housingType || '—'}</div>
+              <div><span className="text-[#6B7280]">بيت عائلة/منفصل:</span> {profile.housingPrivacy || '—'}</div>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="font-semibold text-[#1B4332] mb-2">الحالة الاجتماعية</h3>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div><span className="text-[#6B7280]">الحالة:</span> {profile.maritalStatus === 'SINGLE' ? 'أعزب' : profile.maritalStatus === 'DIVORCED' ? 'مطلق' : profile.maritalStatus === 'WIDOWED' ? 'أرمل' : profile.maritalStatus}</div>
+              <div><span className="text-[#6B7280]">عدد الزيجات:</span> {profile.marriageNumber || '—'}</div>
+              {profile.lastDivorceDate && <div><span className="text-[#6B7280]">آخر طلاق:</span> {profile.lastDivorceDate}</div>}
+              <div><span className="text-[#6B7280]">أطفال:</span> {profile.hasChildren ? `${profile.numberOfChildren} (${profile.childrenDetails || ''})` : 'لا'}</div>
+              {profile.childrenCustody && <div><span className="text-[#6B7280]">الحضانة:</span> {profile.childrenCustody}</div>}
+              <div><span className="text-[#6B7280]">يرغب في التعدد:</span> {profile.wantsPolygamy ? 'نعم' : 'لا'}</div>
+              <div><span className="text-[#6B7280]">يرغب في الإنجاب:</span> {profile.wantsChildren ? 'نعم' : 'لا'}</div>
             </div>
           </div>
 
@@ -81,13 +146,6 @@ export default function ProfileDetail() {
             <h3 className="font-semibold text-[#1B4332] mb-2">التعريف الذاتي</h3>
             <p className="text-[#4A4A4A] leading-relaxed">{profile.selfIntroduction}</p>
           </div>
-
-          {profile.additionalNotes && (
-            <div className="mb-6">
-              <h3 className="font-semibold text-[#1B4332] mb-2">ملاحظات إضافية</h3>
-              <p className="text-[#4A4A4A]">{profile.additionalNotes}</p>
-            </div>
-          )}
 
           <div className="border-t border-[#E5E7EB] pt-6">
             <h3 className="font-semibold text-[#1B4332] mb-4">إرسال طلب تواصل</h3>

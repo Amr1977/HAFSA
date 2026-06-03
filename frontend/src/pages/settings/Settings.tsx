@@ -148,6 +148,44 @@ export default function Settings() {
     education: t('profile.education'),
     occupation: t('profile.occupation'),
     selfIntroduction: t('profile.selfIntroduction'),
+    weight: 'الوزن (كجم)',
+    height: 'الطول (سم)',
+    skinColor: 'لون البشرة',
+    beard: 'اللحية',
+    sports: 'الرياضة',
+    healthIssues: 'الأمراض',
+    smoking: 'التدخين',
+    educationLevel: 'المستوى التعليمي',
+    workType: 'نطاق العمل',
+    incomeLevel: 'مستوى الدخل',
+    originGovernorate: 'محافظة المنشأ',
+    residenceGovernorate: 'محافظة الإقامة',
+    areaType: 'المنطقة (ريف/حضر)',
+    marriedResidence: 'سكن الزوجية',
+    housingType: 'نوع السكن',
+    housingPrivacy: 'بيت عائلة/منفصل',
+    fatherOccupation: 'عمل الوالد',
+    motherOccupation: 'عمل الوالدة',
+    siblingsCount: 'عدد الأخوة',
+    siblingsEducation: 'مؤهلات الأخوة',
+    hasChildren: 'لديه أطفال',
+    numberOfChildren: 'عدد الأطفال',
+    childrenDetails: 'تفاصيل الأطفال',
+    childrenCustody: 'الحضانة',
+    lastDivorceDate: 'آخر طلاق',
+    wantsPolygamy: 'يرغب في التعدد',
+    wantsChildren: 'يرغب في الإنجاب',
+    wifePreferredSkinColor: 'لون البشرة المفضل',
+    wifePreferredHijab: 'الحجاب',
+    wifePreferredWork: 'عمل الزوجة',
+    wifeAcceptDivorcedWithChildren: 'يقبل مطلقة بأطفال',
+    wifeAcceptDivorcedChildrenCustody: 'يقبل حضانة أطفالها',
+    wifeAcceptOtherCity: 'يقبل الزواج خارج المدينة',
+    wifeFurnishApartment: 'تجهيز الشقة',
+    maritalStatus: 'الحالة الاجتماعية',
+    marriageNumber: 'عدد الزيجات السابقة',
+    dateOfBirth: 'تاريخ الميلاد',
+    madhab: 'المذهب',
   };
 
   const toggleSection = (s: Section) => {
@@ -324,15 +362,89 @@ export default function Settings() {
             </button>
             {openSection === 'profile' && (
               <div className="px-4 pb-4 space-y-4">
-                {/* Profile fields */}
+                {/* Basic Info */}
                 <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">بيانات أساسية</p>
                   {renderField('displayName', profile.displayName)}
                   {renderField('age', profile.age)}
+                  {renderField('dateOfBirth', profile.dateOfBirth)}
                   {renderField('nationality', profile.nationality)}
                   {renderField('countryOfResidence', profile.countryOfResidence)}
                   {renderField('city', profile.city)}
+                  {renderField('madhab', profile.madhab)}
+                </div>
+
+                {/* Personal Info */}
+                <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">بيانات شخصية</p>
+                  {renderField('weight', profile.weight)}
+                  {renderField('height', profile.height)}
+                  {renderField('skinColor', profile.skinColor)}
+                  {renderField('beard', profile.beard)}
+                  {renderField('sports', profile.sports)}
+                  {renderField('healthIssues', profile.healthIssues)}
+                  {renderField('smoking', profile.smoking)}
+                </div>
+
+                {/* Education & Work */}
+                <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">التعليم والعمل</p>
                   {renderField('education', profile.education)}
+                  {renderField('educationLevel', profile.educationLevel)}
                   {renderField('occupation', profile.occupation)}
+                  {renderField('workType', profile.workType)}
+                  {renderField('incomeLevel', profile.incomeLevel)}
+                </div>
+
+                {/* Marital Status */}
+                <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">الحالة الاجتماعية</p>
+                  {renderField('maritalStatus', profile.maritalStatus)}
+                  {renderField('marriageNumber', profile.marriageNumber)}
+                  {renderField('lastDivorceDate', profile.lastDivorceDate)}
+                  {renderField('hasChildren', profile.hasChildren)}
+                  {renderField('numberOfChildren', profile.numberOfChildren)}
+                  {renderField('childrenDetails', profile.childrenDetails)}
+                  {renderField('childrenCustody', profile.childrenCustody)}
+                  {renderField('wantsPolygamy', profile.wantsPolygamy)}
+                  {renderField('wantsChildren', profile.wantsChildren)}
+                </div>
+
+                {/* Family */}
+                <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">بيانات الأسرة</p>
+                  {renderField('fatherOccupation', profile.fatherOccupation)}
+                  {renderField('motherOccupation', profile.motherOccupation)}
+                  {renderField('siblingsCount', profile.siblingsCount)}
+                  {renderField('siblingsEducation', profile.siblingsEducation)}
+                </div>
+
+                {/* Residence */}
+                <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">بيانات السكن</p>
+                  {renderField('originGovernorate', profile.originGovernorate)}
+                  {renderField('residenceGovernorate', profile.residenceGovernorate)}
+                  {renderField('areaType', profile.areaType)}
+                  {renderField('marriedResidence', profile.marriedResidence)}
+                  {renderField('housingType', profile.housingType)}
+                  {renderField('housingPrivacy', profile.housingPrivacy)}
+                </div>
+
+                {/* Partner Preferences */}
+                <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">التفضيلات</p>
+                  {renderField('wifePreferredSkinColor', profile.wifePreferredSkinColor)}
+                  {renderField('wifePreferredHijab', profile.wifePreferredHijab)}
+                  {renderField('wifePreferredWork', profile.wifePreferredWork)}
+                  {renderField('wifeAcceptDivorcedWithChildren', profile.wifeAcceptDivorcedWithChildren)}
+                  {renderField('wifeAcceptDivorcedChildrenCustody', profile.wifeAcceptDivorcedChildrenCustody)}
+                  {renderField('wifeAcceptOtherCity', profile.wifeAcceptOtherCity)}
+                  {renderField('wifeFurnishApartment', profile.wifeFurnishApartment)}
+                </div>
+
+                {/* Self Introduction */}
+                <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">عن نفسي</p>
                   {renderField('selfIntroduction', profile.selfIntroduction, 'textarea')}
                 </div>
 
