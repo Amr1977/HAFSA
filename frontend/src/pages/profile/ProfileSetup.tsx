@@ -5,6 +5,8 @@ import { api } from '../../lib/api';
 import { photoUrl } from '../../lib/api';
 import { useAuthStore } from '../../stores/authStore';
 
+interface PhotoItem { id?: string; url: string; }
+
 const STEPS = ['basic', 'personal', 'marital', 'family', 'islamic', 'requirements', 'photos', 'review'];
 
 const EMPTY_FORM = {
@@ -33,7 +35,7 @@ const EMPTY_FORM = {
   childrenDetails: '',
   childrenCustody: '',
   wantsPolygamy: false,
-  wantsChildren: true,
+  wantsChildren: false,
   fatherOccupation: '',
   motherOccupation: '',
   siblingsCount: 0,
@@ -46,7 +48,7 @@ const EMPTY_FORM = {
   housingPrivacy: '',
   madhab: 'HANAFI',
   prayerCommitment: 'ALWAYS',
-  quranMemorization: 'SOME_SURAHS',
+  quranMemorization: 'NONE',
   religiousDescription: '',
   smoking: '',
   selfIntroduction: '',
@@ -66,7 +68,7 @@ const EMPTY_FORM = {
   wifeAcceptDivorcedChildrenCustody: '',
   wifeAcceptOtherCity: false,
   wifeFurnishApartment: '',
-  photos: [],
+  photos: [] as PhotoItem[],
 };
 
 export default function ProfileSetup() {
@@ -143,7 +145,7 @@ export default function ProfileSetup() {
         wifeAcceptDivorcedChildrenCustody: p.wifeAcceptDivorcedChildrenCustody || '',
         wifeAcceptOtherCity: p.wifeAcceptOtherCity || false,
         wifeFurnishApartment: p.wifeFurnishApartment || '',
-        photos: (p.photos || []).map((ph: any) => photoUrl(ph.url)),
+        photos: (p.photos || []).map((ph: any) => ({ id: ph.id, url: photoUrl(ph.url) })),
       });
     }).catch(() => {}).finally(() => setInitialLoading(false));
   }, [editId]);
@@ -160,10 +162,20 @@ export default function ProfileSetup() {
       let profile;
       if (editId) {
         const { photos: formPhotos, ...data } = form;
+        const photoItems = formPhotos as PhotoItem[];
         profile = await api.profile.update(editId, data);
-        for (const photo of formPhotos) {
-          if (photo.startsWith('data:')) {
-            const blob = await fetch(photo).then(r => r.blob());
+        // Delete photos removed by user
+        const existingPhotos: any[] = profile.photos || [];
+        const keptIds = new Set(photoItems.filter(p => p.id).map(p => p.id));
+        for (const ep of existingPhotos) {
+          if (!keptIds.has(ep.id)) {
+            await api.profile.deletePhoto(editId, ep.id).catch(() => {});
+          }
+        }
+        // Upload new photos
+        for (const photo of photoItems) {
+          if (!photo.id && photo.url.startsWith('data:')) {
+            const blob = await fetch(photo.url).then(r => r.blob());
             const fd = new FormData();
             fd.append('photo', blob, 'photo.jpg');
             await fetch(`${API_BASE}/profiles/${profile.id}/photos`, {
@@ -175,9 +187,9 @@ export default function ProfileSetup() {
         }
       } else {
         profile = await api.profile.create(form);
-        for (const photo of form.photos) {
-          if (photo.startsWith('data:')) {
-            const blob = await fetch(photo).then(r => r.blob());
+        for (const photo of (form.photos as PhotoItem[])) {
+          if (photo.url.startsWith('data:')) {
+            const blob = await fetch(photo.url).then(r => r.blob());
             const fd = new FormData();
             fd.append('photo', blob, 'photo.jpg');
             await fetch(`${API_BASE}/profiles/${profile.id}/photos`, {
@@ -531,9 +543,9 @@ export default function ProfileSetup() {
             <h2 className="text-xl font-semibold text-[#1B4332]">{t('profile.sections.photos')}</h2>
             <p className="text-sm text-[#6B7280]">أضف صوراً لملفك الشخصي (اختياري - حد أقصى 6)</p>
             <div className="grid grid-cols-3 gap-4">
-              {form.photos.map((photo: string, i: number) => (
-                <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-[#E5E7EB]">
-                  <img src={photo} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+              {form.photos.map((photo: PhotoItem, i: number) => (
+                <div key={photo.id || i} className="relative aspect-square rounded-lg overflow-hidden border border-[#E5E7EB]">
+                  <img src={photo.url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
                   <button
                     onClick={() => {
                       const updated = form.photos.filter((_: any, j: number) => j !== i);
@@ -557,7 +569,7 @@ export default function ProfileSetup() {
                       if (file) {
                         const reader = new FileReader();
                         reader.onload = (ev) => {
-                          update('photos', [...form.photos, ev.target?.result]);
+                          update('photos', [...form.photos, { url: ev.target?.result as string }]);
                         };
                         reader.readAsDataURL(file);
                       }
