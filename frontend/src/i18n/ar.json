@@ -60,6 +60,7 @@
       "DIVORCED": "مطلق",
       "WIDOWED": "أرمل"
     },
+    "marriageNumber_label": "عدد الزيجات السابقة",
     "marriageNumber": {
       "FIRST": "زواج أول",
       "SECOND": "زواج ثانٍ",
@@ -83,6 +84,7 @@
     "marriedResidence": "سكن الزوجية",
     "housingType": "نوع السكن",
     "housingPrivacy": "بيت عائلة/منفصل",
+    "madhab_label": "المذهب",
     "madhab": {
       "HANAFI": "حنفي",
       "MALIKI": "مالكي",
@@ -90,12 +92,14 @@
       "HANBALI": "حنبلي",
       "OTHER": "أخرى"
     },
+    "prayer_label": "الالتزام بالصلاة",
     "prayer": {
       "ALWAYS": "ملتزم بالصلاة دائماً",
       "MOSTLY": "ملتزم في أغلب الأحيان",
       "SOMETIMES": "أحياناً",
       "WORKING_ON_IT": "أسعى للالتزام"
     },
+    "quran_label": "حفظ القرآن",
     "quran": {
       "FULL": "حافظ للقرآن كاملاً",
       "THREE_QUARTERS": "حفظ ثلاثة أرباع القرآن",

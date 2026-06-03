@@ -60,6 +60,7 @@
       "DIVORCED": "Divorcé",
       "WIDOWED": "Veuf"
     },
+    "marriageNumber_label": "Nombre de mariages précédents",
     "marriageNumber": {
       "FIRST": "Premier mariage",
       "SECOND": "Deuxième mariage",
@@ -83,6 +84,7 @@
     "marriedResidence": "Logement conjugal",
     "housingType": "Type de logement",
     "housingPrivacy": "Logement familial/Privé",
+    "madhab_label": "Madhab",
     "madhab": {
       "HANAFI": "Hanafi",
       "MALIKI": "Maliki",
@@ -90,12 +92,14 @@
       "HANBALI": "Hanbali",
       "OTHER": "Autre"
     },
+    "prayer_label": "Engagement à prier",
     "prayer": {
       "ALWAYS": "Prie toujours",
       "MOSTLY": "Prie souvent",
       "SOMETIMES": "Parfois",
       "WORKING_ON_IT": "En progrès"
     },
+    "quran_label": "Mémorisation du Coran",
     "quran": {
       "FULL": "Mémorisation complète",
       "THREE_QUARTERS": "Trois quarts",

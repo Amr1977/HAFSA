@@ -89,7 +89,7 @@ export default function MyProfile() {
             <p className="font-medium">{profile.incomeLevel || '—'}</p>
           </div>
           <div>
-            <p className="text-sm text-[#6B7280]">{t('profile.madhab')}</p>
+            <p className="text-sm text-[#6B7280]">{t('profile.madhab_label')}</p>
             <p className="font-medium">{t(`profile.madhab.${profile.madhab}`)}</p>
           </div>
           <div>
@@ -139,7 +139,7 @@ export default function MyProfile() {
           <h3 className="font-semibold text-[#1B4332] mb-2">{t('profile.sections.maritalInfo')}</h3>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div><span className="text-[#6B7280]">{t('profile.sections.maritalStatus_label')}:</span> {profile.maritalStatus === 'SINGLE' ? t('profile.maritalStatus.SINGLE') : profile.maritalStatus === 'DIVORCED' ? t('profile.maritalStatus.DIVORCED') : profile.maritalStatus === 'WIDOWED' ? t('profile.maritalStatus.WIDOWED') : profile.maritalStatus}</div>
-            <div><span className="text-[#6B7280]">{t('profile.marriageNumber')}:</span> {profile.marriageNumber || '—'}</div>
+            <div><span className="text-[#6B7280]">{t('profile.marriageNumber_label')}:</span> {profile.marriageNumber || '—'}</div>
             {profile.lastDivorceDate && <div><span className="text-[#6B7280]">{t('profile.lastDivorceDate')}:</span> {profile.lastDivorceDate}</div>}
             <div><span className="text-[#6B7280]">{t('profile.hasChildren')}:</span> {profile.hasChildren ? `${profile.numberOfChildren} (${profile.childrenDetails || ''})` : t('common.no')}</div>
             {profile.childrenCustody && <div><span className="text-[#6B7280]">{t('profile.childrenCustody')}:</span> {profile.childrenCustody}</div>}

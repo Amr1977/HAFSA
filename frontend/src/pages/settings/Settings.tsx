@@ -183,9 +183,9 @@ export default function Settings() {
     wifeAcceptOtherCity: t('profile.wifeAcceptOtherCity'),
     wifeFurnishApartment: t('profile.wifeFurnishApartment'),
     maritalStatus: t('profile.sections.maritalStatus_label'),
-    marriageNumber: t('profile.marriageNumber'),
+    marriageNumber: t('profile.marriageNumber_label'),
     dateOfBirth: t('profile.dateOfBirth'),
-    madhab: t('profile.madhab'),
+    madhab: t('profile.madhab_label'),
   };
 
   const toggleSection = (s: Section) => {

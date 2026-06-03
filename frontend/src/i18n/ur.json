@@ -60,6 +60,7 @@
       "DIVORCED": "طلاق یافتہ",
       "WIDOWED": "بیوہ"
     },
+    "marriageNumber_label": "پچھلی شادیوں کی تعداد",
     "marriageNumber": {
       "FIRST": "پہلی شادی",
       "SECOND": "دوسری شادی",
@@ -83,6 +84,7 @@
     "marriedResidence": "ازدواجی رہائش",
     "housingType": "رہائش کی قسم",
     "housingPrivacy": "خاندانی گھر / علیحدہ",
+    "madhab_label": "مسلک",
     "madhab": {
       "HANAFI": "حنفی",
       "MALIKI": "مالکی",
@@ -90,12 +92,14 @@
       "HANBALI": "حنبلی",
       "OTHER": "دیگر"
     },
+    "prayer_label": "نماز کی پابندی",
     "prayer": {
       "ALWAYS": "ہمیشہ نماز پڑھتا ہے",
       "MOSTLY": "اکثر نماز پڑھتا ہے",
       "SOMETIMES": "کبھی کبھی",
       "WORKING_ON_IT": "پابندی کی کوشش"
     },
+    "quran_label": "قرآن حفظ",
     "quran": {
       "FULL": "کامل حفظ",
       "THREE_QUARTERS": "تین چوتھائی حفظ",

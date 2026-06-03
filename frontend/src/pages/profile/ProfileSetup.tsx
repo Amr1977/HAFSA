@@ -304,7 +304,7 @@ export default function ProfileSetup() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.marriageNumber')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.marriageNumber_label')}</label>
               <select value={form.marriageNumber} onChange={(e) => update('marriageNumber', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white">
                 {Object.entries(t('profile.marriageNumber', { returnObjects: true }) as Record<string, string>).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
@@ -410,7 +410,7 @@ export default function ProfileSetup() {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-[#1B4332]">{t('profile.sections.islamic')}</h2>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.madhab')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.madhab_label')}</label>
               <select value={form.madhab} onChange={(e) => update('madhab', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white">
                 {Object.entries(t('profile.madhab', { returnObjects: true }) as Record<string, string>).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
@@ -418,7 +418,7 @@ export default function ProfileSetup() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.prayer')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.prayer_label')}</label>
               <select value={form.prayerCommitment} onChange={(e) => update('prayerCommitment', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white">
                 {Object.entries(t('profile.prayer', { returnObjects: true }) as Record<string, string>).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
@@ -426,7 +426,7 @@ export default function ProfileSetup() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.quran')}</label>
+              <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.quran_label')}</label>
               <select value={form.quranMemorization} onChange={(e) => update('quranMemorization', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg bg-white">
                 {Object.entries(t('profile.quran', { returnObjects: true }) as Record<string, string>).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
