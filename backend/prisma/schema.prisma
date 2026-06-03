@@ -125,7 +125,7 @@ model Profile {
 
   displayName           String
   age                   Int
-  dateOfBirth           DateTime?
+  dateOfBirth           String?
   weight                Int?
   height                Int?
   skinColor             String?

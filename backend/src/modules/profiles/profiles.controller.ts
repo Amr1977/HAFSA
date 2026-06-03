@@ -135,6 +135,19 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     }
 
     const { photos, ...profileData } = req.body;
+
+    // Sanitize empty strings to null/undefined for non-string fields
+    const intFields = ['age', 'weight', 'height', 'numberOfChildren', 'siblingsCount', 'wifeAgeMin', 'wifeAgeMax'];
+    const boolFields = ['hasChildren', 'wantsPolygamy', 'wantsChildren', 'wifeAcceptOtherCity'];
+    for (const key of Object.keys(profileData)) {
+      const val = profileData[key];
+      if (val === '' || val === undefined) {
+        if (intFields.includes(key) || boolFields.includes(key)) {
+          profileData[key] = null;
+        }
+      }
+    }
+
     const updated = await prisma.profile.update({
       where: { id: params.id },
       data: {
