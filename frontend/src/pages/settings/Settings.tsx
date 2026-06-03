@@ -143,49 +143,49 @@ export default function Settings() {
     displayName: t('profile.displayName'),
     age: t('profile.age'),
     nationality: t('profile.nationality'),
-    countryOfResidence: t('profile.country') || 'بلد الإقامة',
+    countryOfResidence: t('profile.country'),
     city: t('profile.city'),
     education: t('profile.education'),
     occupation: t('profile.occupation'),
     selfIntroduction: t('profile.selfIntroduction'),
-    weight: 'الوزن (كجم)',
-    height: 'الطول (سم)',
-    skinColor: 'لون البشرة',
-    beard: 'اللحية',
-    sports: 'الرياضة',
-    healthIssues: 'الأمراض',
-    smoking: 'التدخين',
-    educationLevel: 'المستوى التعليمي',
-    workType: 'نطاق العمل',
-    incomeLevel: 'مستوى الدخل',
-    originGovernorate: 'محافظة المنشأ',
-    residenceGovernorate: 'محافظة الإقامة',
-    areaType: 'المنطقة (ريف/حضر)',
-    marriedResidence: 'سكن الزوجية',
-    housingType: 'نوع السكن',
-    housingPrivacy: 'بيت عائلة/منفصل',
-    fatherOccupation: 'عمل الوالد',
-    motherOccupation: 'عمل الوالدة',
-    siblingsCount: 'عدد الأخوة',
-    siblingsEducation: 'مؤهلات الأخوة',
-    hasChildren: 'لديه أطفال',
-    numberOfChildren: 'عدد الأطفال',
-    childrenDetails: 'تفاصيل الأطفال',
-    childrenCustody: 'الحضانة',
-    lastDivorceDate: 'آخر طلاق',
-    wantsPolygamy: 'يرغب في التعدد',
-    wantsChildren: 'يرغب في الإنجاب',
-    wifePreferredSkinColor: 'لون البشرة المفضل',
-    wifePreferredHijab: 'الحجاب',
-    wifePreferredWork: 'عمل الزوجة',
-    wifeAcceptDivorcedWithChildren: 'يقبل مطلقة بأطفال',
-    wifeAcceptDivorcedChildrenCustody: 'يقبل حضانة أطفالها',
-    wifeAcceptOtherCity: 'يقبل الزواج خارج المدينة',
-    wifeFurnishApartment: 'تجهيز الشقة',
-    maritalStatus: 'الحالة الاجتماعية',
-    marriageNumber: 'عدد الزيجات السابقة',
-    dateOfBirth: 'تاريخ الميلاد',
-    madhab: 'المذهب',
+    weight: t('profile.weight'),
+    height: t('profile.height'),
+    skinColor: t('profile.skinColor'),
+    beard: t('profile.beard'),
+    sports: t('profile.sports'),
+    healthIssues: t('profile.healthIssues'),
+    smoking: t('profile.smoking'),
+    educationLevel: t('profile.educationLevel'),
+    workType: t('profile.workType'),
+    incomeLevel: t('profile.incomeLevel'),
+    originGovernorate: t('profile.originGovernorate'),
+    residenceGovernorate: t('profile.residenceGovernorate'),
+    areaType: t('profile.areaType'),
+    marriedResidence: t('profile.marriedResidence'),
+    housingType: t('profile.housingType'),
+    housingPrivacy: t('profile.housingPrivacy'),
+    fatherOccupation: t('profile.fatherOccupation'),
+    motherOccupation: t('profile.motherOccupation'),
+    siblingsCount: t('profile.siblingsCount'),
+    siblingsEducation: t('profile.siblingsEducation'),
+    hasChildren: t('profile.hasChildren'),
+    numberOfChildren: t('profile.numberOfChildren'),
+    childrenDetails: t('profile.childrenDetails'),
+    childrenCustody: t('profile.childrenCustody'),
+    lastDivorceDate: t('profile.lastDivorceDate'),
+    wantsPolygamy: t('profile.wantsPolygamy'),
+    wantsChildren: t('profile.wantsChildren'),
+    wifePreferredSkinColor: t('profile.wifePreferredSkinColor'),
+    wifePreferredHijab: t('profile.wifePreferredHijab'),
+    wifePreferredWork: t('profile.wifePreferredWork'),
+    wifeAcceptDivorcedWithChildren: t('profile.wifeAcceptDivorcedWithChildren'),
+    wifeAcceptDivorcedChildrenCustody: t('profile.wifeAcceptDivorcedChildrenCustody'),
+    wifeAcceptOtherCity: t('profile.wifeAcceptOtherCity'),
+    wifeFurnishApartment: t('profile.wifeFurnishApartment'),
+    maritalStatus: t('profile.sections.maritalStatus_label'),
+    marriageNumber: t('profile.marriageNumber'),
+    dateOfBirth: t('profile.dateOfBirth'),
+    madhab: t('profile.madhab'),
   };
 
   const toggleSection = (s: Section) => {
@@ -364,7 +364,7 @@ export default function Settings() {
               <div className="px-4 pb-4 space-y-4">
                 {/* Basic Info */}
                 <div className="bg-[var(--color-bg)] rounded-lg p-3">
-                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">بيانات أساسية</p>
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">{t('profile.basicInfo')}</p>
                   {renderField('displayName', profile.displayName)}
                   {renderField('age', profile.age)}
                   {renderField('dateOfBirth', profile.dateOfBirth)}
@@ -376,7 +376,7 @@ export default function Settings() {
 
                 {/* Personal Info */}
                 <div className="bg-[var(--color-bg)] rounded-lg p-3">
-                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">بيانات شخصية</p>
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">{t('profile.sections.personalInfo')}</p>
                   {renderField('weight', profile.weight)}
                   {renderField('height', profile.height)}
                   {renderField('skinColor', profile.skinColor)}
@@ -388,7 +388,7 @@ export default function Settings() {
 
                 {/* Education & Work */}
                 <div className="bg-[var(--color-bg)] rounded-lg p-3">
-                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">التعليم والعمل</p>
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">{t('profile.sections.educationWork')}</p>
                   {renderField('education', profile.education)}
                   {renderField('educationLevel', profile.educationLevel)}
                   {renderField('occupation', profile.occupation)}
@@ -398,7 +398,7 @@ export default function Settings() {
 
                 {/* Marital Status */}
                 <div className="bg-[var(--color-bg)] rounded-lg p-3">
-                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">الحالة الاجتماعية</p>
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">{t('profile.sections.maritalInfo')}</p>
                   {renderField('maritalStatus', profile.maritalStatus)}
                   {renderField('marriageNumber', profile.marriageNumber)}
                   {renderField('lastDivorceDate', profile.lastDivorceDate)}
@@ -412,7 +412,7 @@ export default function Settings() {
 
                 {/* Family */}
                 <div className="bg-[var(--color-bg)] rounded-lg p-3">
-                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">بيانات الأسرة</p>
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">{t('profile.sections.familyInfo')}</p>
                   {renderField('fatherOccupation', profile.fatherOccupation)}
                   {renderField('motherOccupation', profile.motherOccupation)}
                   {renderField('siblingsCount', profile.siblingsCount)}
@@ -421,7 +421,7 @@ export default function Settings() {
 
                 {/* Residence */}
                 <div className="bg-[var(--color-bg)] rounded-lg p-3">
-                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">بيانات السكن</p>
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">{t('profile.sections.residenceInfo')}</p>
                   {renderField('originGovernorate', profile.originGovernorate)}
                   {renderField('residenceGovernorate', profile.residenceGovernorate)}
                   {renderField('areaType', profile.areaType)}
@@ -432,7 +432,7 @@ export default function Settings() {
 
                 {/* Partner Preferences */}
                 <div className="bg-[var(--color-bg)] rounded-lg p-3">
-                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">التفضيلات</p>
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">{t('profile.sections.preferences')}</p>
                   {renderField('wifePreferredSkinColor', profile.wifePreferredSkinColor)}
                   {renderField('wifePreferredHijab', profile.wifePreferredHijab)}
                   {renderField('wifePreferredWork', profile.wifePreferredWork)}
@@ -444,7 +444,7 @@ export default function Settings() {
 
                 {/* Self Introduction */}
                 <div className="bg-[var(--color-bg)] rounded-lg p-3">
-                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">عن نفسي</p>
+                  <p className="text-xs text-[var(--color-muted)] mb-2 font-semibold">{t('profile.sections.aboutMe')}</p>
                   {renderField('selfIntroduction', profile.selfIntroduction, 'textarea')}
                 </div>
 
