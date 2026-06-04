@@ -13,15 +13,17 @@ function GeometricBand() {
 
 function SectionIcon({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-11 h-11 bg-[#1B4332] rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-      {children}
+    <div className="w-11 h-11 bg-[#1B4332] dark:bg-[#DAA520] rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+      <div className="[&>svg]:fill-[#DAA520] dark:[&>svg]:fill-[#1B4332]">
+        {children}
+      </div>
     </div>
   );
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="font-['Scheherazade_New'] text-[clamp(20px,3vw,26px)] font-bold text-[#1B4332] border-b-2 border-[#DAA520] pb-1 flex-1">
+    <h2 className="font-['Scheherazade_New'] text-[clamp(20px,3vw,26px)] font-bold text-[#1B4332] dark:text-[#DAA520] border-b-2 border-[#DAA520] pb-1 flex-1">
       {children}
     </h2>
   );
@@ -29,7 +31,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function NarrativeCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-white border border-[#D4C4A0] border-r-4 border-r-[#1B4332] rounded-lg p-5 md:p-6 mb-4 leading-[2.1] text-[clamp(16px,2vw,19px)] text-[#3D2B1F] shadow-md">
+    <div className="bg-white dark:bg-gray-800 border border-[#D4C4A0] dark:border-gray-600 border-r-4 border-r-[#1B4332] dark:border-r-[#DAA520] rounded-lg p-5 md:p-6 mb-4 leading-[2.1] text-[clamp(16px,2vw,19px)] text-[#3D2B1F] dark:text-gray-200 shadow-md">
       {children}
     </div>
   );
@@ -37,11 +39,11 @@ function NarrativeCard({ children }: { children: React.ReactNode }) {
 
 function HadithBox({ children, source }: { children: React.ReactNode; source: string }) {
   return (
-    <div className="bg-[#E8F5E9] border border-[#A8D5B5] border-r-4 border-r-[#1B4332] rounded-lg p-5 md:p-6 my-6 shadow-md">
-      <p className="font-['Scheherazade_New'] text-[clamp(17px,2.5vw,21px)] leading-[2.3] text-[#1B4332] italic before:content-['\{'] after:content-['\}']">
+    <div className="bg-[#E8F5E9] dark:bg-gray-800 border border-[#A8D5B5] dark:border-gray-600 border-r-4 border-r-[#1B4332] dark:border-r-[#DAA520] rounded-lg p-5 md:p-6 my-6 shadow-md">
+      <p className="font-['Scheherazade_New'] text-[clamp(17px,2.5vw,21px)] leading-[2.3] text-[#1B4332] dark:text-[#DAA520] italic">
         {'«'}{children}{'»'}
       </p>
-      <div className="text-xs md:text-sm text-[#5D8C6F] mt-3 text-left border-t border-dashed border-[#C8E6D0] pt-2 ltr">
+      <div className="text-xs md:text-sm text-[#5D8C6F] dark:text-[#94a3b8] mt-3 text-left border-t border-dashed border-[#C8E6D0] dark:border-gray-600 pt-2 ltr">
         {source}
       </div>
     </div>
@@ -50,7 +52,7 @@ function HadithBox({ children, source }: { children: React.ReactNode; source: st
 
 function DateBadge({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-block bg-[#F5E6B8] text-[#B8860B] border border-[#DAA520] rounded-full px-4 py-0.5 text-sm font-semibold align-middle">
+    <span className="inline-block bg-[#F5E6B8] dark:bg-[#3D2B1F] text-[#B8860B] dark:text-[#F5E6B8] border border-[#DAA520] dark:border-[#B8860B] rounded-full px-4 py-0.5 text-sm font-semibold align-middle">
       {children}
     </span>
   );
@@ -95,11 +97,19 @@ const sectionStyles = `
     border: 3px solid #FDF8EE;
     box-shadow: 0 0 0 2px #DAA520;
   }
+  .dark .timeline::before {
+    background: linear-gradient(to bottom, #DAA520, #1f2937);
+  }
+  .dark .timeline-item::before {
+    background: #DAA520;
+    border-color: #1f2937;
+    box-shadow: 0 0 0 2px #DAA520;
+  }
 `;
 
 export default function HafsaStory() {
   return (
-    <div dir="rtl" className="bg-[#FDF8EE] text-[#1A1008] min-h-screen font-['Scheherazade_New']">
+    <div dir="rtl" className="bg-[#FDF8EE] dark:bg-gray-900 text-[#1A1008] dark:text-gray-100 min-h-screen font-['Scheherazade_New']">
       <style>{sectionStyles}</style>
 
       <GeometricBand />
@@ -144,10 +154,10 @@ export default function HafsaStory() {
       <GeometricBand />
 
       {/* ─── BREADCRUMB ─── */}
-      <nav className="bg-[#1B4332] px-8 py-2.5 flex gap-2 items-center text-sm text-[#9DC4AE]">
+      <nav className="bg-[#1B4332] dark:bg-gray-950 px-8 py-2.5 flex gap-2 items-center text-sm text-[#9DC4AE]">
         <Link to="/" className="text-[#DAA520] no-underline hover:underline">الرئيسية</Link>
         <span>›</span>
-        <span className="text-[#6B9A7A]">حفصة بنت عمر رضي الله عنها</span>
+            <span className="text-[#6B9A7A] dark:text-[#94a3b8]">حفصة بنت عمر رضي الله عنها</span>
       </nav>
 
       {/* ─── MAIN ─── */}
@@ -162,8 +172,8 @@ export default function HafsaStory() {
         </Link>
 
         {/* ─── BISMILLAH ─── */}
-        <div className="text-center py-6 px-4 bg-[#E8F5E9] border-t-[3px] border-b-[3px] border-[#B8860B] my-8 rounded-sm">
-          <div className="font-['Scheherazade_New'] text-[clamp(24px,4vw,36px)] font-bold text-[#1B4332] leading-[1.8]">
+        <div className="text-center py-6 px-4 bg-[#E8F5E9] dark:bg-gray-800 border-t-[3px] border-b-[3px] border-[#B8860B] my-8 rounded-sm">
+          <div className="font-['Scheherazade_New'] text-[clamp(24px,4vw,36px)] font-bold text-[#1B4332] dark:text-[#DAA520] leading-[1.8]">
             بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
           </div>
         </div>
@@ -180,7 +190,7 @@ export default function HafsaStory() {
           </div>
           <NarrativeCard>
             <p>
-              هي <span className="text-[#1B4332] font-bold">حفصة بنت عمر بن الخطاب</span> رضي الله عنهما، أمها <span className="text-[#1B4332] font-bold">زينب بنت مظعون</span> الجمحية، أخت عثمان بن مظعون. وُلدت قبل البعثة النبوية بخمس سنين، وذلك في مكة المكرمة في بيت الإيمان والعدل.
+              هي <span className="text-[#1B4332] dark:text-[#DAA520] font-bold">حفصة بنت عمر بن الخطاب</span> رضي الله عنهما، أمها <span className="text-[#1B4332] dark:text-[#DAA520] font-bold">زينب بنت مظعون</span> الجمحية، أخت عثمان بن مظعون. وُلدت قبل البعثة النبوية بخمس سنين، وذلك في مكة المكرمة في بيت الإيمان والعدل.
             </p>
             <p>
               كانت حفصة من المهاجرات الأوائل إلى المدينة المنورة، وكانت قارئةً كاتبةً في وقتٍ ندرت فيه الكتابة بين النساء، مما يدل على رفعة شأنها وعلو همتها رضي الله عنها.
@@ -200,30 +210,30 @@ export default function HafsaStory() {
           </div>
 
           <div className="timeline">
-            <div className="timeline-item bg-white border border-[#D4C4A0] rounded-lg p-4 md:p-5 shadow-md hover:shadow-lg transition-shadow">
-              <div className="text-sm font-bold text-[#B8860B] mb-1.5">السبب الأول — وفاة زوجها رضي الله عنه</div>
-              <div className="text-[clamp(15px,2vw,17px)] leading-8 text-[#3D2B1F]">
-                كانت حفصة رضي الله عنها متزوجةً من <span className="text-[#1B4332] font-bold">خنيس بن حذافة السهمي</span> رضي الله عنه، وهو من المهاجرين الأوائل. شهد غزوة بدر ثم غزوة أُحد، وتُوفي رضي الله عنه في المدينة المنورة بعد أن أصابته جراح في أُحد، فأصبحت حفصة أرملةً شابة.
+            <div className="timeline-item bg-white dark:bg-gray-800 border border-[#D4C4A0] dark:border-gray-600 rounded-lg p-4 md:p-5 shadow-md hover:shadow-lg transition-shadow">
+              <div className="text-sm font-bold text-[#B8860B] dark:text-[#DAA520] mb-1.5">السبب الأول — وفاة زوجها رضي الله عنه</div>
+              <div className="text-[clamp(15px,2vw,17px)] leading-8 text-[#3D2B1F] dark:text-gray-200">
+                كانت حفصة رضي الله عنها متزوجةً من <span className="text-[#1B4332] dark:text-[#DAA520] font-bold">خنيس بن حذافة السهمي</span> رضي الله عنه، وهو من المهاجرين الأوائل. شهد غزوة بدر ثم غزوة أُحد، وتُوفي رضي الله عنه في المدينة المنورة بعد أن أصابته جراح في أُحد، فأصبحت حفصة أرملةً شابة.
               </div>
             </div>
 
-            <div className="timeline-item bg-white border border-[#D4C4A0] rounded-lg p-4 md:p-5 shadow-md hover:shadow-lg transition-shadow">
-              <div className="text-sm font-bold text-[#B8860B] mb-1.5">عرض عمر على عثمان رضي الله عنه</div>
-              <div className="text-[clamp(15px,2vw,17px)] leading-8 text-[#3D2B1F]">
-                لما تأيَّمت حفصة، أشفق عليها أبوها عمر بن الخطاب رضي الله عنه، فعرضها على <span className="text-[#1B4332] font-bold">عثمان بن عفان</span> رضي الله عنه بعد وفاة زوجته رقية بنت رسول الله ﷺ. فقال له عثمان: «ما أريد أن أتزوج اليوم»، فانصرف عمر حزيناً.
+            <div className="timeline-item bg-white dark:bg-gray-800 border border-[#D4C4A0] dark:border-gray-600 rounded-lg p-4 md:p-5 shadow-md hover:shadow-lg transition-shadow">
+              <div className="text-sm font-bold text-[#B8860B] dark:text-[#DAA520] mb-1.5">عرض عمر على عثمان رضي الله عنه</div>
+              <div className="text-[clamp(15px,2vw,17px)] leading-8 text-[#3D2B1F] dark:text-gray-200">
+                لما تأيَّمت حفصة، أشفق عليها أبوها عمر بن الخطاب رضي الله عنه، فعرضها على <span className="text-[#1B4332] dark:text-[#DAA520] font-bold">عثمان بن عفان</span> رضي الله عنه بعد وفاة زوجته رقية بنت رسول الله ﷺ. فقال له عثمان: «ما أريد أن أتزوج اليوم»، فانصرف عمر حزيناً.
               </div>
             </div>
 
-            <div className="timeline-item bg-white border border-[#D4C4A0] rounded-lg p-4 md:p-5 shadow-md hover:shadow-lg transition-shadow">
-              <div className="text-sm font-bold text-[#B8860B] mb-1.5">عرض عمر على أبي بكر رضي الله عنه</div>
-              <div className="text-[clamp(15px,2vw,17px)] leading-8 text-[#3D2B1F]">
-                ثم لقي عمر <span className="text-[#1B4332] font-bold">أبا بكر الصديق</span> رضي الله عنه فعرض عليه حفصة، فصمت أبو بكر ولم يردَّ شيئاً، فوجد عمر في نفسه من ذلك أكثر مما وجد من عثمان.
+            <div className="timeline-item bg-white dark:bg-gray-800 border border-[#D4C4A0] dark:border-gray-600 rounded-lg p-4 md:p-5 shadow-md hover:shadow-lg transition-shadow">
+              <div className="text-sm font-bold text-[#B8860B] dark:text-[#DAA520] mb-1.5">عرض عمر على أبي بكر رضي الله عنه</div>
+              <div className="text-[clamp(15px,2vw,17px)] leading-8 text-[#3D2B1F] dark:text-gray-200">
+                ثم لقي عمر <span className="text-[#1B4332] dark:text-[#DAA520] font-bold">أبا بكر الصديق</span> رضي الله عنه فعرض عليه حفصة، فصمت أبو بكر ولم يردَّ شيئاً، فوجد عمر في نفسه من ذلك أكثر مما وجد من عثمان.
               </div>
             </div>
 
-            <div className="timeline-item bg-white border border-[#D4C4A0] rounded-lg p-4 md:p-5 shadow-md hover:shadow-lg transition-shadow">
-              <div className="text-sm font-bold text-[#B8860B] mb-1.5">الخطبة الشريفة من النبي ﷺ</div>
-              <div className="text-[clamp(15px,2vw,17px)] leading-8 text-[#3D2B1F]">
+            <div className="timeline-item bg-white dark:bg-gray-800 border border-[#D4C4A0] dark:border-gray-600 rounded-lg p-4 md:p-5 shadow-md hover:shadow-lg transition-shadow">
+              <div className="text-sm font-bold text-[#B8860B] dark:text-[#DAA520] mb-1.5">الخطبة الشريفة من النبي ﷺ</div>
+              <div className="text-[clamp(15px,2vw,17px)] leading-8 text-[#3D2B1F] dark:text-gray-200">
                 فلما كان بعد أيام، خطب رسول الله ﷺ حفصةَ من أبيها عمر رضي الله عنه، فزوَّجها إياه. وذلك في <DateBadge>السنة الثالثة هجرياً</DateBadge>. وعندها جاء أبو بكر رضي الله عنه إلى عمر فقال: «لا تجدن في نفسك، فإن رسول الله ﷺ كان قد ذكر حفصة، فلم أكن لأفشي سرَّ رسول الله ﷺ، ولو تركها لتزوجتها».
               </div>
             </div>
@@ -247,10 +257,10 @@ export default function HafsaStory() {
 
           <NarrativeCard>
             <p>
-              تزوج النبي ﷺ حفصةَ رضي الله عنها في <DateBadge>السنة الثالثة هجرياً</DateBadge> وقيل الرابعة، بعد غزوة بدر الكبرى. وقد كان مهرها <span className="text-[#1B4332] font-bold">أربعمئة درهم</span> على رواية ابن سعد في الطبقات الكبرى.
+              تزوج النبي ﷺ حفصةَ رضي الله عنها في <DateBadge>السنة الثالثة هجرياً</DateBadge> وقيل الرابعة، بعد غزوة بدر الكبرى. وقد كان مهرها <span className="text-[#1B4332] dark:text-[#DAA520] font-bold">أربعمئة درهم</span> على رواية ابن سعد في الطبقات الكبرى.
             </p>
             <p>
-              وكان زواجها ﷺ منها تكريماً وعزاءً لأمير المؤمنين <span className="text-[#1B4332] font-bold">عمر بن الخطاب</span> رضي الله عنه، وتوطيداً للروابط بين النبي ﷺ وصاحبيه الصديق والفاروق.
+              وكان زواجها ﷺ منها تكريماً وعزاءً لأمير المؤمنين <span className="text-[#1B4332] dark:text-[#DAA520] font-bold">عمر بن الخطاب</span> رضي الله عنه، وتوطيداً للروابط بين النبي ﷺ وصاحبيه الصديق والفاروق.
             </p>
           </NarrativeCard>
 
@@ -271,25 +281,25 @@ export default function HafsaStory() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4">
-            <div className="bg-white border border-[#D4C4A0] rounded-lg p-4 md:p-5 text-center shadow-md hover:-translate-y-1 transition-transform">
+            <div className="bg-white dark:bg-gray-800 border border-[#D4C4A0] dark:border-gray-600 rounded-lg p-4 md:p-5 text-center shadow-md hover:-translate-y-1 transition-transform">
               <span className="text-[32px] block mb-2">📖</span>
-              <div className="text-base font-bold text-[#1B4332] mb-1.5">حافظة القرآن الكريم</div>
-              <div className="text-sm text-[#5C4033] leading-[1.8]">كانت تحفظ القرآن الكريم، وعندها المصحف الأول الذي جُمع في عهد أبي بكر الصديق رضي الله عنه</div>
+              <div className="text-base font-bold text-[#1B4332] dark:text-[#DAA520] mb-1.5">حافظة القرآن الكريم</div>
+              <div className="text-sm text-[#5C4033] dark:text-gray-300 leading-[1.8]">كانت تحفظ القرآن الكريم، وعندها المصحف الأول الذي جُمع في عهد أبي بكر الصديق رضي الله عنه</div>
             </div>
-            <div className="bg-white border border-[#D4C4A0] rounded-lg p-4 md:p-5 text-center shadow-md hover:-translate-y-1 transition-transform">
+            <div className="bg-white dark:bg-gray-800 border border-[#D4C4A0] dark:border-gray-600 rounded-lg p-4 md:p-5 text-center shadow-md hover:-translate-y-1 transition-transform">
               <span className="text-[32px] block mb-2">🌙</span>
-              <div className="text-base font-bold text-[#1B4332] mb-1.5">صوَّامةٌ قوَّامة</div>
-              <div className="text-sm text-[#5C4033] leading-[1.8]">وصفها جبريل عليه السلام بأنها كثيرة الصيام والقيام، وأنها زوجة النبي ﷺ في الجنة</div>
+              <div className="text-base font-bold text-[#1B4332] dark:text-[#DAA520] mb-1.5">صوَّامةٌ قوَّامة</div>
+              <div className="text-sm text-[#5C4033] dark:text-gray-300 leading-[1.8]">وصفها جبريل عليه السلام بأنها كثيرة الصيام والقيام، وأنها زوجة النبي ﷺ في الجنة</div>
             </div>
-            <div className="bg-white border border-[#D4C4A0] rounded-lg p-4 md:p-5 text-center shadow-md hover:-translate-y-1 transition-transform">
+            <div className="bg-white dark:bg-gray-800 border border-[#D4C4A0] dark:border-gray-600 rounded-lg p-4 md:p-5 text-center shadow-md hover:-translate-y-1 transition-transform">
               <span className="text-[32px] block mb-2">✍️</span>
-              <div className="text-base font-bold text-[#1B4332] mb-1.5">قارئة كاتبة</div>
-              <div className="text-sm text-[#5C4033] leading-[1.8]">من القلة النادرة في عصرها ممن تُحسن القراءة والكتابة، وعلَّمت الشفاء بنت عبدالله الكتابة</div>
+              <div className="text-base font-bold text-[#1B4332] dark:text-[#DAA520] mb-1.5">قارئة كاتبة</div>
+              <div className="text-sm text-[#5C4033] dark:text-gray-300 leading-[1.8]">من القلة النادرة في عصرها ممن تُحسن القراءة والكتابة، وعلَّمت الشفاء بنت عبدالله الكتابة</div>
             </div>
-            <div className="bg-white border border-[#D4C4A0] rounded-lg p-4 md:p-5 text-center shadow-md hover:-translate-y-1 transition-transform">
+            <div className="bg-white dark:bg-gray-800 border border-[#D4C4A0] dark:border-gray-600 rounded-lg p-4 md:p-5 text-center shadow-md hover:-translate-y-1 transition-transform">
               <span className="text-[32px] block mb-2">👑</span>
-              <div className="text-base font-bold text-[#1B4332] mb-1.5">أم المؤمنين</div>
-              <div className="text-sm text-[#5C4033] leading-[1.8]">نالت شرف أمومة المؤمنين، وكانت ذات رأي وشخصية قوية كأبيها الفاروق رضي الله عنه</div>
+              <div className="text-base font-bold text-[#1B4332] dark:text-[#DAA520] mb-1.5">أم المؤمنين</div>
+              <div className="text-sm text-[#5C4033] dark:text-gray-300 leading-[1.8]">نالت شرف أمومة المؤمنين، وكانت ذات رأي وشخصية قوية كأبيها الفاروق رضي الله عنه</div>
             </div>
           </div>
         </section>
@@ -306,10 +316,10 @@ export default function HafsaStory() {
           </div>
           <NarrativeCard>
             <p>
-              تُوفيت حفصة رضي الله عنها في المدينة المنورة، وكان ذلك في خلافة <span className="text-[#1B4332] font-bold">معاوية بن أبي سفيان</span> رضي الله عنه، في السنة الخامسة والأربعين من الهجرة على المشهور، وقيل السابعة والعشرين، وهي تبلغ نحو ستين عاماً.
+              تُوفيت حفصة رضي الله عنها في المدينة المنورة، وكان ذلك في خلافة <span className="text-[#1B4332] dark:text-[#DAA520] font-bold">معاوية بن أبي سفيان</span> رضي الله عنه، في السنة الخامسة والأربعين من الهجرة على المشهور، وقيل السابعة والعشرين، وهي تبلغ نحو ستين عاماً.
             </p>
             <p>
-              صلَّى عليها مروان بن الحكم والي المدينة، ودُفنت في مقبرة <span className="text-[#1B4332] font-bold">البقيع</span> رضي الله عنها وأرضاها، وجعل الجنة مقامها ومستقرها.
+              صلَّى عليها مروان بن الحكم والي المدينة، ودُفنت في مقبرة <span className="text-[#1B4332] dark:text-[#DAA520] font-bold">البقيع</span> رضي الله عنها وأرضاها، وجعل الجنة مقامها ومستقرها.
             </p>
           </NarrativeCard>
         </section>
