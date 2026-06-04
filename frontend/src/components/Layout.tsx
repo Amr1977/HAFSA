@@ -127,16 +127,21 @@ export default function Layout() {
                 )}
               </button>
 
-              <select
-                value={i18n.language}
-                onChange={(e) => changeLanguage(e.target.value)}
-                className="text-sm border border-[var(--color-border)] rounded px-2 py-1 bg-[var(--color-surface)] text-[var(--color-text)]"
-              >
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-                <option value="ur">اردو</option>
-                <option value="fr">Français</option>
-              </select>
+              <div className="flex gap-0.5 border border-[var(--color-border)] rounded-lg overflow-hidden" dir="ltr">
+                {(['ar', 'en', 'ur', 'fr'] as const).map((code) => (
+                  <button
+                    key={code}
+                    onClick={() => changeLanguage(code)}
+                    className={`px-1.5 py-1 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                      i18n.language === code
+                        ? 'bg-[var(--color-primary)] text-white'
+                        : 'text-[var(--color-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-pale)]'
+                    }`}
+                  >
+                    {code}
+                  </button>
+                ))}
+              </div>
 
               {isAuthenticated && (
                 <Link

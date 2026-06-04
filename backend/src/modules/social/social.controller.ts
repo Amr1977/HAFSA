@@ -59,8 +59,8 @@ const postIncludeFull = (userId: string) => ({
 export const createPost = async (req: AuthRequest, res: Response) => {
   try {
     const { content, mediaUrls, privacy, allowedUserIds } = req.body;
-    if (!content?.trim()) {
-      return res.status(400).json({ error: 'EMPTY_CONTENT', message: 'Post content is required' });
+    if (!content?.trim() && (!mediaUrls || mediaUrls.length === 0)) {
+      return res.status(400).json({ error: 'EMPTY_CONTENT', message: 'Post content or media is required' });
     }
     const postPrivacy: string = privacy || 'PUBLIC';
     const post = await prisma.post.create({
@@ -203,8 +203,8 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ error: 'FORBIDDEN', message: 'Not your post' });
     }
     const { content, mediaUrls, privacy, allowedUserIds } = req.body;
-    if (content !== undefined && !content?.trim()) {
-      return res.status(400).json({ error: 'EMPTY_CONTENT', message: 'Post content cannot be empty' });
+    if (content !== undefined && !content?.trim() && (!mediaUrls || mediaUrls.length === 0)) {
+      return res.status(400).json({ error: 'EMPTY_CONTENT', message: 'Post content or media is required' });
     }
     if (privacy === 'SELECTED') {
       await prisma.postPrivacyUser.deleteMany({ where: { postId } });
