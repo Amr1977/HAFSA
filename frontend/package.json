@@ -3,6 +3,18 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "description": "Frontend for Hafsa — an Islamic marriage platform",
+  "license": "MIT",
+  "author": "Hafsa Project",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Amr1977/HAFSA.git"
+  },
+  "homepage": "https://github.com/Amr1977/HAFSA#readme",
+  "bugs": {
+    "url": "https://github.com/Amr1977/HAFSA/issues"
+  },
+  "keywords": ["islamic", "marriage", "matchmaking", "muslim", "nikah", "react", "tailwind"],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

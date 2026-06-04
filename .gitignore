@@ -5,3 +5,8 @@ dist/
 *.log
 .DS_Store
 backend/uploads/
+*.html
+opencode-prompt-*.md
+hafsa_prompt.md
+*.tsbuildinfo
+frontend/.firebase/

@@ -1,13 +1,14 @@
+// This file is generated at build time — update these values for your Firebase project
 importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-  apiKey: 'AIzaSyD_qEYXTR9Y6oBkZqbvLFvxNnD8TzMVIwI',
-  authDomain: 'hafsa-77.firebaseapp.com',
-  projectId: 'hafsa-77',
-  storageBucket: 'hafsa-77.firebasestorage.app',
-  messagingSenderId: '891711148532',
-  appId: '1:891711148532:web:759503c65bfcc0073229a1',
+  apiKey: 'YOUR_FIREBASE_API_KEY',
+  authDomain: 'YOUR_PROJECT.firebaseapp.com',
+  projectId: 'YOUR_PROJECT_ID',
+  storageBucket: 'YOUR_PROJECT.firebasestorage.app',
+  messagingSenderId: 'YOUR_SENDER_ID',
+  appId: 'YOUR_APP_ID',
 });
 
 const messaging = firebase.messaging();
