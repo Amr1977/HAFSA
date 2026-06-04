@@ -20,6 +20,28 @@ export default function Landing() {
         >
           {user.role === 'GROOM' ? t('profile.my') : t('browse.title')}
         </Link>
+
+        {/* ─── Story teaser section (authenticated) ─── */}
+        <div className="max-w-5xl mx-auto mt-20 px-4 text-right" dir="rtl">
+          <h2 className="text-2xl font-bold text-[#1B4332] mb-1">من سيرة أمهات المؤمنين</h2>
+          <p className="text-sm text-[#6B7280] mb-6">قصص موثَّقة من أمهات المصادر الإسلامية</p>
+          <Link
+            to="/siyar/hafsa-bint-umar"
+            className="block bg-white rounded-xl border-t-4 border-t-[#DAA520] shadow-sm border border-[#E5E7EB] p-6 text-right no-underline hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-[#6B7280]">أم المؤمنين</span>
+              <span className="text-xs bg-[#1B4332] text-[#DAA520] px-3 py-1 rounded-full font-medium">السيرة النبوية</span>
+            </div>
+            <h3 className="text-[22px] font-bold text-[#1B4332] mb-3">حفصة بنت عمر رضي الله عنها</h3>
+            <p className="text-base text-[#6B7280] leading-relaxed mb-4 line-clamp-3">
+              زوجة النبي ﷺ وحافظة القرآن الكريم، ابنة الفاروق عمر بن الخطاب رضي الله عنه. قارئةٌ كاتبةٌ صوَّامةٌ قوَّامة، وصفها جبريل بأنها زوجة النبي ﷺ في الجنة.
+            </p>
+            <div className="border-t border-[#E5E7EB] pt-3 text-left">
+              <span className="text-[#DAA520] font-medium text-sm">← اقرأ القصة كاملة</span>
+            </div>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -86,6 +108,28 @@ export default function Landing() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* ─── Story teaser section (unauthenticated) ─── */}
+      <div className="max-w-5xl mx-auto mt-20 px-4 text-right" dir="rtl">
+        <h2 className="text-2xl font-bold text-[#1B4332] mb-1">من سيرة أمهات المؤمنين</h2>
+        <p className="text-sm text-[#6B7280] mb-6">قصص موثَّقة من أمهات المصادر الإسلامية</p>
+        <Link
+          to="/siyar/hafsa-bint-umar"
+          className="block bg-white rounded-xl border-t-4 border-t-[#DAA520] shadow-sm border border-[#E5E7EB] p-6 text-right no-underline hover:shadow-md transition-shadow"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-[#6B7280]">أم المؤمنين</span>
+            <span className="text-xs bg-[#1B4332] text-[#DAA520] px-3 py-1 rounded-full font-medium">السيرة النبوية</span>
+          </div>
+          <h3 className="text-[22px] font-bold text-[#1B4332] mb-3">حفصة بنت عمر رضي الله عنها</h3>
+          <p className="text-base text-[#6B7280] leading-relaxed mb-4 line-clamp-3">
+            زوجة النبي ﷺ وحافظة القرآن الكريم، ابنة الفاروق عمر بن الخطاب رضي الله عنه. قارئةٌ كاتبةٌ صوَّامةٌ قوَّامة، وصفها جبريل بأنها زوجة النبي ﷺ في الجنة.
+          </p>
+          <div className="border-t border-[#E5E7EB] pt-3 text-left">
+            <span className="text-[#DAA520] font-medium text-sm">← اقرأ القصة كاملة</span>
+          </div>
+        </Link>
       </div>
     </div>
   );

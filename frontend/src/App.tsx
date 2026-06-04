@@ -20,6 +20,7 @@ import Settings from './pages/settings/Settings';
 import Subscription from './pages/settings/Subscription';
 import SocialFeed from './pages/social/SocialFeed';
 import PostDetail from './pages/social/PostDetail';
+import HafsaStory from './pages/siyar/HafsaStory';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminProfiles from './pages/admin/AdminProfiles';
@@ -67,6 +68,7 @@ export default function App() {
         <Route index element={<Landing />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="siyar/hafsa-bint-umar" element={<HafsaStory />} />
         <Route path="profile/setup" element={<ProtectedRoute><ProfileSetup /></ProtectedRoute>} />
         <Route path="profile/my" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
         <Route path="browse" element={<ProtectedRoute roles={['GUARDIAN', 'BOTH', 'ADMIN']}><Browse /></ProtectedRoute>} />
