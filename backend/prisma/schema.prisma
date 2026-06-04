@@ -105,6 +105,7 @@ model User {
   followers         Follow[]         @relation("Follower")
   following         Follow[]         @relation("Following")
   pushTokens        PushToken[]
+  feedback          Feedback[]
 }
 
 model PushToken {
@@ -355,4 +356,30 @@ model AdminLog {
   targetId  String?
   details   Json?
   createdAt DateTime @default(now())
+}
+
+enum FeedbackType {
+  FEEDBACK
+  BUG_REPORT
+  FEATURE_REQUEST
+  TESTIMONIAL
+}
+
+enum FeedbackStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Feedback {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      FeedbackType   @default(FEEDBACK)
+  title     String
+  content   String         @db.Text
+  rating    Int?
+  status    FeedbackStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 }

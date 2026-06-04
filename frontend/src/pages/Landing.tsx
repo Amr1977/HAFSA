@@ -1,10 +1,51 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../stores/authStore';
+import { api } from '../lib/api';
 
 export default function Landing() {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuthStore();
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+
+  useEffect(() => {
+    api.feedback.testimonials().then(setTestimonials).catch(() => {});
+  }, []);
+
+  const TestimonialsSection = () => testimonials.length > 0 ? (
+    <div className="max-w-5xl mx-auto mt-20 px-4" dir="rtl">
+      <div className="text-center mb-10">
+        <h2 className="text-2xl font-bold text-[#1B4332] dark:text-[#DAA520] mb-1">كلمات المستخدمين</h2>
+        <p className="text-sm text-[#6B7280] dark:text-gray-400">ماذا يقول عنا المستخدمون</p>
+      </div>
+      <div className="grid md:grid-cols-3 gap-6">
+        {testimonials.slice(0, 6).map((t: any, i: number) => (
+          <div key={t.id || i}
+            className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-[#E5E7EB] dark:border-gray-700 p-6 relative ${i === 0 ? 'md:col-span-2 md:row-span-1' : ''}`}>
+            <div className="absolute -top-3 -right-3 text-3xl text-[#DAA520]/30">❝</div>
+            <p className="text-sm text-[#374151] dark:text-gray-300 leading-relaxed mb-4 line-clamp-4">{t.content}</p>
+            <div className="flex items-center gap-2 border-t border-[#E5E7EB] dark:border-gray-700 pt-3">
+              <div className="w-8 h-8 rounded-full bg-[#1B4332] dark:bg-[#DAA520] flex items-center justify-center text-white dark:text-[#1B4332] text-xs font-bold">
+                {t.title?.charAt(0) || 'م'}
+              </div>
+              <div>
+                <p className="text-xs font-medium text-[#1B4332] dark:text-[#DAA520]">{t.title}</p>
+                {t.rating && (
+                  <div className="text-amber-400 text-xs">{'★'.repeat(t.rating)}{'☆'.repeat(5 - t.rating)}</div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {isAuthenticated && (
+        <div className="text-center mt-6">
+          <Link to="/feedback" className="text-sm text-[#DAA520] hover:underline">أضف شهادتك ←</Link>
+        </div>
+      )}
+    </div>
+  ) : null;
 
   if (isAuthenticated && user) {
     const dashboardLink = user.role === 'GROOM' ? '/profile/my' : '/browse';
@@ -20,6 +61,8 @@ export default function Landing() {
         >
           {user.role === 'GROOM' ? t('profile.my') : t('browse.title')}
         </Link>
+
+          <TestimonialsSection />
 
           {/* ─── Story teaser section (authenticated) ─── */}
           <div className="max-w-5xl mx-auto mt-20 px-4 text-right" dir="rtl">
@@ -137,6 +180,8 @@ export default function Landing() {
           </div>
         </div>
       </div>
+
+      <TestimonialsSection />
 
       {/* ─── Story teaser section (unauthenticated) ─── */}
       <div className="max-w-5xl mx-auto mt-20 px-4 text-right" dir="rtl">

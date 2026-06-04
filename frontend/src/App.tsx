@@ -25,6 +25,10 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminProfiles from './pages/admin/AdminProfiles';
 import AdminReports from './pages/admin/AdminReports';
+import AdminPosts from './pages/admin/AdminPosts';
+import AdminMessages from './pages/admin/AdminMessages';
+import AdminFeedback from './pages/admin/AdminFeedback';
+import Feedback from './pages/Feedback';
 
 function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles?: string[] }) {
   const { isAuthenticated, isLoading, user } = useAuthStore();
@@ -83,10 +87,14 @@ export default function App() {
         <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="settings/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
+        <Route path="feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
         <Route path="admin" element={<ProtectedRoute roles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
         <Route path="admin/users" element={<ProtectedRoute roles={['ADMIN']}><AdminUsers /></ProtectedRoute>} />
         <Route path="admin/profiles" element={<ProtectedRoute roles={['ADMIN']}><AdminProfiles /></ProtectedRoute>} />
         <Route path="admin/reports" element={<ProtectedRoute roles={['ADMIN']}><AdminReports /></ProtectedRoute>} />
+        <Route path="admin/posts" element={<ProtectedRoute roles={['ADMIN']}><AdminPosts /></ProtectedRoute>} />
+        <Route path="admin/messages" element={<ProtectedRoute roles={['ADMIN']}><AdminMessages /></ProtectedRoute>} />
+        <Route path="admin/feedback" element={<ProtectedRoute roles={['ADMIN']}><AdminFeedback /></ProtectedRoute>} />
       </Route>
     </Routes>
   );

@@ -167,11 +167,25 @@ export const api = {
     users: (params?: string) => api.get(`/admin/users${params ? `?${params}` : ''}`),
     banUser: (id: string) => api.put(`/admin/users/${id}/ban`),
     verifyUser: (id: string) => api.put(`/admin/users/${id}/verify`),
+    deleteUser: (id: string) => api.delete(`/admin/users/${id}`),
     pendingProfiles: () => api.get('/admin/profiles/pending'),
     approveProfile: (id: string) => api.put(`/admin/profiles/${id}/approve`),
     rejectProfile: (id: string) => api.put(`/admin/profiles/${id}/reject`),
     reports: () => api.get('/admin/reports'),
     resolveReport: (id: string) => api.put(`/admin/reports/${id}/resolve`),
     logs: (params?: string) => api.get(`/admin/logs${params ? `?${params}` : ''}`),
+    posts: (params?: string) => api.get(`/admin/posts${params ? `?${params}` : ''}`),
+    deletePost: (id: string) => api.delete(`/admin/posts/${id}`),
+    conversations: (params?: string) => api.get(`/admin/conversations${params ? `?${params}` : ''}`),
+    feedback: (params?: string) => api.get(`/admin/feedback${params ? `?${params}` : ''}`),
+    approveFeedback: (id: string) => api.put(`/admin/feedback/${id}/approve`),
+    rejectFeedback: (id: string) => api.put(`/admin/feedback/${id}/reject`),
+    deleteFeedback: (id: string) => api.delete(`/admin/feedback/${id}`),
+  },
+
+  // Feedback
+  feedback: {
+    submit: (data: any) => api.post('/feedback', data),
+    testimonials: () => api.get('/feedback/testimonials'),
   },
 };

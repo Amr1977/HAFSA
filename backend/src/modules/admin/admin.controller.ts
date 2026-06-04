@@ -6,25 +6,47 @@ const p = (req: AuthRequest) => req.params as { id: string };
 
 export const getDashboard = async (_req: AuthRequest, res: Response) => {
   try {
-    const [totalUsers, totalProfiles, pendingProfiles, reportsToday] = await Promise.all([
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    const [totalUsers, totalProfiles, pendingProfiles, reportsToday, totalPosts, totalMessages, totalConversations, totalFeedback, newUsersWeek, newPostsWeek, totalLikes, totalComments] = await Promise.all([
       prisma.user.count(),
       prisma.profile.count(),
       prisma.profile.count({ where: { status: 'PENDING_AI_REVIEW' } }),
-      prisma.report.count({
-        where: {
-          createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) },
-        },
-      }),
+      prisma.report.count({ where: { createdAt: { gte: todayStart } } }),
+      prisma.post.count(),
+      prisma.message.count(),
+      prisma.conversation.count(),
+      prisma.feedback.count(),
+      prisma.user.count({ where: { createdAt: { gte: weekAgo } } }),
+      prisma.post.count({ where: { createdAt: { gte: weekAgo } } }),
+      prisma.postLike.count(),
+      prisma.postComment.count(),
     ]);
+
+    const usersByRole = await prisma.user.groupBy({
+      by: ['role'],
+      _count: { id: true },
+    });
 
     return res.json({
       totalUsers,
       totalProfiles,
       pendingProfiles,
       reportsToday,
+      totalPosts,
+      totalMessages,
+      totalConversations,
+      totalFeedback,
+      newUsersWeek,
+      newPostsWeek,
+      totalLikes,
+      totalComments,
       activeGrooms: await prisma.user.count({ where: { role: 'GROOM', isActive: true } }),
       activeGuardians: await prisma.user.count({ where: { role: 'GUARDIAN', isActive: true } }),
       premiumUsers: await prisma.user.count({ where: { subscriptionPlan: 'PREMIUM' } }),
+      usersByRole,
     });
   } catch (error) {
     console.error('Dashboard error:', error);
@@ -238,5 +260,89 @@ export const getLogs = async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error('Get logs error:', error);
     return res.status(500).json({ error: 'INTERNAL', message: 'Failed to get logs' });
+  }
+};
+
+export const listPosts = async (req: AuthRequest, res: Response) => {
+  try {
+    const { page = '1', limit = '20', search } = req.query;
+    const pageNum = Math.max(1, parseInt(page as string));
+    const limitNum = Math.min(50, parseInt(limit as string));
+    const where: any = {};
+    if (search) where.content = { contains: search as string, mode: 'insensitive' };
+
+    const [posts, total] = await Promise.all([
+      prisma.post.findMany({
+        where,
+        skip: (pageNum - 1) * limitNum,
+        take: limitNum,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: { select: { id: true, email: true, phone: true, role: true } },
+          _count: { select: { likes: true, comments: true } },
+        },
+      }),
+      prisma.post.count({ where }),
+    ]);
+    return res.json({ posts, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
+  } catch (error) {
+    console.error('List posts error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to list posts' });
+  }
+};
+
+export const deletePost = async (req: AuthRequest, res: Response) => {
+  try {
+    await prisma.post.delete({ where: { id: p(req).id } });
+    await prisma.adminLog.create({
+      data: { adminId: req.userId!, action: 'DELETE_POST', targetId: p(req).id },
+    });
+    return res.json({ message: 'Post deleted' });
+  } catch (error) {
+    console.error('Delete post error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to delete post' });
+  }
+};
+
+export const listConversations = async (req: AuthRequest, res: Response) => {
+  try {
+    const { page = '1', limit = '20' } = req.query;
+    const pageNum = Math.max(1, parseInt(page as string));
+    const limitNum = Math.min(50, parseInt(limit as string));
+
+    const [conversations, total] = await Promise.all([
+      prisma.conversation.findMany({
+        skip: (pageNum - 1) * limitNum,
+        take: limitNum,
+        orderBy: { lastMessageAt: 'desc' },
+        include: {
+          participants: {
+            include: { user: { select: { id: true, email: true, phone: true, role: true } } },
+          },
+          messages: { orderBy: { createdAt: 'desc' }, take: 1 },
+          _count: { select: { messages: true } },
+        },
+      }),
+      prisma.conversation.count(),
+    ]);
+    return res.json({ conversations, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
+  } catch (error) {
+    console.error('List conversations error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to list conversations' });
+  }
+};
+
+export const deleteUser = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await prisma.user.findUnique({ where: { id: p(req).id } });
+    if (!user) return res.status(404).json({ error: 'NOT_FOUND', message: 'User not found' });
+    await prisma.user.delete({ where: { id: p(req).id } });
+    await prisma.adminLog.create({
+      data: { adminId: req.userId!, action: 'DELETE_USER', targetId: p(req).id },
+    });
+    return res.json({ message: 'User deleted' });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to delete user' });
   }
 };

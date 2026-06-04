@@ -16,7 +16,10 @@ export default function PostDetail() {
   const [submitting, setSubmitting] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState('');
+  const [editMediaUrls, setEditMediaUrls] = useState<string[]>([]);
+  const [editNewMediaPreviews, setEditNewMediaPreviews] = useState<{ id: string; url: string; type: string; uploading: boolean }[]>([]);
   const editInputRef = useRef<HTMLTextAreaElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -52,6 +55,8 @@ export default function PostDetail() {
   const startEdit = () => {
     if (!post) return;
     setEditContent(post.content);
+    setEditMediaUrls([...(post.mediaUrls || [])]);
+    setEditNewMediaPreviews([]);
     setEditing(true);
     setTimeout(() => editInputRef.current?.focus(), 0);
   };
@@ -59,13 +64,48 @@ export default function PostDetail() {
   const cancelEdit = () => {
     setEditing(false);
     setEditContent('');
+    setEditMediaUrls([]);
+    setEditNewMediaPreviews([]);
+  };
+
+  const removeEditMedia = (idx: number) => {
+    setEditMediaUrls(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleEditFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const entries = Array.from(files).map((file) => {
+      const id = Math.random().toString(36).slice(2);
+      const previewUrl = URL.createObjectURL(file);
+      return { file, id, previewUrl };
+    });
+    const newPreviews = entries.map(e => ({ id: e.id, url: e.previewUrl, type: e.file.type, uploading: true }));
+    setEditNewMediaPreviews(prev => [...prev, ...newPreviews]);
+    const results = await Promise.allSettled(
+      entries.map(e => {
+        const fd = new FormData();
+        fd.append('media', e.file);
+        return api.social.uploadMedia(fd).then((res: any) => ({ id: e.id, url: res.url }));
+      })
+    );
+    const succeeded: { id: string; url: string }[] = [];
+    results.forEach((r) => {
+      if (r.status === 'fulfilled') succeeded.push(r.value);
+    });
+    setEditMediaUrls(prev => [...prev, ...succeeded.map(s => s.url)]);
+    setEditNewMediaPreviews(prev => prev.map(p => {
+      const found = succeeded.find(s => s.id === p.id);
+      return found ? { ...p, uploading: false } : p;
+    }));
+    if (editFileInputRef.current) editFileInputRef.current.value = '';
   };
 
   const handleSaveEdit = async () => {
     if (!post || !editContent.trim()) return;
     setSubmitting(true);
     try {
-      const updated = await api.social.updatePost(post.id, { content: editContent });
+      const updated = await api.social.updatePost(post.id, { content: editContent, mediaUrls: editMediaUrls, privacy: post.privacy });
       setPost(updated);
       cancelEdit();
     } catch (e) {} finally { setSubmitting(false); }
@@ -103,13 +143,62 @@ export default function PostDetail() {
                 onChange={(e) => setEditContent(e.target.value)}
                 className="w-full border border-[var(--color-border)] rounded-lg p-3 text-sm resize-none focus:outline-none focus:border-[var(--color-primary)] h-24"
               />
-              <div className="flex gap-2 mt-2">
-                <button onClick={handleSaveEdit} disabled={submitting || !editContent.trim()} className="px-4 py-1.5 bg-[var(--color-primary)] text-white rounded-lg text-xs font-medium hover:bg-[var(--color-primary-light)] disabled:opacity-50">
-                  {submitting ? 'جاري الحفظ...' : 'حفظ'}
+              {/* Edit media previews */}
+              {editMediaUrls.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {editMediaUrls.map((url, i) => (
+                    <div key={i} className="relative group">
+                      {url.startsWith('data:video/') ? (
+                        <video src={url} className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
+                      ) : (
+                        <img src={url} alt="" className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
+                      )}
+                      <button onClick={() => removeEditMedia(i)} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Edit new media uploads */}
+              {editNewMediaPreviews.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {editNewMediaPreviews.map((m) => (
+                    <div key={m.id} className="relative">
+                      {m.type.startsWith('video/') ? (
+                        <video src={m.url} className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
+                      ) : (
+                        <img src={m.url} alt="" className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
+                      )}
+                      {m.uploading && (
+                        <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center">
+                          <span className="text-white text-xs">جاري الرفع...</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-center gap-2 mt-2">
+                <button onClick={() => editFileInputRef.current?.click()} className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
                 </button>
-                <button onClick={cancelEdit} className="px-4 py-1.5 border border-[var(--color-border)] rounded-lg text-xs text-[var(--color-muted)] hover:text-[var(--color-text)]">
-                  إلغاء
-                </button>
+                <input ref={editFileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleEditFileSelect} />
+                <select value={post.privacy} onChange={(e) => setPost({ ...post, privacy: e.target.value })} className="text-xs border border-[var(--color-border)] rounded-lg px-2 py-1 text-[var(--color-muted)] bg-[var(--color-surface)]">
+                  <option value="PUBLIC">عام</option>
+                  <option value="CONNECTIONS">المتابعين</option>
+                  <option value="PRIVATE">خاص</option>
+                </select>
+                <div className="flex gap-2 mr-auto">
+                  <button onClick={handleSaveEdit} disabled={submitting || !editContent.trim()} className="px-4 py-1.5 bg-[var(--color-primary)] text-white rounded-lg text-xs font-medium hover:bg-[var(--color-primary-light)] disabled:opacity-50">
+                    {submitting ? 'جاري الحفظ...' : 'حفظ'}
+                  </button>
+                  <button onClick={cancelEdit} className="px-4 py-1.5 border border-[var(--color-border)] rounded-lg text-xs text-[var(--color-muted)] hover:text-[var(--color-text)]">
+                    إلغاء
+                  </button>
+                </div>
               </div>
             </div>
           ) : (

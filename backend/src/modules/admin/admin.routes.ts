@@ -6,13 +6,23 @@ import {
   listUsers,
   banUser,
   verifyUser,
+  deleteUser,
   getPendingProfiles,
   approveProfile,
   rejectProfile,
   listReports,
   resolveReport,
   getLogs,
+  listPosts,
+  deletePost,
+  listConversations,
 } from './admin.controller';
+import {
+  listFeedback,
+  approveFeedback,
+  rejectFeedback,
+  deleteFeedback,
+} from '../feedback/feedback.controller';
 
 const router = Router();
 
@@ -23,11 +33,19 @@ router.get('/dashboard', getDashboard);
 router.get('/users', listUsers);
 router.put('/users/:id/ban', banUser);
 router.put('/users/:id/verify', verifyUser);
+router.delete('/users/:id', deleteUser);
 router.get('/profiles/pending', getPendingProfiles);
 router.put('/profiles/:id/approve', approveProfile);
 router.put('/profiles/:id/reject', rejectProfile);
 router.get('/reports', listReports);
 router.put('/reports/:id/resolve', resolveReport);
 router.get('/logs', getLogs);
+router.get('/posts', listPosts);
+router.delete('/posts/:id', deletePost);
+router.get('/conversations', listConversations);
+router.get('/feedback', listFeedback);
+router.put('/feedback/:id/approve', approveFeedback);
+router.put('/feedback/:id/reject', rejectFeedback);
+router.delete('/feedback/:id', deleteFeedback);
 
 export default router;

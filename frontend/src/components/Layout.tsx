@@ -65,7 +65,18 @@ export default function Layout() {
         ]
       : []),
     ...(isAuthenticated && user?.role === 'ADMIN'
-      ? [{ path: '/admin', label: t('nav.admin') }]
+      ? [
+          { path: '/admin', label: 'لوحة التحكم' },
+          { path: '/admin/users', label: 'المستخدمين' },
+          { path: '/admin/profiles', label: 'الملفات' },
+          { path: '/admin/posts', label: 'المنشورات' },
+          { path: '/admin/messages', label: 'المحادثات' },
+          { path: '/admin/reports', label: 'التقارير' },
+          { path: '/admin/feedback', label: 'الملاحظات' },
+        ]
+      : []),
+    ...(isAuthenticated
+      ? [{ path: '/feedback', label: 'تواصل معنا' }]
       : []),
   ];
 

@@ -75,8 +75,12 @@ export default function ProfileSetup() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { setUser } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const editId = searchParams.get('edit');
+  const isGuardian = user?.role === 'GUARDIAN';
+  const fullSteps = ['basic', 'personal', 'marital', 'family', 'islamic', 'requirements', 'photos', 'review'];
+  const guardianSteps = ['basic'];
+  const STEPS = isGuardian ? guardianSteps : fullSteps;
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<any>({ ...EMPTY_FORM });
   const [loading, setLoading] = useState(false);
@@ -186,7 +190,10 @@ export default function ProfileSetup() {
           }
         }
       } else {
-        profile = await api.profile.create(form);
+        const profileData = isGuardian
+          ? { displayName: form.displayName, age: form.age, nationality: form.nationality, countryOfResidence: form.countryOfResidence, city: form.city }
+          : form;
+        profile = await api.profile.create(profileData);
         for (const photo of (form.photos as PhotoItem[])) {
           if (photo.url.startsWith('data:')) {
             const blob = await fetch(photo.url).then(r => r.blob());
@@ -203,7 +210,7 @@ export default function ProfileSetup() {
       }
       const user = await api.auth.getMe();
       setUser(user);
-      navigate('/profile/my');
+      navigate(isGuardian ? '/browse' : '/profile/my');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -214,6 +221,37 @@ export default function ProfileSetup() {
   const renderStep = () => {
     switch (STEPS[step]) {
       case 'basic':
+        if (isGuardian) {
+          return (
+            <div className="space-y-6">
+              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-4 text-sm text-amber-800 dark:text-amber-200">
+                <p className="font-medium mb-1">مرحباً بك ولي الأمر 👋</p>
+                <p className="leading-relaxed">بصفتك ولي أمر، يمكنك تصفح الملفات الشخصية للراغبين في الزواج والتواصل معهم. كل ما تحتاجه هو إدخال اسمك وبعض المعلومات الأساسية للبدء.</p>
+              </div>
+              <h2 className="text-xl font-semibold text-[#1B4332]">المعلومات الأساسية</h2>
+              <div>
+                <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.displayName')}</label>
+                <input type="text" value={form.displayName} onChange={(e) => update('displayName', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#1B4332]" required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.age')}</label>
+                <input type="number" value={form.age} onChange={(e) => update('age', parseInt(e.target.value))} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" min={18} max={100} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.nationality')}</label>
+                <input type="text" value={form.nationality} onChange={(e) => update('nationality', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.country')}</label>
+                <input type="text" value={form.countryOfResidence} onChange={(e) => update('countryOfResidence', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#6B7280] mb-1">{t('profile.city')}</label>
+                <input type="text" value={form.city} onChange={(e) => update('city', e.target.value)} className="w-full px-4 py-2 border border-[#E5E7EB] rounded-lg" />
+              </div>
+            </div>
+          );
+        }
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-[#1B4332]">{t('profile.basicInfo')}</h2>
