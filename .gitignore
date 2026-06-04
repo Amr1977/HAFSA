@@ -11,3 +11,5 @@ opencode-prompt-*.md
 hafsa_prompt.md
 *.tsbuildinfo
 frontend/.firebase/
+.secrets/
+*_service_key.json
