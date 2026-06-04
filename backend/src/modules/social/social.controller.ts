@@ -4,6 +4,19 @@ import { prisma } from '../../config/database';
 import { AuthRequest } from '../../middleware/auth';
 import { notifyPostLike, notifyPostComment, notifyNewFollower } from '../../services/notification.service';
 
+export const uploadPostMedia = async (req: AuthRequest, res: Response) => {
+  try {
+    const file = req.file;
+    if (!file) return res.status(400).json({ error: 'NO_FILE', message: 'No file uploaded' });
+    const base64 = file.buffer.toString('base64');
+    const dataUrl = `data:${file.mimetype};base64,${base64}`;
+    res.json({ url: dataUrl });
+  } catch (error) {
+    console.error('Upload media error:', error);
+    res.status(500).json({ error: 'INTERNAL', message: 'Failed to upload media' });
+  }
+};
+
 const getUserDisplayName = async (userId: string) => {
   const profile = await prisma.profile.findUnique({ where: { userId }, select: { displayName: true } });
   return profile?.displayName || 'مستخدم';

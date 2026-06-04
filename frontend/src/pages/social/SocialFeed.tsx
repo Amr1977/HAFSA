@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
 import { photoUrl } from '../../lib/api';
 
 const DEFAULT_AVATAR = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="#D8F3DC" rx="20"/><text x="20" y="26" text-anchor="middle" fill="#1B4332" font-size="16" font-weight="bold">?</text></svg>');
+
+type MediaItem = { url: string; type: string };
 
 export default function SocialFeed() {
   const { t } = useTranslation();
@@ -16,6 +18,9 @@ export default function SocialFeed() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [mediaPreviews, setMediaPreviews] = useState<{ id: string; url: string; type: string; uploading: boolean }[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const privacyLabels: Record<string, string> = {
     PUBLIC: 'عام',
@@ -35,12 +40,43 @@ export default function SocialFeed() {
 
   useEffect(() => { fetchPosts(); }, [tab, page]);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const newPreviews: { id: string; url: string; type: string; uploading: boolean }[] = [];
+    const uploadPromises: Promise<void>[] = [];
+    Array.from(files).forEach((file) => {
+      const id = Math.random().toString(36).slice(2);
+      const previewUrl = URL.createObjectURL(file);
+      newPreviews.push({ id, url: previewUrl, type: file.type, uploading: true });
+      const fd = new FormData();
+      fd.append('media', file);
+      uploadPromises.push(
+        api.social.uploadMedia(fd).then((res: any) => {
+          setMediaItems(prev => [...prev, { url: res.url, type: file.type }]);
+          setMediaPreviews(prev => prev.map(p => p.id === id ? { ...p, uploading: false } : p));
+        }).catch(() => {
+          setMediaPreviews(prev => prev.filter(p => p.id !== id));
+        })
+      );
+    });
+    setMediaPreviews(prev => [...prev, ...newPreviews]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const removeMedia = (idx: number) => {
+    setMediaItems(prev => prev.filter((_, i) => i !== idx));
+    setMediaPreviews(prev => prev.filter((_, i) => i !== idx));
+  };
+
   const handleCreatePost = async () => {
-    if (!newPost.trim()) return;
+    if (!newPost.trim() && mediaItems.length === 0) return;
     setSubmitting(true);
     try {
-      await api.social.createPost({ content: newPost, privacy: postPrivacy });
+      await api.social.createPost({ content: newPost, privacy: postPrivacy, mediaUrls: mediaItems.map(m => m.url) });
       setNewPost('');
+      setMediaItems([]);
+      setMediaPreviews([]);
       setPage(1);
       fetchPosts();
     } catch (e) {} finally { setSubmitting(false); }
@@ -62,6 +98,8 @@ export default function SocialFeed() {
 
   const userName = (p: any) => p.user.profile?.displayName || p.user.role;
   const avatar = (p: any) => photoUrl(p.user.profile?.photos?.[0]?.url) || DEFAULT_AVATAR;
+
+  const isVideo = (url: string) => url.startsWith('data:video/');
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -87,14 +125,46 @@ export default function SocialFeed() {
           placeholder="ما الذي يدور في ذهنك؟"
           className="w-full border-0 resize-none focus:outline-none text-sm h-20"
         />
+
+        {/* Media previews */}
+        {mediaPreviews.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {mediaPreviews.map((m, i) => (
+              <div key={m.id} className="relative group">
+                {m.type.startsWith('video/') ? (
+                  <video src={m.url} className="w-24 h-24 object-cover rounded-lg border border-[var(--color-border)]" />
+                ) : (
+                  <img src={m.url} alt="" className="w-24 h-24 object-cover rounded-lg border border-[var(--color-border)]" />
+                )}
+                {m.uploading && (
+                  <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center">
+                    <span className="text-white text-xs">جاري الرفع...</span>
+                  </div>
+                )}
+                {!m.uploading && (
+                  <button onClick={() => removeMedia(i)} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="flex items-center gap-3 pt-3 border-t border-[var(--color-border)]">
+          <button onClick={() => fileInputRef.current?.click()} className="p-2 text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </button>
+          <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleFileSelect} />
           <select value={postPrivacy} onChange={(e) => setPostPrivacy(e.target.value as any)} className="text-xs border border-[var(--color-border)] rounded-lg px-2 py-1.5 text-[var(--color-muted)] bg-[var(--color-surface)]">
             <option value="PUBLIC">عام</option>
             <option value="CONNECTIONS">المتابعين</option>
             <option value="PRIVATE">خاص</option>
           </select>
           <span className="text-xs text-[var(--color-muted)]">{newPost.length} حرف</span>
-          <button onClick={handleCreatePost} disabled={submitting || !newPost.trim()} className="mr-auto px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--color-primary-light)] disabled:opacity-50">
+          <button onClick={handleCreatePost} disabled={submitting || (!newPost.trim() && mediaItems.length === 0)} className="mr-auto px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--color-primary-light)] disabled:opacity-50">
             {submitting ? 'جاري النشر...' : 'نشر'}
           </button>
         </div>
@@ -141,7 +211,11 @@ export default function SocialFeed() {
                 {post.mediaUrls?.length > 0 && (
                   <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: post.mediaUrls.length > 1 ? '1fr 1fr' : '1fr' }}>
                     {post.mediaUrls.map((url: string, i: number) => (
-                      <img key={i} src={url} alt="" className="rounded-lg w-full h-48 object-cover" />
+                      isVideo(url) ? (
+                        <video key={i} src={url} controls className="rounded-lg w-full h-48 object-cover" />
+                      ) : (
+                        <img key={i} src={url} alt="" className="rounded-lg w-full h-48 object-cover" />
+                      )
                     ))}
                   </div>
                 )}

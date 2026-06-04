@@ -9,3 +9,16 @@ export const upload = multer({
     cb(new Error('Only image files are allowed'));
   },
 });
+
+export const uploadMedia = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = [
+      'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+      'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime',
+    ];
+    if (allowed.includes(file.mimetype)) return cb(null, true);
+    cb(new Error('Only images and videos are allowed'));
+  },
+});

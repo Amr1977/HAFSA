@@ -145,6 +145,7 @@ export const api = {
   // Social
   social: {
     createPost: (data: any) => api.post('/social/posts', data),
+    uploadMedia: (formData: FormData) => api.upload('/social/posts/media', formData),
     getFeed: (params?: string) => api.get(`/social/feed${params ? `?${params}` : ''}`),
     getExplore: (params?: string) => api.get(`/social/explore${params ? `?${params}` : ''}`),
     getPost: (id: string) => api.get(`/social/posts/${id}`),

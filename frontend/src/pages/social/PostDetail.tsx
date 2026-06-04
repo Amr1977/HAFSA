@@ -71,7 +71,11 @@ export default function PostDetail() {
         {post.mediaUrls?.length > 0 && (
           <div className="grid gap-2 mb-4" style={{ gridTemplateColumns: post.mediaUrls.length > 1 ? '1fr 1fr' : '1fr' }}>
             {post.mediaUrls.map((url: string, i: number) => (
-              <img key={i} src={url} alt="" className="rounded-lg w-full h-64 object-cover" />
+              url.startsWith('data:video/') ? (
+                <video key={i} src={url} controls className="rounded-lg w-full h-64 object-cover" />
+              ) : (
+                <img key={i} src={url} alt="" className="rounded-lg w-full h-64 object-cover" />
+              )
             ))}
           </div>
         )}
