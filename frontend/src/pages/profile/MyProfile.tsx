@@ -1,13 +1,21 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api, photoUrl } from '../../lib/api';
+import { useAuthStore } from '../../stores/authStore';
+
+const DEFAULT_AVATAR = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="#D8F3DC" rx="20"/><text x="20" y="26" text-anchor="middle" fill="#1B4332" font-size="16" font-weight="bold">?</text></svg>');
 
 export default function MyProfile() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [postsLoading, setPostsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     api.profile.getMy()
@@ -15,6 +23,35 @@ export default function MyProfile() {
       .catch(() => setProfile(null))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    setPostsLoading(true);
+    api.social.getUserPosts(user.id, `page=${page}&limit=20`)
+      .then((res: any) => {
+        setPosts(res.posts || []);
+        setTotalPages(res.totalPages || 1);
+      })
+      .catch(() => {})
+      .finally(() => setPostsLoading(false));
+  }, [user?.id, page]);
+
+  const handleLike = async (postId: string) => {
+    await api.social.toggleLike(postId);
+    setPosts(prev => prev.map(p => p.id === postId ? {
+      ...p,
+      liked: !p.liked,
+      _count: { ...p._count, likes: p.liked ? p._count.likes - 1 : p._count.likes + 1 },
+    } : p));
+  };
+
+  const handleDelete = async (postId: string) => {
+    if (!window.confirm('هل أنت متأكد من حذف هذا المنشور؟')) return;
+    await api.social.deletePost(postId);
+    setPosts(prev => prev.filter(p => p.id !== postId));
+  };
+
+  const isVideo = (url: string) => url.startsWith('data:video/');
 
   if (loading) return <div className="text-center py-8">{t('common.loading')}</div>;
 
@@ -35,7 +72,8 @@ export default function MyProfile() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white p-8 rounded-xl shadow-sm border border-[#E5E7EB]">
+      {/* Profile card */}
+      <div className="bg-white p-8 rounded-xl shadow-sm border border-[#E5E7EB] mb-6">
         <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-[#1B4332]">{profile.displayName}</h1>
@@ -175,6 +213,136 @@ export default function MyProfile() {
             المشاهدات: {profile.viewCount} • طلبات التواصل: {profile.requestCount}
           </p>
         </div>
+      </div>
+
+      {/* Posts timeline */}
+      <div>
+        <h2 className="text-xl font-bold text-[#1B4332] mb-4">المنشورات</h2>
+
+        {postsLoading ? (
+          <div className="text-center py-8 text-[#6B7280]">جاري التحميل...</div>
+        ) : posts.length === 0 ? (
+          <div className="bg-white rounded-xl border border-[#E5E7EB] p-8 text-center">
+            <p className="text-[#6B7280] mb-2">لا توجد منشورات بعد</p>
+            <Link to="/social" className="text-[#1B4332] font-medium hover:underline">
+              اذهب إلى المنصة الاجتماعية لإنشاء أول منشور
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <div key={post.id} className="bg-white rounded-xl border border-[#E5E7EB] p-4">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-3">
+                  <Link to={`/profile/my`} className="flex items-center gap-3">
+                    <img
+                      src={photoUrl(post.user?.profile?.photos?.[0]?.url) || DEFAULT_AVATAR}
+                      alt=""
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="text-sm font-semibold text-[#1B4332]">
+                        {post.user?.profile?.displayName || post.user?.role || 'مستخدم'}
+                      </p>
+                      <p className="text-xs text-[#6B7280]">
+                        {new Date(post.createdAt).toLocaleDateString('ar-SA')}
+                      </p>
+                    </div>
+                  </Link>
+                  <div className="flex gap-2">
+                    <Link
+                      to={`/social/post/${post.id}`}
+                      className="text-xs text-blue-400 hover:text-blue-600"
+                    >
+                      تعديل
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(post.id)}
+                      className="text-xs text-red-400 hover:text-red-600"
+                    >
+                      حذف
+                    </button>
+                  </div>
+                </div>
+
+                {/* Privacy badge */}
+                {post.privacy && post.privacy !== 'PUBLIC' && (
+                  <div className="mb-2">
+                    <span className="inline-block text-xs bg-gray-100 text-[#6B7280] px-2 py-0.5 rounded">
+                      {post.privacy === 'PRIVATE' ? 'خاص' : post.privacy === 'CONNECTIONS' ? 'المتابعين' : post.privacy}
+                    </span>
+                  </div>
+                )}
+
+                {/* Content */}
+                <Link to={`/social/post/${post.id}`}>
+                  <p className="text-sm text-[#374151] leading-relaxed mb-3 whitespace-pre-wrap">
+                    {post.content}
+                  </p>
+                  {post.mediaUrls?.length > 0 && (
+                    <div
+                      className="grid gap-2 mb-3"
+                      style={{ gridTemplateColumns: post.mediaUrls.length > 1 ? '1fr 1fr' : '1fr' }}
+                    >
+                      {post.mediaUrls.map((url: string, i: number) => (
+                        isVideo(url) ? (
+                          <video key={i} src={url} controls className="rounded-lg w-full h-48 object-cover" />
+                        ) : (
+                          <img key={i} src={url} alt="" className="rounded-lg w-full h-48 object-cover" />
+                        )
+                      ))}
+                    </div>
+                  )}
+                </Link>
+
+                {/* Actions */}
+                <div className="flex items-center gap-6 pt-3 border-t border-[#E5E7EB]">
+                  <button
+                    onClick={() => handleLike(post.id)}
+                    className={`flex items-center gap-1.5 text-sm transition-colors ${
+                      post.liked?.[0] || post.liked ? 'text-red-500' : 'text-[#6B7280] hover:text-red-500'
+                    }`}
+                  >
+                    <svg className="w-5 h-5" fill={post.liked?.[0] || post.liked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    {post._count?.likes || 0}
+                  </button>
+                  <Link
+                    to={`/social/post/${post.id}`}
+                    className="flex items-center gap-1.5 text-sm text-[#6B7280] hover:text-[#1B4332] transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    {post._count?.comments || 0}
+                  </Link>
+                </div>
+              </div>
+            ))}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center gap-2 mt-6">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-4 py-2 text-sm border border-[#E5E7EB] rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                >
+                  السابق
+                </button>
+                <span className="px-4 py-2 text-sm text-[#6B7280]">{page} / {totalPages}</span>
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="px-4 py-2 text-sm border border-[#E5E7EB] rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                >
+                  التالي
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
