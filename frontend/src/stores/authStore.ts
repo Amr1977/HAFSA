@@ -42,6 +42,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: () => {
     setToken(null);
+    localStorage.removeItem('auth_token');
     set({ user: null, isAuthenticated: false, isLoading: false });
     disconnectSocket();
     api.auth.logout().catch(() => {});
