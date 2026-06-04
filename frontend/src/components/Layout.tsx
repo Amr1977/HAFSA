@@ -155,10 +155,11 @@ export default function Layout() {
               )}
 
               {isAuthenticated ? (
-                <div className="hidden md:flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <Link
                     to="/profile/my"
-                    className="w-8 h-8 rounded-full overflow-hidden border-2 border-[var(--color-primary)] hover:opacity-80 transition-opacity"
+                    className="w-8 h-8 rounded-full overflow-hidden border-2 border-[var(--color-primary)] hover:opacity-80 transition-opacity shrink-0"
+                    title="الملف الشخصي"
                   >
                     {profilePhoto ? (
                       <img src={photoUrl(profilePhoto)} alt="" className="w-full h-full object-cover" />
@@ -170,13 +171,13 @@ export default function Layout() {
                   </Link>
                   <Link
                     to="/settings"
-                    className="text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-primary)]"
+                    className="hidden md:inline text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-primary)]"
                   >
                     {t('nav.settings')}
                   </Link>
                   <button
                     onClick={logout}
-                    className="text-sm font-medium text-red-500 hover:text-red-600"
+                    className="hidden md:inline text-sm font-medium text-red-500 hover:text-red-600"
                   >
                     {t('nav.logout')}
                   </button>
@@ -250,21 +251,48 @@ export default function Layout() {
             </div>
 
             {isAuthenticated && (
-              <div className="absolute bottom-0 left-0 right-0 border-t border-[var(--color-border)] p-4 space-y-2">
-                <Link
-                  to="/settings"
-                  onClick={close}
-                  className="block px-4 py-3 rounded-lg text-sm font-medium text-[var(--color-text)] hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  {t('nav.settings')}
-                </Link>
-                <button
-                  onClick={() => { logout(); close(); }}
-                  className="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50"
-                >
-                  {t('nav.logout')}
-                </button>
-              </div>
+              <>
+                <div className="p-4 border-t border-[var(--color-border)]">
+                  <Link
+                    to="/profile/my"
+                    onClick={close}
+                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--color-primary)] shrink-0">
+                      {profilePhoto ? (
+                        <img src={photoUrl(profilePhoto)} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-[var(--color-primary-pale)] flex items-center justify-center text-[var(--color-primary)] text-sm font-bold">
+                          {user?.role?.charAt(0) || '?'}
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[var(--color-text)] truncate">
+                        {user?.email || 'الملف الشخصي'}
+                      </p>
+                      <p className="text-xs text-[var(--color-muted)]">
+                        عرض الملف الشخصي
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 border-t border-[var(--color-border)] p-4 space-y-2">
+                  <Link
+                    to="/settings"
+                    onClick={close}
+                    className="block px-4 py-3 rounded-lg text-sm font-medium text-[var(--color-text)] hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    {t('nav.settings')}
+                  </Link>
+                  <button
+                    onClick={() => { logout(); close(); }}
+                    className="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50"
+                  >
+                    {t('nav.logout')}
+                  </button>
+                </div>
+              </>
             )}
 
             {!isAuthenticated && (
