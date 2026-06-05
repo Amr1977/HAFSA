@@ -28,6 +28,8 @@ export default function AdminDashboard() {
     { label: 'المحادثات', value: stats.totalConversations, path: '/admin/messages', color: '#6B7280' },
     { label: 'الرسائل', value: stats.totalMessages, path: '/admin/messages', color: '#6B7280' },
     { label: 'الملاحظات', value: stats.totalFeedback, path: '/admin/feedback', color: '#6B7280' },
+    { label: 'اشتراكات pending', value: stats.pendingSubscriptions, path: '/admin/subscriptions', color: '#DAA520', highlight: true },
+    { label: 'تبرعات pending', value: stats.pendingDonations, path: '/admin/donations', color: '#B8860B', highlight: true },
   ];
 
   const quickActions = [
@@ -37,6 +39,8 @@ export default function AdminDashboard() {
     { label: 'المنشورات', desc: 'عرض وإدارة المنشورات', path: '/admin/posts', icon: '📝' },
     { label: 'المحادثات', desc: 'مشاهدة المحادثات', path: '/admin/messages', icon: '💬' },
     { label: 'الملاحظات', desc: 'إدارة اقتراحات وملاحظات المستخدمين', path: '/admin/feedback', icon: '💡' },
+    { label: 'الاشتراكات', desc: 'تأكيد ورفض طلبات الاشتراك المميز', path: '/admin/subscriptions', icon: '⭐' },
+    { label: 'التبرعات', desc: 'تأكيد ورفض طلبات التبرعات', path: '/admin/donations', icon: '❤️' },
   ];
 
   return (

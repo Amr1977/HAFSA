@@ -25,6 +25,11 @@ export const getDashboard = async (_req: AuthRequest, res: Response) => {
       prisma.postComment.count(),
     ]);
 
+    const [pendingSubscriptions, pendingDonations] = await Promise.all([
+      prisma.subscription.count({ where: { status: 'PENDING' } }),
+      prisma.donation.count({ where: { status: 'PENDING' } }),
+    ]);
+
     const usersByRole = await prisma.user.groupBy({
       by: ['role'],
       _count: { id: true },
@@ -47,6 +52,8 @@ export const getDashboard = async (_req: AuthRequest, res: Response) => {
       activeGuardians: await prisma.user.count({ where: { role: 'GUARDIAN', isActive: true } }),
       premiumUsers: await prisma.user.count({ where: { subscriptionPlan: 'PREMIUM' } }),
       usersByRole,
+      pendingSubscriptions,
+      pendingDonations,
     });
   } catch (error) {
     console.error('Dashboard error:', error);
