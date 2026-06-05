@@ -83,7 +83,7 @@ export default function App() {
         <Route path="messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="messages/:id" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
         <Route path="social" element={<ProtectedRoute><SocialFeed /></ProtectedRoute>} />
-        <Route path="social/post/:id" element={<ProtectedRoute><PostDetail /></ProtectedRoute>} />
+        <Route path="social/post/:id" element={<PostDetail />} />
         <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="settings/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />

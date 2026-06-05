@@ -18,6 +18,10 @@ export default function MyProfile() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [viewerImg, setViewerImg] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [sharingId, setSharingId] = useState<string | null>(null);
+  const [shareContent, setShareContent] = useState('');
+  const [sharingSubmitting, setSharingSubmitting] = useState(false);
 
   useEffect(() => {
     api.profile.getMy()
@@ -51,6 +55,22 @@ export default function MyProfile() {
     if (!window.confirm('هل أنت متأكد من حذف هذا المنشور؟')) return;
     await api.social.deletePost(postId);
     setPosts(prev => prev.filter(p => p.id !== postId));
+  };
+
+  const copyLink = (postId: string) => {
+    navigator.clipboard.writeText(`${window.location.origin}/social/post/${postId}`);
+    setCopiedId(postId);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleShare = async (postId: string) => {
+    setSharingSubmitting(true);
+    try {
+      const shared = await api.social.sharePost(postId, shareContent || undefined);
+      setPosts(prev => [shared, ...prev]);
+      setSharingId(null);
+      setShareContent('');
+    } catch (e) {} finally { setSharingSubmitting(false); }
   };
 
   const isVideo = (url: string) => url.startsWith('data:video/');
@@ -295,6 +315,26 @@ export default function MyProfile() {
                       ))}
                     </div>
                   )}
+                  {post.sharedPost && (
+                    <div className="bg-gray-50 rounded-xl border border-[#E5E7EB] p-3 mb-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <img src={photoUrl(post.sharedPost.user?.profile?.photos?.[0]?.url) || DEFAULT_AVATAR} alt="" className="w-5 h-5 rounded-full object-cover" />
+                        <span className="text-xs font-semibold text-[#1B4332]">{post.sharedPost.user?.profile?.displayName || post.sharedPost.user?.role}</span>
+                      </div>
+                      <p className="text-xs text-[#374151] leading-relaxed whitespace-pre-wrap">{post.sharedPost.content}</p>
+                      {post.sharedPost.mediaUrls?.length > 0 && (
+                        <div className="grid gap-1 mt-2" style={{ gridTemplateColumns: post.sharedPost.mediaUrls.length > 1 ? '1fr 1fr' : '1fr' }}>
+                          {post.sharedPost.mediaUrls.map((url: string, i: number) => (
+                            isVideo(url) ? (
+                              <video key={i} src={url} controls className="rounded-lg w-full h-24 object-cover" />
+                            ) : (
+                              <img key={i} src={url} alt="" className="rounded-lg w-full h-24 object-cover" />
+                            )
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </Link>
 
                 {/* Actions */}
@@ -319,7 +359,58 @@ export default function MyProfile() {
                     </svg>
                     {post._count?.comments || 0}
                   </Link>
+                  <button
+                    onClick={() => setSharingId(sharingId === post.id ? null : post.id)}
+                    className={`flex items-center gap-1.5 text-sm transition-colors ${
+                      sharingId === post.id ? 'text-[#1B4332]' : 'text-[#6B7280] hover:text-[#1B4332]'
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span className="hidden sm:inline">إعادة نشر</span>
+                  </button>
+                  <button
+                    onClick={() => copyLink(post.id)}
+                    className="mr-auto flex items-center gap-1.5 text-sm text-[#6B7280] hover:text-[#1B4332] transition-colors"
+                  >
+                    {copiedId === post.id ? (
+                      <span className="text-green-500 text-xs">تم النسخ!</span>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        <span className="hidden sm:inline">مشاركة</span>
+                      </>
+                    )}
+                  </button>
                 </div>
+                {sharingId === post.id && (
+                  <div className="mt-3 pt-3 border-t border-[#E5E7EB]">
+                    <textarea
+                      value={shareContent}
+                      onChange={(e) => setShareContent(e.target.value)}
+                      placeholder="أضف تعليقك (اختياري)"
+                      className="w-full border border-[#E5E7EB] rounded-lg p-3 text-sm resize-none focus:outline-none focus:border-[#1B4332] h-20 mb-2"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleShare(post.id)}
+                        disabled={sharingSubmitting}
+                        className="px-4 py-1.5 bg-[#1B4332] text-white rounded-lg text-xs font-medium hover:bg-[#2D6A4F] disabled:opacity-50"
+                      >
+                        {sharingSubmitting ? 'جاري النشر...' : 'إعادة نشر'}
+                      </button>
+                      <button
+                        onClick={() => { setSharingId(null); setShareContent(''); }}
+                        className="px-4 py-1.5 border border-[#E5E7EB] rounded-lg text-xs text-[#6B7280] hover:text-[#374151]"
+                      >
+                        إلغاء
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
 

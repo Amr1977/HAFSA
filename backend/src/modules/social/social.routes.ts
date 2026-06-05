@@ -1,14 +1,16 @@
 import { Router } from 'express';
-import { authenticate } from '../../middleware/auth';
+import { authenticate, optionalAuth } from '../../middleware/auth';
 import { uploadMedia } from '../../config/upload';
 import {
   createPost, updatePost, getFeed, getPost, deletePost, toggleLike,
   addComment, deleteComment, toggleFollow, getFollowers, getFollowing,
   getUserPosts, getReputation, getExploreFeed, updatePostPrivacy,
-  uploadPostMedia,
+  uploadPostMedia, sharePost,
 } from './social.controller';
 
 const router = Router();
+
+router.get('/posts/:id', optionalAuth, getPost);
 
 router.use(authenticate);
 
@@ -17,9 +19,9 @@ router.post('/posts', createPost);
 router.put('/posts/:id', updatePost);
 router.get('/feed', getFeed);
 router.get('/explore', getExploreFeed);
-router.get('/posts/:id', getPost);
 router.delete('/posts/:id', deletePost);
 router.post('/posts/:id/like', toggleLike);
+router.post('/posts/:id/share', sharePost);
 router.post('/posts/:id/comments', addComment);
 router.delete('/posts/:id/comments/:commentId', deleteComment);
 router.post('/follow/:userId', toggleFollow);

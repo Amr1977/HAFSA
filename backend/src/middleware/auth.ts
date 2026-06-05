@@ -33,3 +33,28 @@ export const authenticate = async (
     return res.status(401).json({ error: 'UNAUTHORIZED', message: 'Invalid token' });
   }
 };
+
+export const optionalAuth = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return next();
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+
+    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    if (user && user.isActive && !user.isBanned) {
+      req.userId = decoded.userId;
+      req.userRole = user.role;
+    }
+  } catch {
+    // Ignore invalid tokens for optional auth
+  }
+  next();
+};

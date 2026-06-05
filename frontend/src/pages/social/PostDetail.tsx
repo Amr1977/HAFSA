@@ -20,6 +20,10 @@ export default function PostDetail() {
   const [editMediaUrls, setEditMediaUrls] = useState<string[]>([]);
   const [editNewMediaPreviews, setEditNewMediaPreviews] = useState<{ id: string; url: string; type: string; uploading: boolean }[]>([]);
   const [viewerImg, setViewerImg] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [shareContent, setShareContent] = useState('');
+  const [sharingSubmitting, setSharingSubmitting] = useState(false);
   const editInputRef = useRef<HTMLTextAreaElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -111,6 +115,23 @@ export default function PostDetail() {
       setPost(updated);
       cancelEdit();
     } catch (e) {} finally { setSubmitting(false); }
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/social/post/${post?.id}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async () => {
+    if (!post) return;
+    setSharingSubmitting(true);
+    try {
+      const shared = await api.social.sharePost(post.id, shareContent || undefined);
+      setPost(shared);
+      setSharing(false);
+      setShareContent('');
+    } catch (e) {} finally { setSharingSubmitting(false); }
   };
 
   const avatar = (p: any) => photoUrl(p.user?.profile?.photos?.[0]?.url) || DEFAULT_AVATAR;
@@ -217,6 +238,28 @@ export default function PostDetail() {
                   ))}
                 </div>
               )}
+              {post.sharedPost && (
+                <div className="bg-[var(--color-bg)] rounded-xl border border-[var(--color-border)] p-4 mb-4">
+                  <Link to={`/social/post/${post.sharedPost.id}`} className="block">
+                    <div className="flex items-center gap-2 mb-2">
+                      <img src={avatar(post.sharedPost)} alt="" className="w-6 h-6 rounded-full object-cover" />
+                      <span className="text-sm font-semibold text-[var(--color-primary)]">{userName(post.sharedPost)}</span>
+                    </div>
+                    <p className="text-sm text-[var(--color-text)] leading-relaxed whitespace-pre-wrap">{post.sharedPost.content}</p>
+                    {post.sharedPost.mediaUrls?.length > 0 && (
+                      <div className="grid gap-2 mt-2" style={{ gridTemplateColumns: post.sharedPost.mediaUrls.length > 1 ? '1fr 1fr' : '1fr' }}>
+                        {post.sharedPost.mediaUrls.map((url: string, i: number) => (
+                          url.startsWith('data:video/') ? (
+                            <video key={i} src={url} controls className="rounded-lg w-full h-32 object-cover" />
+                          ) : (
+                            <img key={i} src={url} alt="" className="rounded-lg w-full h-32 object-cover" />
+                          )
+                        ))}
+                      </div>
+                    )}
+                  </Link>
+                </div>
+              )}
             </>
           )}
 
@@ -233,7 +276,50 @@ export default function PostDetail() {
             </svg>
             {post._count.comments} {t('social.comment')}
           </span>
+          <button onClick={() => setSharing(!sharing)} className={`flex items-center gap-1.5 text-sm transition-colors ${sharing ? 'text-[var(--color-primary)]' : 'text-[var(--color-muted)] hover:text-[var(--color-primary)]'}`}>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span className="hidden sm:inline">إعادة نشر</span>
+          </button>
+          <button onClick={copyLink} className="mr-auto flex items-center gap-1.5 text-sm text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors">
+            {copied ? (
+              <span className="text-green-500 text-xs">تم النسخ!</span>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                <span className="hidden sm:inline">{t('social.share') || 'مشاركة'}</span>
+              </>
+            )}
+          </button>
         </div>
+        {sharing && (
+          <div className="mt-3 pt-3 border-t border-[var(--color-border)]">
+            <textarea
+              value={shareContent}
+              onChange={(e) => setShareContent(e.target.value)}
+              placeholder="أضف تعليقك (اختياري)"
+              className="w-full border border-[var(--color-border)] rounded-lg p-3 text-sm resize-none focus:outline-none focus:border-[var(--color-primary)] h-20 mb-2"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={handleShare}
+                disabled={sharingSubmitting}
+                className="px-4 py-1.5 bg-[var(--color-primary)] text-white rounded-lg text-xs font-medium hover:bg-[var(--color-primary-light)] disabled:opacity-50"
+              >
+                {sharingSubmitting ? 'جاري النشر...' : 'إعادة نشر'}
+              </button>
+              <button
+                onClick={() => { setSharing(false); setShareContent(''); }}
+                className="px-4 py-1.5 border border-[var(--color-border)] rounded-lg text-xs text-[var(--color-muted)] hover:text-[var(--color-text)]"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-6">

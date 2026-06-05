@@ -24,18 +24,20 @@ const getUserDisplayName = async (userId: string) => {
 
 const id = (req: AuthRequest) => req.params.id as string;
 
-const canView = async (post: { id: string; userId: string; privacy: string }, viewerId: string): Promise<boolean> => {
-  if (viewerId === post.userId) return true;
+const canView = async (post: { id: string; userId: string; privacy: string }, viewerId?: string): Promise<boolean> => {
+  if (viewerId && viewerId === post.userId) return true;
   switch (post.privacy) {
     case 'PUBLIC': return true;
     case 'PRIVATE': return false;
     case 'CONNECTIONS': {
+      if (!viewerId) return false;
       const follow = await prisma.follow.findUnique({
         where: { followerId_followingId: { followerId: viewerId, followingId: post.userId } },
       });
       return !!follow;
     }
     case 'SELECTED': {
+      if (!viewerId) return false;
       const allowed = await prisma.postPrivacyUser.findUnique({
         where: { postId_userId: { postId: post.id, userId: viewerId } },
       });
@@ -49,6 +51,12 @@ const postInclude = (userId: string) => ({
   user: { select: { id: true, role: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
   _count: { select: { likes: true, comments: true } },
   likes: { where: { userId }, take: 1 },
+  sharedPost: {
+    include: {
+      user: { select: { id: true, role: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
+      _count: { select: { likes: true, comments: true } },
+    },
+  },
 } as const);
 
 const postIncludeFull = (userId: string) => ({
@@ -175,7 +183,7 @@ export const getPost = async (req: AuthRequest, res: Response) => {
       include: {
         user: { select: { id: true, role: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
         _count: { select: { likes: true, comments: true } },
-        likes: { where: { userId: req.userId }, take: 1 },
+        ...(req.userId ? { likes: { where: { userId: req.userId }, take: 1 } } : {}),
         comments: {
           orderBy: { createdAt: 'asc' },
           include: {
@@ -185,13 +193,41 @@ export const getPost = async (req: AuthRequest, res: Response) => {
       },
     });
     if (!post) return res.status(404).json({ error: 'NOT_FOUND', message: 'Post not found' });
-    if (!(await canView(post, req.userId!))) {
+    if (!(await canView(post, req.userId))) {
       return res.status(403).json({ error: 'FORBIDDEN', message: 'You cannot view this post' });
     }
     res.json(post);
   } catch (error) {
     console.error('Get post error:', error);
     res.status(500).json({ error: 'INTERNAL', message: 'Failed to get post' });
+  }
+};
+
+export const sharePost = async (req: AuthRequest, res: Response) => {
+  try {
+    const postId = id(req);
+    const { content } = req.body;
+
+    const original = await prisma.post.findUnique({ where: { id: postId } });
+    if (!original) return res.status(404).json({ error: 'NOT_FOUND', message: 'Post not found' });
+    if (!(await canView(original, req.userId))) {
+      return res.status(403).json({ error: 'FORBIDDEN', message: 'You cannot share this post' });
+    }
+
+    const shared = await prisma.post.create({
+      data: {
+        userId: req.userId!,
+        content: content?.trim() || '',
+        mediaUrls: [],
+        privacy: 'PUBLIC' as any,
+        sharedPostId: postId,
+      },
+      include: postIncludeFull(req.userId!),
+    });
+    res.status(201).json(shared);
+  } catch (error) {
+    console.error('Share post error:', error);
+    res.status(500).json({ error: 'INTERNAL', message: 'Failed to share post' });
   }
 };
 

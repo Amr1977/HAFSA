@@ -158,6 +158,7 @@ export const api = {
     getFollowers: (userId?: string) => api.get(userId ? `/social/followers/${userId}` : '/social/followers'),
     getFollowing: (userId?: string) => api.get(userId ? `/social/following/${userId}` : '/social/following'),
     getUserPosts: (userId: string, params?: string) => api.get(`/social/user/${userId}/posts${params ? `?${params}` : ''}`),
+    sharePost: (postId: string, content?: string) => api.post(`/social/posts/${postId}/share`, { content }),
     getReputation: (userId?: string) => api.get(userId ? `/social/user/${userId}/reputation` : '/social/reputation'),
   },
 

@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../stores/authStore';
 import { useTheme } from '../stores/themeStore';
 import { api, photoUrl } from '../lib/api';
-import { changeLanguage } from '../i18n';
 import { onNewNotification } from '../lib/socket';
 
 export default function Layout() {
@@ -126,22 +125,6 @@ export default function Layout() {
                   </svg>
                 )}
               </button>
-
-              <div className="flex gap-0.5 border border-[var(--color-border)] rounded-lg overflow-hidden" dir="ltr">
-                {(['ar', 'en', 'ur', 'fr'] as const).map((code) => (
-                  <button
-                    key={code}
-                    onClick={() => changeLanguage(code)}
-                    className={`px-1.5 py-1 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
-                      i18n.language === code
-                        ? 'bg-[var(--color-primary)] text-white'
-                        : 'text-[var(--color-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-pale)]'
-                    }`}
-                  >
-                    {code}
-                  </button>
-                ))}
-              </div>
 
               {isAuthenticated && (
                 <Link

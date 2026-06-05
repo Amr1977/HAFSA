@@ -302,6 +302,9 @@ model Post {
   allowedUsers PostPrivacyUser[]
   likes     PostLike[]
   comments  PostComment[]
+  sharedPostId String?
+  sharedPost   Post?      @relation("PostReposts", fields: [sharedPostId], references: [id], onDelete: SetNull)
+  reposts      Post[]     @relation("PostReposts")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
