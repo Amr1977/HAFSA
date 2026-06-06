@@ -62,9 +62,9 @@ export default function Login() {
         {/* Brand header */}
         <div className="text-center mb-8">
           <Link to="/" className="text-3xl font-bold text-[#1B4332] dark:text-[#DAA520] font-display tracking-tight">
-            حفصة
+            عمر
           </Link>
-          <p className="text-sm text-[#6B7280] dark:text-gray-400 mt-1">منصة زواج إسلامية موثوقة</p>
+          <p className="text-sm text-[#6B7280] dark:text-gray-400 mt-1">شبكة اجتماعية متكاملة للرجال</p>
         </div>
 
         {/* Card */}

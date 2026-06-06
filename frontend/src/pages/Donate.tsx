@@ -80,7 +80,7 @@ export default function Donate() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8" dir="rtl">
-      <h1 className="text-2xl font-bold text-[#1B4332] dark:text-[#DAA520] mb-2 text-center">تبرع لدعم حفصة</h1>
+      <h1 className="text-2xl font-bold text-[#1B4332] dark:text-[#DAA520] mb-2 text-center">تبرع لدعم عمر</h1>
       <p className="text-sm text-[#6B7280] dark:text-gray-400 text-center mb-8">
         ساهم في دعم المنصة وتطويرها لخدمة المجتمع الإسلامي
       </p>

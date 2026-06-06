@@ -1,13 +1,15 @@
 <div align="center">
-  <h1>حفصة — Hafsa</h1>
-  <p><strong>An Islamic marriage platform connecting families with integrity</strong></p>
-  <p>شبكة إسلامية للتعارف بقصد الزواج</p>
+  <h1>عمر — OMAR</h1>
+  <p><strong>A social network for men — marriage, services, e-shops, and more</strong></p>
+  <p>شبكة اجتماعية متكاملة للرجال</p>
   <br>
 </div>
 
-**Hafsa** is a full-featured web platform designed to facilitate Islamic marriage introductions. It enables guardians (أولياء) to browse profiles of those seeking marriage, communicate securely, and manage the matchmaking process — all within an Islamic framework.
+**OMAR** is a full-featured web platform designed as a social network for men. It includes specialized verticals for marriage introductions (with guardian oversight), a provider/consumer services marketplace, user storefronts for e-commerce, and spatial data (GIS) integration for location-aware features.
 
-The platform is named after **Hafsa bint Umar** (حفصة بنت عمر), one of the Mothers of the Believers, reflecting the project's commitment to Islamic values.
+The platform is named after **Omar ibn al-Khattab** (عمر بن الخطاب), reflecting strength, justice, and community leadership.
+
+> The marriage vertical includes the story of **Hafsa bint Umar** (حفصة بنت عمر) — one of the Mothers of the Believers — as part of the marriage section content.
 
 ## Versioning
 

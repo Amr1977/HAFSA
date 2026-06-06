@@ -48,6 +48,7 @@ export default function Layout() {
     ...(isAuthenticated
       ? [
           { path: '/social', label: 'المنشورات' },
+          { path: '/services', label: 'الخدمات' },
           { path: '/profile/my', label: t('profile.my') },
         ]
       : []),

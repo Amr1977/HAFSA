@@ -34,6 +34,11 @@ import Feedback from './pages/Feedback';
 import Donate from './pages/Donate';
 import BrideList from './pages/guardian/BrideList';
 import BrideForm from './pages/guardian/BrideForm';
+import ServiceList from './pages/services/ServiceList';
+import ServiceDetail from './pages/services/ServiceDetail';
+import ServiceForm from './pages/services/ServiceForm';
+import MyServices from './pages/services/MyServices';
+import MyBookings from './pages/services/MyBookings';
 
 function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles?: string[] }) {
   const { isAuthenticated, isLoading, user } = useAuthStore();
@@ -77,7 +82,7 @@ export default function App() {
         <Route index element={<Landing />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="siyar/hafsa-bint-umar" element={<HafsaStory />} />
+        <Route path="marriage/hafsa" element={<HafsaStory />} />
         <Route path="profile/setup" element={<ProtectedRoute><ProfileSetup /></ProtectedRoute>} />
         <Route path="profile/my" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
         <Route path="browse" element={<ProtectedRoute roles={['GUARDIAN', 'BOTH', 'ADMIN']}><Browse /></ProtectedRoute>} />
@@ -106,6 +111,12 @@ export default function App() {
         <Route path="guardian/brides" element={<ProtectedRoute roles={['GUARDIAN', 'BOTH', 'ADMIN']}><BrideList /></ProtectedRoute>} />
         <Route path="guardian/brides/new" element={<ProtectedRoute roles={['GUARDIAN', 'BOTH', 'ADMIN']}><BrideForm /></ProtectedRoute>} />
         <Route path="guardian/brides/:id/edit" element={<ProtectedRoute roles={['GUARDIAN', 'BOTH', 'ADMIN']}><BrideForm /></ProtectedRoute>} />
+        <Route path="services" element={<ProtectedRoute><ServiceList /></ProtectedRoute>} />
+        <Route path="services/new" element={<ProtectedRoute><ServiceForm /></ProtectedRoute>} />
+        <Route path="services/:id" element={<ServiceDetail />} />
+        <Route path="services/:id/edit" element={<ProtectedRoute><ServiceForm /></ProtectedRoute>} />
+        <Route path="my/services" element={<ProtectedRoute><MyServices /></ProtectedRoute>} />
+        <Route path="my/bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
       </Route>
     </Routes>
   );

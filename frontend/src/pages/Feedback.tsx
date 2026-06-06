@@ -46,7 +46,7 @@ export default function Feedback() {
   return (
     <div className="max-w-2xl mx-auto py-8">
       <h1 className="text-2xl font-bold text-[#1B4332] dark:text-[#DAA520] mb-2">تواصل معنا</h1>
-      <p className="text-sm text-[#6B7280] dark:text-gray-400 mb-8">نحن نرحب باقتراحاتك، الإبلاغ عن الأخطاء، طلب ميزات جديدة، أو مشاركة شهادتك عن حفصة.</p>
+      <p className="text-sm text-[#6B7280] dark:text-gray-400 mb-8">نحن نرحب باقتراحاتك، الإبلاغ عن الأخطاء، طلب ميزات جديدة، أو مشاركة شهادتك عن عمر.</p>
 
       <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl border border-[#E5E7EB] dark:border-gray-700 p-6 space-y-5">
         <div>

@@ -1,12 +1,12 @@
 {
   "app": {
-    "name": "Hafsa",
-    "tagline": "Réseau de Mariage Islamique",
-    "description": "La première plateforme de mariage islamique qui place le tuteur au cœur du processus de mise en relation"
+    "name": "OMAR",
+    "tagline": "Réseau Social pour Hommes",
+    "description": "Un réseau social pour hommes avec mariage, services, boutiques en ligne et plus"
   },
   "nav": {
     "home": "Accueil",
-    "about": "À propos",
+    "about": "À propos d'OMAR",
     "browse": "Parcourir",
     "messages": "Messages",
     "requests": "Demandes",
@@ -297,5 +297,27 @@
     "instapay": "Instapay",
     "vodafoneCash": "Vodafone Cash",
     "usdtTrc20": "USDT TRC20"
+  },
+  "services": {
+    "title": "Services",
+    "add": "Ajouter un service",
+    "edit": "Modifier le service",
+    "my": "Mes services",
+    "bookings": "Mes réservations",
+    "noResults": "Aucun service trouvé",
+    "search": "Rechercher un service...",
+    "allCategories": "Toutes les catégories",
+    "price": "Prix",
+    "description": "Description",
+    "location": "Emplacement",
+    "book": "Réserver",
+    "bookingSent": "Demande de réservation envoyée",
+    "review": "Avis",
+    "reviews": "Avis",
+    "noReviews": "Aucun avis pour le moment",
+    "fixed": "Prix fixe",
+    "hourly": "Par heure",
+    "daily": "Par jour",
+    "negotiable": "Négociable"
   }
 }

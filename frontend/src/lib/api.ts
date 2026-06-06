@@ -215,4 +215,19 @@ export const api = {
     update: (id: string, data: any) => api.put(`/brides/${id}`, data),
     delete: (id: string) => api.delete(`/brides/${id}`),
   },
+
+  // Services
+  services: {
+    categories: () => api.get('/services/categories'),
+    list: (params?: string) => api.get(`/services${params ? `?${params}` : ''}`),
+    my: () => api.get('/services/my'),
+    get: (id: string) => api.get(`/services/${id}`),
+    create: (data: any) => api.post('/services', data),
+    update: (id: string, data: any) => api.put(`/services/${id}`, data),
+    delete: (id: string) => api.delete(`/services/${id}`),
+    book: (id: string, message?: string) => api.post(`/services/${id}/book`, { message }),
+    bookings: () => api.get('/services/bookings'),
+    updateBooking: (id: string, status: string) => api.put(`/services/bookings/${id}`, { status }),
+    addReview: (id: string, rating: number, content?: string) => api.post(`/services/${id}/reviews`, { rating, content }),
+  },
 };

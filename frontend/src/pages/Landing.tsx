@@ -97,13 +97,6 @@ const features = [
   },
 ];
 
-const stats = [
-  { label: 'مستخدم', value: '100+' },
-  { label: 'ملف شخصي', value: '50+' },
-  { label: 'منشور', value: '200+' },
-  { label: 'رسالة', value: '500+' },
-];
-
 function TestimonialsSection({ testimonials, isAuthenticated }: { testimonials: any[]; isAuthenticated: boolean }) {
   if (testimonials.length === 0) return null;
   return (
@@ -111,7 +104,7 @@ function TestimonialsSection({ testimonials, isAuthenticated }: { testimonials: 
       <div className="text-center mb-10">
         <span className="inline-block px-3 py-1 bg-[#DAA520]/10 text-[#DAA520] rounded-full text-xs font-bold mb-3">شهادات</span>
         <h2 className="text-2xl font-bold text-[#1B4332] dark:text-[#DAA520]">ماذا يقول المستخدمون</h2>
-        <p className="text-sm text-[#6B7280] dark:text-gray-400 mt-1">كلمات من مجتمع حفصة</p>
+        <p className="text-sm text-[#6B7280] dark:text-gray-400 mt-1">كلمات من مجتمع عمر</p>
       </div>
       <div className="grid md:grid-cols-3 gap-6">
         {testimonials.slice(0, 6).map((t: any, i: number) => (
@@ -149,9 +142,11 @@ export default function Landing() {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuthStore();
   const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [stats, setStats] = useState({ users: 0, profiles: 0, posts: 0, messages: 0 });
 
   useEffect(() => {
     api.feedback.testimonials().then(setTestimonials).catch(() => {});
+    api.get('/stats').then(setStats).catch(() => {});
   }, []);
 
   if (isAuthenticated && user) {
@@ -210,7 +205,7 @@ export default function Landing() {
           <h2 className="text-2xl font-bold text-[#1B4332] dark:text-[#DAA520] mb-1">من سيرة أمهات المؤمنين</h2>
           <p className="text-sm text-[#6B7280] dark:text-gray-400 mb-6">قصص موثَّقة من أمهات المصادر الإسلامية</p>
           <Link
-            to="/siyar/hafsa-bint-umar"
+            to="/marriage/hafsa"
             className="group block bg-white dark:bg-gray-800 rounded-2xl border-t-4 border-t-[#DAA520] shadow-sm border border-[#E5E7EB] dark:border-gray-600 p-6 md:p-8 text-right no-underline hover:shadow-xl transition-all duration-300"
           >
             <div className="flex items-center justify-between mb-3">
@@ -235,7 +230,7 @@ export default function Landing() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-[#F5E6B8] mb-3 text-center">ادعم مشروع حفصة</h2>
+          <h2 className="text-2xl font-bold text-[#F5E6B8] mb-3 text-center">ادعم مشروع عمر</h2>
             <p className="text-base text-[#B8DFC8] leading-relaxed max-w-2xl mx-auto mb-6 text-center">
               تبرعاتكم تساعد في تطوير المنصة وتغطية تكاليف الاستضافة والخدمات.
             </p>
@@ -278,7 +273,7 @@ export default function Landing() {
             </div>
             <h2 className="text-2xl font-bold text-[#F5E6B8] mb-3">مشروع مفتوح المصدر</h2>
             <p className="text-base text-[#B8DFC8] leading-relaxed max-w-2xl mx-auto mb-6">
-              حفصة مشروع مفتوح المصدر نسعى من خلاله لخدمة المجتمع الإسلامي. نسعد بانضمامك إلينا في التطوير والتحسين.
+            عمر مشروع مفتوح المصدر نسعى من خلاله لخدمة المجتمع. نسعد بانضمامك إلينا في التطوير والتحسين.
             </p>
             <a href="https://github.com/Amr1977/HAFSA" target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-[#DAA520] text-[#1B4332] rounded-xl font-bold hover:bg-[#F5E6B8] hover:shadow-lg hover:scale-105 transition-all duration-200 shadow-md">
@@ -323,9 +318,14 @@ export default function Landing() {
       {/* ─── Stats ─── */}
       <section className="max-w-4xl mx-auto px-4 -mt-4 mb-16" dir="rtl">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 md:p-8 grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((s) => (
+          {[
+            { label: 'مستخدم', value: stats.users },
+            { label: 'ملف شخصي', value: stats.profiles },
+            { label: 'منشور', value: stats.posts },
+            { label: 'رسالة', value: stats.messages },
+          ].map((s) => (
             <div key={s.label} className="text-center">
-              <p className="text-2xl md:text-3xl font-bold text-[#DAA520]">{s.value}</p>
+              <p className="text-2xl md:text-3xl font-bold text-[#DAA520]">{s.value.toLocaleString('ar-EG')}</p>
               <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">{s.label}</p>
             </div>
           ))}
@@ -405,7 +405,7 @@ export default function Landing() {
       <section className="max-w-5xl mx-auto mt-20 px-4 text-right" dir="rtl">
         <h2 className="text-2xl font-bold text-[#1B4332] dark:text-[#DAA520] mb-1">من سيرة أمهات المؤمنين</h2>
         <p className="text-sm text-[#6B7280] dark:text-gray-400 mb-6">قصص موثَّقة من أمهات المصادر الإسلامية</p>
-        <Link to="/siyar/hafsa-bint-umar"
+        <Link to="/marriage/hafsa"
           className="group block bg-white dark:bg-gray-800 rounded-2xl border-t-4 border-t-[#DAA520] shadow-sm border border-[#E5E7EB] dark:border-gray-600 p-6 md:p-8 text-right no-underline hover:shadow-xl transition-all duration-300">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm text-[#6B7280] dark:text-gray-400">أم المؤمنين</span>
@@ -429,7 +429,7 @@ export default function Landing() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-[#F5E6B8] mb-3 text-center">ادعم مشروع حفصة</h2>
+          <h2 className="text-2xl font-bold text-[#F5E6B8] mb-3 text-center">ادعم مشروع عمر</h2>
           <p className="text-base text-[#B8DFC8] leading-relaxed max-w-2xl mx-auto mb-6 text-center">
             تبرعاتكم تساعد في تطوير المنصة وتغطية تكاليف الاستضافة والخدمات.
           </p>
@@ -473,7 +473,7 @@ export default function Landing() {
           </div>
           <h2 className="text-2xl font-bold text-[#F5E6B8] mb-3">مشروع مفتوح المصدر</h2>
           <p className="text-base text-[#B8DFC8] leading-relaxed max-w-2xl mx-auto mb-6">
-            حفصة مشروع مفتوح المصدر نسعى من خلاله لخدمة المجتمع الإسلامي. نسعد بانضمامك إلينا في التطوير والتحسين.
+            عمر مشروع مفتوح المصدر نسعى من خلاله لخدمة المجتمع. نسعد بانضمامك إلينا في التطوير والتحسين.
           </p>
           <a href="https://github.com/Amr1977/HAFSA" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#DAA520] text-[#1B4332] rounded-xl font-bold hover:bg-[#F5E6B8] hover:shadow-lg hover:scale-105 transition-all duration-200 shadow-md">

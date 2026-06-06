@@ -1,12 +1,12 @@
 {
   "app": {
-    "name": "Hafsa",
-    "tagline": "Islamic Marriage Network",
-    "description": "The first Islamic marriage platform that places the guardian at the heart of the matching process"
+    "name": "OMAR",
+    "tagline": "Social Network for Men",
+    "description": "A men's social network featuring marriage, services, e-shops, and more"
   },
   "nav": {
     "home": "Home",
-    "about": "About Hafsa",
+    "about": "About Us",
     "browse": "Browse",
     "messages": "Messages",
     "requests": "Requests",
@@ -297,5 +297,27 @@
     "instapay": "Instapay",
     "vodafoneCash": "Vodafone Cash",
     "usdtTrc20": "USDT TRC20"
+  },
+  "services": {
+    "title": "Services",
+    "add": "Add Service",
+    "edit": "Edit Service",
+    "my": "My Services",
+    "bookings": "My Bookings",
+    "noResults": "No services found",
+    "search": "Search services...",
+    "allCategories": "All Categories",
+    "price": "Price",
+    "description": "Description",
+    "location": "Location",
+    "book": "Book Now",
+    "bookingSent": "Booking request sent",
+    "review": "Review",
+    "reviews": "Reviews",
+    "noReviews": "No reviews yet",
+    "fixed": "Fixed Price",
+    "hourly": "Per Hour",
+    "daily": "Per Day",
+    "negotiable": "Negotiable"
   }
 }

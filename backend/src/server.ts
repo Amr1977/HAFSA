@@ -22,6 +22,7 @@ import feedbackRoutes from './modules/feedback/feedback.routes';
 import subscriptionRoutes from './modules/subscriptions/subscriptions.routes';
 import donationRoutes from './modules/donations/donations.routes';
 import brideRoutes from './modules/brides/brides.routes';
+import serviceRoutes from './modules/services/services.routes';
 
 const app = express();
 const httpServer = createServer(app);
@@ -43,6 +44,20 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+app.get('/api/stats', async (_req, res) => {
+  try {
+    const [totalUsers, totalProfiles, totalPosts, totalMessages] = await Promise.all([
+      prisma.user.count(),
+      prisma.profile.count(),
+      prisma.post.count(),
+      prisma.message.count(),
+    ]);
+    res.json({ users: totalUsers, profiles: totalProfiles, posts: totalPosts, messages: totalMessages });
+  } catch {
+    res.status(500).json({ error: 'INTERNAL' });
+  }
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/browse', browseRoutes);
@@ -56,6 +71,7 @@ app.use('/api/feedback', feedbackRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/donations', donationRoutes);
 app.use('/api/brides', brideRoutes);
+app.use('/api/services', serviceRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ error: 'NOT_FOUND', message: 'Route not found' });
