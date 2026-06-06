@@ -38,7 +38,7 @@ export const listDonations = async (_req: AuthRequest, res: Response) => {
     const donations = await prisma.donation.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
-        user: { select: { id: true, email: true, phone: true, role: true } },
+        user: { select: { id: true, email: true, phone: true, roles: true } },
       },
     });
     return res.json(donations);

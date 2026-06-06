@@ -65,7 +65,7 @@ export const listSubscriptions = async (_req: AuthRequest, res: Response) => {
     const subscriptions = await prisma.subscription.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
-        user: { select: { id: true, email: true, phone: true, role: true } },
+        user: { select: { id: true, email: true, phone: true, roles: true } },
       },
     });
     return res.json(subscriptions);

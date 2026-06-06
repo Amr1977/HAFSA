@@ -10,7 +10,6 @@ datasource db {
 enum UserRole {
   GROOM
   GUARDIAN
-  BOTH
   SOCIAL
   ADMIN
 }
@@ -81,8 +80,7 @@ model User {
   firebaseUid       String           @unique
   phone             String?          @unique
   email             String?          @unique
-  role              UserRole         @default(SOCIAL)
-  enabledModules    Json             @default("[]")
+  roles             Json             @default("[\"SOCIAL\"]")
   subscriptionPlan  SubscriptionPlan @default(FREE)
   subscriptionExpiry DateTime?
   isVerified        Boolean          @default(false)

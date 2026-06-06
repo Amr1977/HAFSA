@@ -55,7 +55,7 @@ export const listFeedback = async (req: AuthRequest, res: Response) => {
         skip: (pageNum - 1) * limitNum,
         take: limitNum,
         orderBy: { createdAt: 'desc' },
-        include: { user: { select: { id: true, email: true, phone: true, role: true } } },
+        include: { user: { select: { id: true, email: true, phone: true, roles: true } } },
       }),
       prisma.feedback.count({ where }),
     ]);

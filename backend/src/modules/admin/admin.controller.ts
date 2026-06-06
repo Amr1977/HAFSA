@@ -31,7 +31,7 @@ export const getDashboard = async (_req: AuthRequest, res: Response) => {
     ]);
 
     const usersByRole = await prisma.user.groupBy({
-      by: ['role'],
+      by: ['roles'],
       _count: { id: true },
     });
 
@@ -48,8 +48,8 @@ export const getDashboard = async (_req: AuthRequest, res: Response) => {
       newPostsWeek,
       totalLikes,
       totalComments,
-      activeGrooms: await prisma.user.count({ where: { role: 'GROOM', isActive: true } }),
-      activeGuardians: await prisma.user.count({ where: { role: 'GUARDIAN', isActive: true } }),
+      activeGrooms: await prisma.user.count({ where: { roles: { array_contains: 'GROOM' } as any, isActive: true } }),
+      activeGuardians: await prisma.user.count({ where: { roles: { array_contains: 'GUARDIAN' } as any, isActive: true } }),
       premiumUsers: await prisma.user.count({ where: { subscriptionPlan: 'PREMIUM' } }),
       usersByRole,
       pendingSubscriptions,
@@ -68,7 +68,7 @@ export const listUsers = async (req: AuthRequest, res: Response) => {
     const limitNum = Math.min(50, parseInt(limit as string));
 
     const where: any = {};
-    if (role) where.role = role;
+    if (role) where.roles = { array_contains: role } as any;
     if (search) {
       where.OR = [
         { email: { contains: search as string, mode: 'insensitive' } },
@@ -285,7 +285,7 @@ export const listPosts = async (req: AuthRequest, res: Response) => {
         take: limitNum,
         orderBy: { createdAt: 'desc' },
         include: {
-          user: { select: { id: true, email: true, phone: true, role: true } },
+          user: { select: { id: true, email: true, phone: true, roles: true } },
           _count: { select: { likes: true, comments: true } },
         },
       }),
@@ -324,7 +324,7 @@ export const listConversations = async (req: AuthRequest, res: Response) => {
         orderBy: { lastMessageAt: 'desc' },
         include: {
           participants: {
-            include: { user: { select: { id: true, email: true, phone: true, role: true } } },
+            include: { user: { select: { id: true, email: true, phone: true, roles: true } } },
           },
           messages: { orderBy: { createdAt: 'desc' }, take: 1 },
           _count: { select: { messages: true } },

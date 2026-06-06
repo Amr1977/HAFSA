@@ -7,8 +7,7 @@ interface User {
   firebaseUid: string;
   phone?: string;
   email?: string;
-  role: string;
-  enabledModules: string[];
+  roles: string[];
   isVerified: boolean;
   subscriptionPlan: string;
   subscriptionExpiry?: string;

@@ -150,7 +150,9 @@ export default function Landing() {
   }, []);
 
   if (isAuthenticated && user) {
-    const dashboardLink = user.role === 'SOCIAL' ? '/social' : user.role === 'GROOM' ? '/profile/my' : '/browse';
+    const hasGroom = user.roles?.includes('GROOM');
+    const hasGuardian = user.roles?.includes('GUARDIAN');
+    const dashboardLink = hasGuardian ? '/browse' : hasGroom ? '/profile/my' : '/social';
     return (
       <div className="text-center py-12">
         {/* Welcome hero */}
@@ -166,7 +168,7 @@ export default function Landing() {
               to={dashboardLink}
               className="px-8 py-3 bg-gradient-to-r from-[#1B4332] to-[#2D6A4F] dark:from-[#DAA520] dark:to-[#C49520] text-white dark:text-[#1B4332] rounded-xl text-lg font-bold hover:shadow-lg hover:scale-105 transition-all duration-200 shadow-md"
             >
-              {user.role === 'SOCIAL' ? 'المنشورات' : user.role === 'GROOM' ? t('profile.my') : t('browse.title')}
+              {hasGuardian ? t('browse.title') : hasGroom ? t('profile.my') : 'المنشورات'}
             </Link>
             <Link
               to="/social"

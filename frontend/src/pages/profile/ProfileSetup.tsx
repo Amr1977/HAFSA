@@ -79,12 +79,12 @@ export default function ProfileSetup() {
   const editId = searchParams.get('edit');
 
   useEffect(() => {
-    if (user?.role === 'SOCIAL') {
+    if (user?.roles && user.roles.length <= 1 && user.roles[0] === 'SOCIAL') {
       navigate('/social', { replace: true });
     }
   }, [user, navigate]);
 
-  const isGuardian = user?.role === 'GUARDIAN';
+  const isGuardian = user?.roles?.includes('GUARDIAN') ?? false;
   const fullSteps = ['basic', 'personal', 'marital', 'family', 'islamic', 'requirements', 'photos', 'review'];
   const guardianSteps = ['basic'];
   const STEPS = isGuardian ? guardianSteps : fullSteps;

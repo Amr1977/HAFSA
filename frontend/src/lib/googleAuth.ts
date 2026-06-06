@@ -6,14 +6,14 @@ import { useAuthStore } from '../stores/authStore';
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({ prompt: 'select_account' });
 
-export const signInWithGoogle = async (role?: string) => {
+export const signInWithGoogle = async (roles?: string[]) => {
   const result = await signInWithPopup(auth, provider);
   const firebaseUser = result.user;
 
   const res: any = await api.post('/auth/register', {
     firebaseUid: firebaseUser.uid,
     email: firebaseUser.email,
-    role: role || 'SOCIAL',
+    roles: roles || ['SOCIAL'],
   });
 
   setToken(res.accessToken);

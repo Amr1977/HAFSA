@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, verifyOtp, refreshToken, logout, getMe, updateModules } from './auth.controller';
+import { register, verifyOtp, refreshToken, logout, getMe, updateRoles } from './auth.controller';
 import { authenticate } from '../../middleware/auth';
 import { authLimiter } from '../../middleware/rateLimiter';
 
@@ -10,6 +10,6 @@ router.post('/verify-otp', authLimiter, verifyOtp);
 router.post('/refresh-token', refreshToken);
 router.post('/logout', authenticate, logout);
 router.get('/me', authenticate, getMe);
-router.put('/modules', authenticate, updateModules);
+router.put('/roles', authenticate, updateRoles);
 
 export default router;

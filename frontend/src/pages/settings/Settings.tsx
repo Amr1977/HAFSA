@@ -353,9 +353,10 @@ export default function Settings() {
               <div>
                 <p className="font-semibold text-[var(--color-text)] text-sm">الخدمات المفعلة</p>
                 <p className="text-xs text-[var(--color-muted)]">
-                  {(!user?.enabledModules || user.enabledModules.length === 0) && 'التواصل الاجتماعي فقط'}
-                  {user?.enabledModules?.includes('marriage') && 'الزواج '}
-                  {user?.enabledModules?.includes('guardian') && 'ولي أمر '}
+                  {(!user?.roles || user.roles.length <= 1) && 'التواصل الاجتماعي فقط'}
+                  {user?.roles?.includes('GROOM') && 'راغب في الزواج '}
+                  {user?.roles?.includes('GUARDIAN') && 'ولي أمر '}
+                  {user?.roles?.includes('ADMIN') && 'مشرف '}
                 </p>
               </div>
             </div>
@@ -368,37 +369,37 @@ export default function Settings() {
               <p className="text-xs text-[var(--color-muted)] mb-3">اختر الخدمات الإضافية التي تريد تفعيلها. يمكنك تغيير هذه الإعدادات في أي وقت.</p>
               <div className="space-y-2">
                 <ModuleToggle
-                  label="الزواج"
+                  label="راغب في الزواج"
                   desc="إنشاء ملف تعارف والتواصل مع العائلات"
-                  checked={user?.enabledModules?.includes('marriage') ?? false}
+                  checked={user?.roles?.includes('GROOM') ?? false}
                   onChange={async (val) => {
-                    const modules = [...(user?.enabledModules || [])];
+                    const roles = [...(user?.roles || [])].filter(r => r !== 'ADMIN');
                     if (val) {
-                      if (!modules.includes('marriage')) modules.push('marriage');
+                      if (!roles.includes('GROOM')) roles.push('GROOM');
                     } else {
-                      const idx = modules.indexOf('marriage');
-                      if (idx >= 0) modules.splice(idx, 1);
+                      const idx = roles.indexOf('GROOM');
+                      if (idx >= 0) roles.splice(idx, 1);
                     }
-                    const { user: updated } = await api.auth.updateModules(modules);
+                    const { user: updated } = await api.auth.updateRoles(roles);
                     const store = useAuthStore.getState();
-                    store.setUser({ ...store.user!, role: updated.role, enabledModules: updated.enabledModules });
+                    store.setUser({ ...store.user!, roles: updated.roles });
                   }}
                 />
                 <ModuleToggle
                   label="ولي أمر"
                   desc="البحث عن عريس وإدارة ملفات العرائس"
-                  checked={user?.enabledModules?.includes('guardian') ?? false}
+                  checked={user?.roles?.includes('GUARDIAN') ?? false}
                   onChange={async (val) => {
-                    const modules = [...(user?.enabledModules || [])];
+                    const roles = [...(user?.roles || [])].filter(r => r !== 'ADMIN');
                     if (val) {
-                      if (!modules.includes('guardian')) modules.push('guardian');
+                      if (!roles.includes('GUARDIAN')) roles.push('GUARDIAN');
                     } else {
-                      const idx = modules.indexOf('guardian');
-                      if (idx >= 0) modules.splice(idx, 1);
+                      const idx = roles.indexOf('GUARDIAN');
+                      if (idx >= 0) roles.splice(idx, 1);
                     }
-                    const { user: updated } = await api.auth.updateModules(modules);
+                    const { user: updated } = await api.auth.updateRoles(roles);
                     const store = useAuthStore.getState();
-                    store.setUser({ ...store.user!, role: updated.role, enabledModules: updated.enabledModules });
+                    store.setUser({ ...store.user!, roles: updated.roles });
                   }}
                 />
               </div>

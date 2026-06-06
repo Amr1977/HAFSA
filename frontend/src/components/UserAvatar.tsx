@@ -8,6 +8,7 @@ interface UserAvatarProps {
   photo?: string | null;
   size?: 'sm' | 'md' | 'lg';
   role?: string;
+  roles?: string[];
   subscriptionPlan?: string;
   className?: string;
 }
@@ -24,10 +25,11 @@ const BADGE_SIZE_MAP = {
   lg: 'w-5 h-5 text-[9px]',
 };
 
-export default function UserAvatar({ photo, size = 'lg', role, subscriptionPlan, className = '' }: UserAvatarProps) {
+export default function UserAvatar({ photo, size = 'lg', role, roles, subscriptionPlan, className = '' }: UserAvatarProps) {
+  const displayRole = role || (roles ? roles.find(r => r !== 'SOCIAL' && r !== 'ADMIN') || 'SOCIAL' : '');
   const isPremium = subscriptionPlan === 'PREMIUM';
-  const isGuardian = role === 'GUARDIAN';
-  const isSocial = role === 'SOCIAL';
+  const isGuardian = displayRole === 'GUARDIAN';
+  const isSocial = displayRole === 'SOCIAL';
 
   const ringColor = isPremium
     ? 'ring-2 ring-[#DAA520] ring-offset-2 ring-offset-[var(--color-bg)]'

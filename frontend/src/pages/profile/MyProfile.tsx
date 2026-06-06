@@ -259,13 +259,13 @@ export default function MyProfile() {
                     <UserAvatar
                       photo={post.user?.profile?.photos?.[0]?.url}
                       size="lg"
-                      role={post.user?.role}
+                      roles={post.user?.roles}
                       subscriptionPlan={post.user?.subscriptionPlan}
                     />
                     <div>
                       <div className="flex items-center gap-1.5">
                         <p className="text-sm font-semibold text-[#1B4332]">
-                          {post.user?.profile?.displayName || post.user?.role || 'مستخدم'}
+                          {post.user?.profile?.displayName || 'مستخدم'}
                         </p>
                         {post.user?.subscriptionPlan === 'PREMIUM' && (
                           <span className="text-[10px] bg-[#DAA520]/20 text-[#DAA520] px-1.5 py-0.5 rounded font-medium leading-none">مميز</span>
@@ -332,10 +332,10 @@ export default function MyProfile() {
                         <UserAvatar
                           photo={post.sharedPost.user?.profile?.photos?.[0]?.url}
                           size="sm"
-                          role={post.sharedPost.user?.role}
+                          roles={post.sharedPost.user?.roles}
                           subscriptionPlan={post.sharedPost.user?.subscriptionPlan}
                         />
-                        <span className="text-xs font-semibold text-[#1B4332]">{post.sharedPost.user?.profile?.displayName || post.sharedPost.user?.role}</span>
+                        <span className="text-xs font-semibold text-[#1B4332]">{post.sharedPost.user?.profile?.displayName || ''}</span>
                       </div>
                       <p className="text-xs text-[#374151] leading-relaxed whitespace-pre-wrap">{post.sharedPost.content}</p>
                       {post.sharedPost.mediaUrls?.length > 0 && (

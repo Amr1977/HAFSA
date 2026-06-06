@@ -3,20 +3,6 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../../config/database';
 import { AuthRequest } from '../../middleware/auth';
 
-const MODULE_ROLE_MAP: Record<string, string[]> = {
-  marriage: ['GROOM'],
-  guardian: ['GUARDIAN'],
-};
-
-const deriveRole = (modules: string[]): string => {
-  const hasMarriage = modules.includes('marriage');
-  const hasGuardian = modules.includes('guardian');
-  if (hasMarriage && hasGuardian) return 'BOTH';
-  if (hasMarriage) return 'GROOM';
-  if (hasGuardian) return 'GUARDIAN';
-  return 'SOCIAL';
-};
-
 const generateTokens = (userId: string) => {
   const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET!, {
     expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as any,
@@ -32,8 +18,7 @@ const formatUser = (user: any) => ({
   firebaseUid: user.firebaseUid,
   phone: user.phone,
   email: user.email,
-  role: user.role,
-  enabledModules: user.enabledModules,
+  roles: user.roles,
   isVerified: user.isVerified,
   isActive: user.isActive,
   isBanned: user.isBanned,
@@ -43,7 +28,7 @@ const formatUser = (user: any) => ({
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { firebaseUid, phone, email, role: reqRole, language, modules } = req.body;
+    const { firebaseUid, phone, email, roles: reqRoles, language } = req.body;
 
     let user = await prisma.user.findFirst({
       where: {
@@ -58,22 +43,15 @@ export const register = async (req: Request, res: Response) => {
     const isNew = !user;
 
     if (!user) {
-      const selectedModules: string[] = modules || [];
-      if (reqRole === 'GROOM' && !selectedModules.includes('marriage')) selectedModules.push('marriage');
-      if (reqRole === 'GUARDIAN' && !selectedModules.includes('guardian')) selectedModules.push('guardian');
-      if (reqRole === 'BOTH') {
-        if (!selectedModules.includes('marriage')) selectedModules.push('marriage');
-        if (!selectedModules.includes('guardian')) selectedModules.push('guardian');
-      }
-      const role = reqRole || deriveRole(selectedModules);
+      const selectedRoles: string[] = reqRoles || ['SOCIAL'];
+      if (!selectedRoles.includes('SOCIAL')) selectedRoles.unshift('SOCIAL');
 
       user = await prisma.user.create({
         data: {
           firebaseUid,
           phone,
           email,
-          role: role as any,
-          enabledModules: selectedModules,
+          roles: selectedRoles,
           language: language || 'ar',
         },
       });
@@ -96,29 +74,27 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const updateModules = async (req: AuthRequest, res: Response) => {
+export const updateRoles = async (req: AuthRequest, res: Response) => {
   try {
-    const { modules } = req.body;
-    if (!Array.isArray(modules)) {
-      return res.status(400).json({ error: 'INVALID', message: 'modules must be an array' });
+    const { roles } = req.body;
+    if (!Array.isArray(roles)) {
+      return res.status(400).json({ error: 'INVALID', message: 'roles must be an array' });
     }
 
-    const validModules = ['marriage', 'guardian'];
-    const filtered = modules.filter((m: string) => validModules.includes(m));
-    const role = deriveRole(filtered);
+    const validRoles = ['GROOM', 'GUARDIAN'];
+    const filtered = [...new Set([...roles.filter((r: string) => validRoles.includes(r)), 'SOCIAL'])];
+    const isAdmin = (req.roles || []).includes('ADMIN');
+    if (isAdmin) filtered.push('ADMIN');
 
     const user = await prisma.user.update({
       where: { id: req.userId },
-      data: {
-        enabledModules: filtered,
-        role: role as any,
-      },
+      data: { roles: filtered },
     });
 
     return res.json({ user: formatUser(user) });
   } catch (error) {
-    console.error('Update modules error:', error);
-    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to update modules' });
+    console.error('Update roles error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to update roles' });
   }
 };
 
@@ -200,8 +176,7 @@ export const getMe = async (req: AuthRequest, res: Response) => {
       firebaseUid: user.firebaseUid,
       phone: user.phone,
       email: user.email,
-      role: user.role,
-      enabledModules: user.enabledModules,
+      roles: user.roles,
       isVerified: user.isVerified,
       subscriptionPlan: user.subscriptionPlan,
       subscriptionExpiry: user.subscriptionExpiry,

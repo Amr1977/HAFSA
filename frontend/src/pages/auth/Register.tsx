@@ -14,19 +14,19 @@ export default function Register() {
   const [form, setForm] = useState({
     email: '',
     password: '',
-    modules: [] as string[],
+    roles: [] as string[],
     language: 'ar',
   });
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const toggleModule = (mod: string) => {
+  const toggleRole = (role: string) => {
     setForm(prev => ({
       ...prev,
-      modules: prev.modules.includes(mod)
-        ? prev.modules.filter(m => m !== mod)
-        : [...prev.modules, mod],
+      roles: prev.roles.includes(role)
+        ? prev.roles.filter(r => r !== role)
+        : [...prev.roles, role],
     }));
   };
 
@@ -39,14 +39,14 @@ export default function Register() {
       const result = await api.post('/auth/register', {
         firebaseUid: cred.user.uid,
         email: form.email,
-        modules: form.modules,
+        roles: form.roles,
         language: form.language,
       });
       setToken(result.accessToken);
       localStorage.setItem('auth_token', result.accessToken);
       const user = await api.auth.getMe();
       login(result.accessToken, user);
-      navigate(user?.enabledModules?.length ? '/profile/setup' : '/social');
+      navigate(user.roles.length > 1 ? '/profile/setup' : '/social');
     } catch (err: any) {
       const msg = err.code === 'auth/email-already-in-use'
         ? 'هذا البريد مسجل بالفعل'
@@ -63,8 +63,8 @@ export default function Register() {
     setGoogleLoading(true);
     setError('');
     try {
-      const userData = await signInWithGoogle();
-      navigate(userData?.enabledModules?.length ? '/profile/setup' : '/social');
+      const userData = await signInWithGoogle(form.roles);
+      navigate(userData.roles.length > 1 ? '/profile/setup' : '/social');
     } catch (err: any) {
       setError(err.message || 'فشل التسجيل عبر Google');
     } finally {
@@ -128,40 +128,40 @@ export default function Register() {
             <div>
               <label className="block text-sm font-medium text-[#374151] dark:text-gray-300 mb-2.5">الخدمات التي تهمني</label>
               <div className="grid grid-cols-1 gap-2">
-                <button type="button" onClick={() => toggleModule('marriage')}
+                <button type="button" onClick={() => toggleRole('GROOM')}
                   className={`flex items-center gap-3 p-3 rounded-xl border-2 text-right transition-all duration-200 ${
-                    form.modules.includes('marriage')
+                    form.roles.includes('GROOM')
                       ? 'border-[#1B4332] dark:border-[#DAA520] bg-[#1B4332]/5 dark:bg-[#DAA520]/10 shadow-sm'
                       : 'border-[#E5E7EB] dark:border-gray-600 hover:border-[#9CA3AF] dark:hover:border-gray-500'
                   }`}>
                   <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${
-                    form.modules.includes('marriage')
+                    form.roles.includes('GROOM')
                       ? 'bg-[#1B4332] dark:bg-[#DAA520] border-[#1B4332] dark:border-[#DAA520]'
                       : 'border-[#9CA3AF]'
                   }`}>
-                    {form.modules.includes('marriage') && (
+                    {form.roles.includes('GROOM') && (
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-[#374151] dark:text-gray-200">الزواج</p>
+                    <p className="text-sm font-semibold text-[#374151] dark:text-gray-200">راغب في الزواج</p>
                     <p className="text-xs text-[#6B7280] dark:text-gray-400">إنشاء ملف تعارف والتواصل مع العائلات</p>
                   </div>
                 </button>
-                <button type="button" onClick={() => toggleModule('guardian')}
+                <button type="button" onClick={() => toggleRole('GUARDIAN')}
                   className={`flex items-center gap-3 p-3 rounded-xl border-2 text-right transition-all duration-200 ${
-                    form.modules.includes('guardian')
+                    form.roles.includes('GUARDIAN')
                       ? 'border-[#1B4332] dark:border-[#DAA520] bg-[#1B4332]/5 dark:bg-[#DAA520]/10 shadow-sm'
                       : 'border-[#E5E7EB] dark:border-gray-600 hover:border-[#9CA3AF] dark:hover:border-gray-500'
                   }`}>
                   <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${
-                    form.modules.includes('guardian')
+                    form.roles.includes('GUARDIAN')
                       ? 'bg-[#1B4332] dark:bg-[#DAA520] border-[#1B4332] dark:border-[#DAA520]'
                       : 'border-[#9CA3AF]'
                   }`}>
-                    {form.modules.includes('guardian') && (
+                    {form.roles.includes('GUARDIAN') && (
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
@@ -169,7 +169,7 @@ export default function Register() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-[#374151] dark:text-gray-200">ولي أمر</p>
-                    <p className="text-xs text-[#6B7280] dark:text-gray-400">البحث عن عريس والتواصل مع المتقدمين</p>
+                    <p className="text-xs text-[#6B7280] dark:text-gray-400">البحث عن عريس وإدارة ملفات العرائس</p>
                   </div>
                 </button>
               </div>

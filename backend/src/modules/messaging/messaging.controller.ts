@@ -17,7 +17,7 @@ export const listConversations = async (req: AuthRequest, res: Response) => {
             user: {
               select: {
                 id: true,
-                role: true,
+                roles: true,
                 isVerified: true,
                 profile: {
                   select: {
@@ -60,7 +60,7 @@ export const getConversation = async (req: AuthRequest, res: Response) => {
             user: {
               select: {
                 id: true,
-                role: true,
+                roles: true,
                 isVerified: true,
                 profile: {
                   select: {

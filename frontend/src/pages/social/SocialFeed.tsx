@@ -204,7 +204,7 @@ export default function SocialFeed() {
     } catch (e) {} finally { setSubmitting(false); }
   };
 
-  const userName = (p: any) => p.user.profile?.displayName || p.user.role;
+  const userName = (p: any) => p.user.profile?.displayName || p.user.roles?.find((r: string) => r !== 'SOCIAL') || p.user.roles?.[0] || '';
 
   const isVideo = (url: string) => url.startsWith('data:video/');
 
@@ -302,28 +302,28 @@ export default function SocialFeed() {
               {/* Header */}
               <div className="flex items-center justify-between mb-3">
                 <Link to={`/profile/my`} className="flex items-center gap-3">
-                  <UserAvatar
-                    photo={post.user.profile?.photos?.[0]?.url}
-                    size="lg"
-                    role={post.user.role}
-                    subscriptionPlan={post.user.subscriptionPlan}
-                  />
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-semibold text-[var(--color-primary)]">{userName(post)}</p>
-                      {post.user.subscriptionPlan === 'PREMIUM' && (
-                        <span className="text-[10px] bg-[#DAA520]/20 text-[#DAA520] px-1.5 py-0.5 rounded font-medium leading-none">مميز</span>
-                      )}
-                      {post.user.role === 'GUARDIAN' && post.user.subscriptionPlan !== 'PREMIUM' && (
-                        <span className="text-[10px] bg-[#2D6A4F]/20 text-[#2D6A4F] px-1.5 py-0.5 rounded font-medium leading-none">ولي</span>
-                      )}
-                      {post.user.role === 'SOCIAL' && post.user.subscriptionPlan !== 'PREMIUM' && (
-                        <span className="text-[10px] bg-[#2563EB]/20 text-[#2563EB] px-1.5 py-0.5 rounded font-medium leading-none">اجتماعي</span>
-                      )}
+                    <UserAvatar
+                      photo={post.user.profile?.photos?.[0]?.url}
+                      size="lg"
+                      roles={post.user.roles}
+                      subscriptionPlan={post.user.subscriptionPlan}
+                    />
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-semibold text-[var(--color-primary)]">{userName(post)}</p>
+                        {post.user.subscriptionPlan === 'PREMIUM' && (
+                          <span className="text-[10px] bg-[#DAA520]/20 text-[#DAA520] px-1.5 py-0.5 rounded font-medium leading-none">مميز</span>
+                        )}
+                        {post.user.roles?.includes('GUARDIAN') && post.user.subscriptionPlan !== 'PREMIUM' && (
+                          <span className="text-[10px] bg-[#2D6A4F]/20 text-[#2D6A4F] px-1.5 py-0.5 rounded font-medium leading-none">ولي</span>
+                        )}
+                        {(!post.user.roles || (post.user.roles.length === 1 && post.user.roles[0] === 'SOCIAL')) && post.user.subscriptionPlan !== 'PREMIUM' && (
+                          <span className="text-[10px] bg-[#2563EB]/20 text-[#2563EB] px-1.5 py-0.5 rounded font-medium leading-none">اجتماعي</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-[var(--color-muted)]">{new Date(post.createdAt).toLocaleDateString('ar-SA')}</p>
                     </div>
-                    <p className="text-xs text-[var(--color-muted)]">{new Date(post.createdAt).toLocaleDateString('ar-SA')}</p>
-                  </div>
-                </Link>
+                  </Link>
                 {post.user.id === localStorage.getItem('user_id') && (
                   <div className="flex gap-2">
                     <button onClick={() => startEdit(post)} className="text-xs text-blue-400 hover:text-blue-600">تعديل</button>
@@ -432,10 +432,10 @@ export default function SocialFeed() {
                         <UserAvatar
                           photo={post.sharedPost.user?.profile?.photos?.[0]?.url}
                           size="sm"
-                          role={post.sharedPost.user?.role}
+                          roles={post.sharedPost.user?.roles}
                           subscriptionPlan={post.sharedPost.user?.subscriptionPlan}
                         />
-                        <span className="text-xs font-semibold text-[var(--color-primary)]">{post.sharedPost.user?.profile?.displayName || post.sharedPost.user?.role}</span>
+                        <span className="text-xs font-semibold text-[var(--color-primary)]">{post.sharedPost.user?.profile?.displayName || ''}</span>
                       </div>
                       <p className="text-xs text-[var(--color-text)] leading-relaxed whitespace-pre-wrap">{post.sharedPost.content}</p>
                       {post.sharedPost.mediaUrls?.length > 0 && (

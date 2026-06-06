@@ -66,7 +66,7 @@ export const setupSocket = (httpServer: HttpServer) => {
             content,
           },
           include: {
-            sender: { select: { id: true, role: true } },
+            sender: { select: { id: true, roles: true } },
           },
         });
 

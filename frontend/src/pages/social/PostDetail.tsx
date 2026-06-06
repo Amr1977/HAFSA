@@ -148,7 +148,7 @@ export default function PostDetail() {
               <UserAvatar
                 photo={post.user?.profile?.photos?.[0]?.url}
                 size="lg"
-                role={post.user?.role}
+                roles={post.user?.roles}
                 subscriptionPlan={post.user?.subscriptionPlan}
               />
               <div>
@@ -259,7 +259,7 @@ export default function PostDetail() {
                       <UserAvatar
                         photo={post.sharedPost.user?.profile?.photos?.[0]?.url}
                         size="sm"
-                        role={post.sharedPost.user?.role}
+                        roles={post.sharedPost.user?.roles}
                         subscriptionPlan={post.sharedPost.user?.subscriptionPlan}
                       />
                       <span className="text-sm font-semibold text-[var(--color-primary)]">{userName(post.sharedPost)}</span>
@@ -369,7 +369,7 @@ export default function PostDetail() {
                 <UserAvatar
                   photo={comment.user?.profile?.photos?.[0]?.url}
                   size="sm"
-                  role={comment.user?.role}
+                  roles={comment.user?.roles}
                   subscriptionPlan={comment.user?.subscriptionPlan}
                 />
                 <div className="flex-1">

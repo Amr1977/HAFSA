@@ -95,7 +95,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
       where: { id: params.id },
       include: {
         photos: { orderBy: { order: 'asc' } },
-        user: { select: { id: true, isVerified: true, role: true } },
+        user: { select: { id: true, isVerified: true, roles: true } },
       },
     });
 
@@ -108,7 +108,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
     }
 
     // Increment view count if viewer is a guardian
-    if (req.userRole === 'GUARDIAN' || req.userRole === 'BOTH') {
+    if (req.roles?.some(r => ['GUARDIAN', 'ADMIN'].includes(r))) {
       await prisma.profile.update({
         where: { id: profile.id },
         data: { viewCount: { increment: 1 } },

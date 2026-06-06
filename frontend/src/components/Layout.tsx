@@ -43,9 +43,9 @@ export default function Layout() {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const modules = user?.enabledModules || [];
-  const hasMarriage = modules.includes('marriage');
-  const hasGuardian = modules.includes('guardian');
+  const roles = user?.roles || ['SOCIAL'];
+  const hasGroom = roles.includes('GROOM');
+  const hasGuardian = roles.includes('GUARDIAN');
 
   const navLinks = [
     { path: '/', label: t('nav.home') },
@@ -54,7 +54,7 @@ export default function Layout() {
           { path: '/social', label: 'المنشورات' },
           { path: '/services', label: 'الخدمات' },
           { path: '/profile/my', label: t('profile.my') },
-          ...(hasMarriage ? [
+          ...(hasGroom ? [
             { path: '/requests', label: t('nav.requests') },
             { path: '/messages', label: t('nav.messages') },
           ] : []),
@@ -66,7 +66,7 @@ export default function Layout() {
           ] : []),
         ]
       : []),
-    ...(isAuthenticated && user?.role === 'ADMIN'
+    ...(isAuthenticated && user?.roles?.includes('ADMIN')
       ? [
           { path: '/admin', label: 'لوحة التحكم' },
           { path: '/admin/users', label: 'المستخدمين' },
@@ -162,7 +162,7 @@ export default function Layout() {
                     <UserAvatar
                       photo={profilePhoto}
                       size="md"
-                      role={user?.role}
+                      roles={user?.roles}
                       subscriptionPlan={user?.subscriptionPlan}
                     />
                   </Link>
@@ -249,7 +249,7 @@ export default function Layout() {
                     <UserAvatar
                       photo={profilePhoto}
                       size="lg"
-                      role={user?.role}
+                      roles={user?.roles}
                       subscriptionPlan={user?.subscriptionPlan}
                     />
                   </div>

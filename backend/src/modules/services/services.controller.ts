@@ -40,7 +40,7 @@ export const listServices = async (req: AuthRequest, res: Response) => {
         take: limitNum,
         orderBy: { createdAt: 'desc' },
         include: {
-          provider: { select: { id: true, email: true, role: true, subscriptionPlan: true } },
+          provider: { select: { id: true, email: true, roles: true, subscriptionPlan: true } },
           category: { select: { id: true, nameAr: true, nameEn: true } },
           reviews: { select: { rating: true } },
           _count: { select: { bookings: true } },
@@ -95,7 +95,7 @@ export const getService = async (req: AuthRequest, res: Response) => {
     const service = await prisma.service.findUnique({
       where: { id },
       include: {
-        provider: { select: { id: true, email: true, role: true, subscriptionPlan: true } },
+        provider: { select: { id: true, email: true, roles: true, subscriptionPlan: true } },
         category: { select: { id: true, nameAr: true, nameEn: true } },
         reviews: {
           include: { reviewer: { select: { id: true, email: true } } },
