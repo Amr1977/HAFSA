@@ -47,13 +47,15 @@ app.get('/health', (_req, res) => {
 
 app.get('/api/stats', async (_req, res) => {
   try {
-    const [totalUsers, totalProfiles, totalPosts, totalMessages] = await Promise.all([
+    const [totalUsers, totalProfiles, totalPosts, totalMessages, totalStores, totalOrders] = await Promise.all([
       prisma.user.count(),
       prisma.profile.count(),
       prisma.post.count(),
       prisma.message.count(),
+      prisma.store.count(),
+      prisma.order.count(),
     ]);
-    res.json({ users: totalUsers, profiles: totalProfiles, posts: totalPosts, messages: totalMessages });
+    res.json({ users: totalUsers, profiles: totalProfiles, posts: totalPosts, messages: totalMessages, businesses: totalStores, orders: totalOrders });
   } catch {
     res.status(500).json({ error: 'INTERNAL' });
   }

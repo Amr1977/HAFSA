@@ -372,7 +372,7 @@ export default function Landing() {
             { label: 'طلب', value: stats.orders },
           ].map((s) => (
             <div key={s.label} className="text-center">
-              <p className="text-2xl md:text-3xl font-bold text-[#DAA520]">{s.value.toLocaleString('ar-EG')}</p>
+              <p className="text-2xl md:text-3xl font-bold text-[#DAA520]">{(s.value ?? 0).toLocaleString('ar-EG')}</p>
               <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">{s.label}</p>
             </div>
           ))}
