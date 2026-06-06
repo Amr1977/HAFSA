@@ -69,6 +69,20 @@ export default function Layout() {
           ] : []),
         ]
       : []),
+    ...(isAuthenticated && user?.roles?.includes('ADMIN')
+      ? [
+          { path: '/admin', label: 'لوحة التحكم' },
+          { path: '/admin/users', label: 'المستخدمين' },
+          { path: '/admin/profiles', label: 'الملفات' },
+          { path: '/admin/posts', label: 'المنشورات' },
+          { path: '/admin/messages', label: 'المحادثات' },
+          { path: '/admin/reports', label: 'التقارير' },
+          { path: '/admin/feedback', label: 'الملاحظات' },
+          { path: '/admin/subscriptions', label: 'الاشتراكات' },
+          { path: '/admin/donations', label: 'التبرعات' },
+          { path: '/admin/eshops', label: 'المتاجر' },
+        ]
+      : []),
     ...(isAuthenticated
       ? [
           { path: '/settings/subscription', label: 'الاشتراك' },
