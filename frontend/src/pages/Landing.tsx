@@ -8,22 +8,12 @@ const features = [
   {
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
       </svg>
     ),
-    title: 'ملفات شخصية متكاملة',
-    desc: 'أكثر من 40 خانة تغطي المواصفات، التعليم، العمل، الأسرة، السكن، وتفضيلات شريك الحياة مع إمكانية إضافة الصور.',
-    badge: 'للراغبين في الزواج',
-  },
-  {
-    icon: (
-      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-      </svg>
-    ),
-    title: 'سجلات العرائس',
-    desc: 'للأولياء: إضافة وتعديل سجلات العرائس ببيانات شاملة (8 أقسام) وإدارة حالتها (نشط/مُوفَّق/مؤرشف).',
-    badge: 'للأولياء',
+    title: 'منشورات وتفاعل',
+    desc: 'أنشر صوراً وفيديو، إعجابات، تعليقات، إعادة نشر، متابعات، وخصوصية كاملة للمنشورات.',
+    badge: 'اجتماعي',
   },
   {
     icon: (
@@ -33,27 +23,57 @@ const features = [
     ),
     title: 'مراسلات فورية',
     desc: 'دردشة مباشرة عبر Socket.IO مع مؤشرات الكتابة، وإشعارات فورية داخل التطبيق و FCM.',
-    badge: 'تواصل آمن',
+    badge: 'تواصل',
   },
   {
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
       </svg>
     ),
-    title: 'خلفية اجتماعية',
-    desc: 'منشورات بالصور والفيديو، إعجابات، تعليقات، إعادة نشر، متابعات، خصوصية المنشور، وعرض صور بتكبير.',
-    badge: 'تواصل اجتماعي',
+    title: 'ملفات شخصية للزواج',
+    desc: 'أكثر من 40 خانة تغطي المواصفات، التعليم، العمل، الأسرة، السكن، وتفضيلات شريك الحياة مع الصور.',
+    badge: 'زواج',
   },
   {
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
       </svg>
     ),
-    title: 'اقتراحات AI',
-    desc: 'توصيات ذكية بالذكاء الاصطناعي (GPT-4o) للمساعدة في اختيار الأنسب — ميزة مميزة.',
-    badge: 'مشتركين premium',
+    title: 'سجلات العرائس',
+    desc: 'للأولياء: إدارة سجلات العرائس ببيانات شاملة (8 أقسام) مع حالات (نشط/مُوفَّق/مؤرشف).',
+    badge: 'أولياء',
+  },
+  {
+    icon: (
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
+      </svg>
+    ),
+    title: 'سوق الخدمات',
+    desc: 'مزودو خدمات ومستهلكون — دليل مزودين، طلبات خدمة، تقييمات، وموقع على الخريطة.',
+    badge: 'خدمات',
+  },
+  {
+    icon: (
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+      </svg>
+    ),
+    title: 'متاجر إلكترونية',
+    desc: 'متاجرك الخاصة — إدارة منتجات، سلة مشتريات، طلبات، تصنيفات، صور، وتتبع حالة الطلب.',
+    badge: 'متاجر',
+  },
+  {
+    icon: (
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+      </svg>
+    ),
+    title: 'خرائط ومواقع',
+    desc: 'عرض على الخريطة (Leaflet) — مواقع مزودي الخدمات والمتاجر للعثور على الأقرب إليك.',
+    badge: 'GIS',
   },
   {
     icon: (
@@ -62,8 +82,18 @@ const features = [
       </svg>
     ),
     title: 'اشتراكات premium',
-    desc: 'خطط متعددة (1/3/6/12 شهراً) مع دفع عبر إنستاباي، فودافون كاش، أو USDT TRC20 مع شارات ذهبية.',
-    badge: 'ميزات حصرية',
+    desc: 'خطط مرنة (1/3/6/12 شهراً) مع دفع عبر إنستاباي، فودافون كاش، أو USDT TRC20 وشارات ذهبية.',
+    badge: 'مميز',
+  },
+  {
+    icon: (
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+      </svg>
+    ),
+    title: 'اقتراحات AI',
+    desc: 'توصيات ذكية بالذكاء الاصطناعي (GPT-4o) للمساعدة في اختيار الأنسب.',
+    badge: 'AI',
   },
   {
     icon: (
@@ -71,9 +101,9 @@ const features = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
       </svg>
     ),
-    title: 'دعم المشروع',
-    desc: 'تبرع لمرة واحدة أو اشتراك شهري لدعم المنصة. ثلاث طرق دفع: إنستاباي، فودافون كاش، USDT (شبكة TRC20).',
-    badge: 'تبرع',
+    title: 'دعم وتبرع',
+    desc: 'ادعم المنصة بتبرع لمرة واحدة أو اشتراك شهري عبر إنستاباي، فودافون كاش، أو USDT TRC20.',
+    badge: 'دعم',
   },
   {
     icon: (
@@ -82,18 +112,18 @@ const features = [
       </svg>
     ),
     title: 'لوحة تحكم المشرف',
-    desc: 'إدارة كاملة: مستخدمين، ملفات شخصية، منشورات، محادثات، ملاحظات، اشتراكات، تبرعات مع رسوم بيانية.',
+    desc: 'إدارة كاملة للمستخدمين، الملفات، المنشورات، المحادثات، الاشتراكات، والتبرعات مع رسوم بيانية.',
     badge: 'مشرف',
   },
   {
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
       </svg>
     ),
     title: 'بـ 4 لغات',
-    desc: 'دعم كامل للغة العربية (RTL)، الإنجليزية، الفرنسية، والأردية مع وضع مظلم أنيق.',
-    badge: 'متعدد اللغات',
+    desc: 'واجهة كاملة بالعربية (RTL)، الإنجليزية، الفرنسية، والأردية مع وضع مظلم.',
+    badge: 'لغات',
   },
 ];
 
@@ -142,7 +172,7 @@ export default function Landing() {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuthStore();
   const [testimonials, setTestimonials] = useState<any[]>([]);
-  const [stats, setStats] = useState({ users: 0, profiles: 0, posts: 0, messages: 0 });
+  const [stats, setStats] = useState({ users: 0, profiles: 0, posts: 0, messages: 0, businesses: 0, orders: 0 });
 
   useEffect(() => {
     api.feedback.testimonials().then(setTestimonials).catch(() => {});
@@ -291,8 +321,13 @@ export default function Landing() {
   return (
     <div>
       {/* ─── Hero ─── */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#D8F3DC]/30 to-transparent dark:from-[#1B4332]/20 dark:to-transparent pointer-events-none" />
+      <section className="relative overflow-hidden min-h-[70vh] flex items-center">
+        {/* Decorative circles */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#D8F3DC]/30 via-transparent to-transparent dark:from-[#1B4332]/20 dark:via-transparent dark:to-transparent pointer-events-none" />
+        <div className="absolute top-10 left-1/4 w-64 h-64 rounded-full bg-[#DAA520]/5 dark:bg-[#DAA520]/3 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 right-1/4 w-72 h-72 rounded-full bg-[#1B4332]/5 dark:bg-[#2D6A4F]/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/3 w-4 h-4 rounded-full bg-[#DAA520]/20 animate-pulse pointer-events-none" />
+        <div className="absolute bottom-1/3 right-1/3 w-3 h-3 rounded-full bg-[#DAA520]/15 animate-pulse pointer-events-none" style={{ animationDelay: '1s' }} />
         <div className="relative max-w-4xl mx-auto px-4 pt-20 pb-16 text-center">
           <span className="inline-block px-4 py-1.5 bg-[#DAA520]/10 text-[#DAA520] rounded-full text-xs font-bold mb-5 border border-[#DAA520]/20">
             {t('app.name')}
@@ -317,14 +352,24 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Section divider */}
+      <div className="relative h-16 -mt-16 pointer-events-none">
+        <svg className="absolute bottom-0 w-full h-16 text-white dark:text-gray-900" viewBox="0 0 1440 64" preserveAspectRatio="none" fill="currentColor">
+          <path d="M0,32 C360,64 720,0 1440,32 L1440,64 L0,64 Z" opacity="0.4" />
+          <path d="M0,48 C360,16 720,48 1440,16 L1440,64 L0,64 Z" opacity="0.2" />
+        </svg>
+      </div>
+
       {/* ─── Stats ─── */}
-      <section className="max-w-4xl mx-auto px-4 -mt-4 mb-16" dir="rtl">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 md:p-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+      <section className="max-w-4xl mx-auto px-4 mb-16" dir="rtl">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 md:p-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {[
             { label: 'مستخدم', value: stats.users },
             { label: 'ملف شخصي', value: stats.profiles },
             { label: 'منشور', value: stats.posts },
             { label: 'رسالة', value: stats.messages },
+            { label: 'متجر', value: stats.businesses },
+            { label: 'طلب', value: stats.orders },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <p className="text-2xl md:text-3xl font-bold text-[#DAA520]">{s.value.toLocaleString('ar-EG')}</p>
@@ -335,13 +380,13 @@ export default function Landing() {
       </section>
 
       {/* ─── Features ─── */}
-      <section className="max-w-5xl mx-auto px-4 mb-16 scroll-mt-20" dir="rtl" id="features">
+      <section className="max-w-6xl mx-auto px-4 mb-16 scroll-mt-20" dir="rtl" id="features">
         <div className="text-center mb-12">
           <span className="inline-block px-3 py-1 bg-[#DAA520]/10 text-[#DAA520] rounded-full text-xs font-bold mb-3">مميزات المنصة</span>
-          <h2 className="text-2xl font-bold text-[#1B4332] dark:text-[#DAA520]">كل ما تحتاج في مكان واحد</h2>
-          <p className="text-sm text-[#6B7280] dark:text-gray-400 mt-1">منصة متكاملة للتعارف الإسلامي بقصد الزواج</p>
+          <h2 className="text-2xl font-bold text-[#1B4332] dark:text-[#DAA520]">منصة متكاملة بأربعة أبعاد</h2>
+          <p className="text-sm text-[#6B7280] dark:text-gray-400 mt-1">اجتماعي — خدمات — زواج — متاجر إلكترونية</p>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {features.map((f, i) => (
             <div key={i}
               className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-xl hover:border-[#DAA520]/30 hover:-translate-y-1 transition-all duration-300"
@@ -366,8 +411,13 @@ export default function Landing() {
             <span className="inline-block px-3 py-1 bg-[#DAA520]/10 text-[#DAA520] rounded-full text-xs font-bold mb-3">طريقة العمل</span>
             <h2 className="text-2xl font-bold text-[#1B4332] dark:text-[#DAA520]">اختر دورك وابدأ رحلتك</h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
+              {
+                role: 'تواصل اجتماعي',
+                icon: '🌐',
+                steps: ['سجل كتواصل اجتماعي', 'انشر منشورات وصور وفيديو', 'تفاعل مع المجتمع', 'تواصل مع الأصدقاء'],
+              },
               {
                 role: 'راغب في الزواج',
                 icon: '👤',
@@ -379,12 +429,22 @@ export default function Landing() {
                 steps: ['سجل كولي أمر', 'أضف سجلات العرائس', 'تصفح الملفات المناسبة', 'أرسل طلبات تواصل'],
               },
               {
-                role: 'تواصل اجتماعي',
-                icon: '🌐',
-                steps: ['سجل كتواصل اجتماعي', 'ابدأ فوراً بدون ملف زواج', 'انشر منشورات وصور وفيديو', 'تفاعل مع المجتمع'],
+                role: 'مزود خدمة',
+                icon: '🔧',
+                steps: ['سجل كمزود خدمة', 'أنشئ متجر خدماتك', 'استقبل طلبات العملاء', 'قدّم الخدمة واحصل على تقييم'],
+              },
+              {
+                role: 'صاحب متجر',
+                icon: '🏪',
+                steps: ['افتح متجرك الإلكتروني', 'أضف المنتجات والصور', 'استقبل الطلبات', 'تتبع حالة الشحن والتوصيل'],
+              },
+              {
+                role: 'مستهلك',
+                icon: '🛍️',
+                steps: ['تصفح الخدمات والمتاجر', 'اطلب واستشر', 'ادفع واستلم', 'قيّم الخدمة أو المنتج'],
               },
             ].map((item) => (
-              <div key={item.role} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 md:p-8 text-center">
+              <div key={item.role} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 md:p-8 text-center hover:shadow-xl hover:border-[#DAA520]/30 hover:-translate-y-1 transition-all duration-300">
                 <span className="text-4xl block mb-4">{item.icon}</span>
                 <h3 className="text-lg font-bold text-[#1B4332] dark:text-gray-100 mb-4">{item.role}</h3>
                 <ol className="text-right space-y-3" dir="rtl">
