@@ -109,6 +109,7 @@ model User {
   subscriptions     Subscription[]
   donations         Donation[]
   brides            Bride[]
+  brideExposures    BrideExposure[]   @relation("GroomExposures")
   services          Service[]         @relation("ProviderServices")
   serviceBookings   ServiceBooking[]  @relation("ClientBookings")
   serviceReviews    ServiceReview[]   @relation("ReviewerReviews")
@@ -511,7 +512,24 @@ model Bride {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
+  exposures        BrideExposure[]
+
   @@index([guardianId])
+}
+
+model BrideExposure {
+  id        String   @id @default(cuid())
+  brideId   String
+  bride     Bride    @relation(fields: [brideId], references: [id], onDelete: Cascade)
+  groomId   String
+  groom     User     @relation("GroomExposures", fields: [groomId], references: [id], onDelete: Cascade)
+  isActive  Boolean  @default(true)
+  exposedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([brideId, groomId])
+  @@index([groomId])
+  @@index([brideId])
 }
 
 enum ServiceStatus {

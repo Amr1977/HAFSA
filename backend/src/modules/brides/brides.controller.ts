@@ -77,3 +77,164 @@ export const deleteBride = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ error: 'INTERNAL', message: 'Failed to delete bride record' });
   }
 };
+
+export const exposeBride = async (req: AuthRequest, res: Response) => {
+  try {
+    const brideId = p(req).id;
+    const { groomId } = req.body;
+
+    if (!groomId) {
+      return res.status(400).json({ error: 'VALIDATION', message: 'groomId is required' });
+    }
+
+    const bride = await prisma.bride.findFirst({
+      where: { id: brideId, guardianId: req.userId! },
+    });
+    if (!bride) return res.status(404).json({ error: 'NOT_FOUND', message: 'Bride record not found' });
+
+    const groom = await prisma.user.findUnique({ where: { id: groomId } });
+    if (!groom) return res.status(404).json({ error: 'NOT_FOUND', message: 'Groom not found' });
+
+    const exposure = await prisma.brideExposure.upsert({
+      where: { brideId_groomId: { brideId, groomId } },
+      update: { isActive: true },
+      create: { brideId, groomId, isActive: true },
+    });
+
+    return res.json(exposure);
+  } catch (error) {
+    console.error('Expose bride error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to expose bride record' });
+  }
+};
+
+export const removeExposure = async (req: AuthRequest, res: Response) => {
+  try {
+    const brideId = p(req).id;
+    const groomId = req.params.groomId as string;
+
+    const bride = await prisma.bride.findFirst({
+      where: { id: brideId, guardianId: req.userId! },
+    });
+    if (!bride) return res.status(404).json({ error: 'NOT_FOUND', message: 'Bride record not found' });
+
+    const exposure = await prisma.brideExposure.findUnique({
+      where: { brideId_groomId: { brideId, groomId } },
+    });
+    if (!exposure) return res.status(404).json({ error: 'NOT_FOUND', message: 'Exposure not found' });
+
+    await prisma.brideExposure.update({
+      where: { brideId_groomId: { brideId, groomId } },
+      data: { isActive: false },
+    });
+
+    return res.json({ message: 'Exposure removed' });
+  } catch (error) {
+    console.error('Remove exposure error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to remove exposure' });
+  }
+};
+
+export const getBrideExposures = async (req: AuthRequest, res: Response) => {
+  try {
+    const brideId = p(req).id;
+
+    const bride = await prisma.bride.findFirst({
+      where: { id: brideId, guardianId: req.userId! },
+    });
+    if (!bride) return res.status(404).json({ error: 'NOT_FOUND', message: 'Bride record not found' });
+
+    const exposures = await prisma.brideExposure.findMany({
+      where: { brideId },
+      include: {
+        groom: {
+          select: { id: true, phone: true, email: true },
+        },
+      },
+      orderBy: { exposedAt: 'desc' },
+    });
+
+    return res.json(exposures);
+  } catch (error) {
+    console.error('Get exposures error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to get exposures' });
+  }
+};
+
+export const getVisibleBrides = async (req: AuthRequest, res: Response) => {
+  try {
+    const groomId = req.userId!;
+    const {
+      ageMin, ageMax, maritalStatus, education,
+      prayerCommitment, hijabType, skinColor,
+      originGovernorate, residenceGovernorate,
+      acceptPolygamy, wantChildren,
+      search,
+      page = '1', limit = '20', sort = 'newest',
+    } = req.query;
+
+    const pageNum = Math.max(1, parseInt(page as string));
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit as string)));
+    const skip = (pageNum - 1) * limitNum;
+
+    const where: any = {
+      exposures: {
+        some: {
+          groomId,
+          isActive: true,
+        },
+      },
+      status: 'ACTIVE',
+    };
+
+    if (ageMin) where.age = { ...(where.age || {}), gte: parseInt(ageMin as string) };
+    if (ageMax) where.age = { ...(where.age || {}), lte: parseInt(ageMax as string) };
+    if (maritalStatus) where.maritalStatus = maritalStatus as string;
+    if (education) where.education = { contains: education as string, mode: 'insensitive' };
+    if (prayerCommitment) where.prayerCommitment = prayerCommitment as string;
+    if (hijabType) where.hijabType = hijabType as string;
+    if (skinColor) where.skinColor = skinColor as string;
+    if (originGovernorate) where.originGovernorate = { contains: originGovernorate as string, mode: 'insensitive' };
+    if (residenceGovernorate) where.residenceGovernorate = { contains: residenceGovernorate as string, mode: 'insensitive' };
+    if (acceptPolygamy) where.acceptPolygamy = acceptPolygamy as string;
+    if (wantChildren) where.wantChildren = wantChildren as string;
+
+    if (search) {
+      where.OR = [
+        { education: { contains: search as string, mode: 'insensitive' } },
+        { occupation: { contains: search as string, mode: 'insensitive' } },
+        { notes: { contains: search as string, mode: 'insensitive' } },
+        { originGovernorate: { contains: search as string, mode: 'insensitive' } },
+        { residenceGovernorate: { contains: search as string, mode: 'insensitive' } },
+        { area: { contains: search as string, mode: 'insensitive' } },
+      ];
+    }
+
+    let orderBy: any = { createdAt: 'desc' };
+    if (sort === 'age_asc') orderBy = { age: 'asc' };
+    else if (sort === 'age_desc') orderBy = { age: 'desc' };
+
+    const [brides, total] = await Promise.all([
+      prisma.bride.findMany({
+        where,
+        skip,
+        take: limitNum,
+        orderBy,
+      }),
+      prisma.bride.count({ where }),
+    ]);
+
+    return res.json({
+      brides,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
+  } catch (error) {
+    console.error('Get visible brides error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to get visible brides' });
+  }
+};

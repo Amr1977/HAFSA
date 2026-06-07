@@ -5,6 +5,9 @@ import App from './App';
 import './i18n';
 import './index.css';
 import { onForegroundMessage } from './lib/firebase';
+import { initLogger } from './lib/logger';
+
+initLogger();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(() => {});

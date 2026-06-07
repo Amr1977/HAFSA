@@ -8,6 +8,8 @@ import { createServer } from 'http';
 import { prisma } from './config/database';
 import { setupSocket } from './services/socket';
 import { generalLimiter } from './middleware/rateLimiter';
+import { requestLogger } from './middleware/requestLogger';
+import logger from './services/logger';
 
 import authRoutes from './modules/auth/auth.routes';
 import profileRoutes from './modules/profiles/profiles.routes';
@@ -24,6 +26,7 @@ import donationRoutes from './modules/donations/donations.routes';
 import brideRoutes from './modules/brides/brides.routes';
 import serviceRoutes from './modules/services/services.routes';
 import eshopRoutes from './modules/eshops/eshops.routes';
+import logRoutes from './modules/logs/logs.routes';
 
 const app = express();
 const httpServer = createServer(app);
@@ -38,6 +41,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(generalLimiter);
+app.use(requestLogger);
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
@@ -76,13 +80,14 @@ app.use('/api/donations', donationRoutes);
 app.use('/api/brides', brideRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/eshops', eshopRoutes);
+app.use('/api/logs', logRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ error: 'NOT_FOUND', message: 'Route not found' });
 });
 
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error('Unhandled error:', err);
+  logger.error('Unhandled error', { error: err.message, stack: err.stack });
   res.status(500).json({ error: 'INTERNAL', message: 'Internal server error' });
 });
 
@@ -93,14 +98,14 @@ const PORT = parseInt(process.env.PORT || '3001');
 const startServer = async () => {
   try {
     await prisma.$connect();
-    console.log('Database connected (Neon/PostgreSQL)');
+    logger.info('Database connected (Neon/PostgreSQL)');
 
     httpServer.listen(PORT, '0.0.0.0', () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log(`Health check: http://localhost:${PORT}/health`);
+      logger.info(`Server running on port ${PORT}`);
+      logger.info(`Health check: http://localhost:${PORT}/health`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    logger.error('Failed to start server', { error });
     process.exit(1);
   }
 };

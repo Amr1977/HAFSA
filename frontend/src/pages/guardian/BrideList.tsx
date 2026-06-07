@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
+import ExposureManager from './ExposureManager';
 
 export default function BrideList() {
   const navigate = useNavigate();
   const [brides, setBrides] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [exposureBrideId, setExposureBrideId] = useState<string | null>(null);
 
   const load = async () => {
     try {
@@ -90,6 +92,16 @@ export default function BrideList() {
                 </div>
                 <div className="flex items-center gap-2 mr-4">
                   <button
+                    onClick={() => setExposureBrideId(bride.id)}
+                    className="p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 text-[#6B7280] hover:text-purple-600 transition-colors"
+                    title="إدارة الإتاحة للعريس"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
+                  <button
                     onClick={() => navigate(`/guardian/brides/${bride.id}/edit`)}
                     className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#6B7280] hover:text-[#DAA520] transition-colors"
                     title="تعديل"
@@ -112,6 +124,9 @@ export default function BrideList() {
             </div>
           ))}
         </div>
+      )}
+      {exposureBrideId && (
+        <ExposureManager brideId={exposureBrideId} onClose={() => setExposureBrideId(null)} />
       )}
     </div>
   );

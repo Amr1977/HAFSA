@@ -11,6 +11,7 @@ import MyProfile from './pages/profile/MyProfile';
 import Browse from './pages/browse/Browse';
 import ProfileDetail from './pages/browse/ProfileDetail';
 import AiSuggestions from './pages/browse/AiSuggestions';
+import GroomBrowseBrides from './pages/browse/GroomBrowseBrides';
 import Requests from './pages/Requests';
 import SentRequests from './pages/SentRequests';
 import Messages from './pages/messages/Messages';
@@ -103,6 +104,7 @@ export default function App() {
         <Route path="ai-suggestions" element={<ProtectedRoute roles={['GUARDIAN', 'ADMIN']}><AiSuggestions /></ProtectedRoute>} />
         <Route path="requests" element={<ProtectedRoute roles={['GROOM', 'ADMIN']}><Requests /></ProtectedRoute>} />
         <Route path="requests/sent" element={<ProtectedRoute roles={['GUARDIAN', 'ADMIN']}><SentRequests /></ProtectedRoute>} />
+        <Route path="brides/visible" element={<ProtectedRoute roles={['GROOM', 'ADMIN']}><GroomBrowseBrides /></ProtectedRoute>} />
         <Route path="messages" element={<ProtectedRoute roles={['GROOM', 'GUARDIAN', 'ADMIN']}><Messages /></ProtectedRoute>} />
         <Route path="messages/:id" element={<ProtectedRoute roles={['GROOM', 'GUARDIAN', 'ADMIN']}><Conversation /></ProtectedRoute>} />
         <Route path="social" element={<ProtectedRoute><SocialFeed /></ProtectedRoute>} />

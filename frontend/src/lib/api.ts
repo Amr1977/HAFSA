@@ -227,6 +227,10 @@ export const api = {
     get: (id: string) => api.get(`/brides/${id}`),
     update: (id: string, data: any) => api.put(`/brides/${id}`, data),
     delete: (id: string) => api.delete(`/brides/${id}`),
+    expose: (id: string, groomId: string) => api.post(`/brides/${id}/expose`, { groomId }),
+    removeExposure: (brideId: string, groomId: string) => api.delete(`/brides/${brideId}/expose/${groomId}`),
+    getExposures: (id: string) => api.get(`/brides/${id}/exposures`),
+    visible: (params?: string) => api.get(`/brides/visible${params ? `?${params}` : ''}`),
   },
 
   // E-shops
