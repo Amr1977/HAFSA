@@ -89,11 +89,20 @@ class FrontendLogger {
 
   private async flush() {
     if (this.flushing || this.queue.length === 0) return;
+    // don't send anonymous logs if backoff active
+    const token = this.getToken();
+    if (!token && this.isBackoffActive()) {
+      // skip sending now; schedule retry
+      if (!this.flushing) {
+        setTimeout(() => this.flush(), 60000); // retry after 1 minute
+      }
+      return;
+    }
+
     this.flushing = true;
 
     const batch = this.queue.splice(0);
     try {
-      const token = this.getToken();
       const url = `${API_BASE}/logs/client`;
       const payload = JSON.stringify(batch);
 
@@ -117,6 +126,14 @@ class FrontendLogger {
         body: payload,
       });
 
+      if (resp.status === 401) {
+        // anonymous/invalid token — enable backoff for anonymous clients to avoid storming
+        this.setBackoff(5 * 60 * 1000); // 5 minutes
+        // requeue entries for later (they may contain auth info later)
+        this.queue.unshift(...batch);
+        return;
+      }
+
       if (!resp.ok) throw new Error('Failed to send client logs');
     } catch (err) {
       // requeue on failure
@@ -127,6 +144,25 @@ class FrontendLogger {
       if (this.queue.length > 0) {
         setTimeout(() => this.flush(), 5000);
       }
+    }
+  }
+
+  private setBackoff(ms: number) {
+    try {
+      const until = Date.now() + ms;
+      localStorage.setItem('client_logs_backoff_until', String(until));
+    } catch {}
+  }
+
+  private isBackoffActive(): boolean {
+    try {
+      const v = localStorage.getItem('client_logs_backoff_until');
+      if (!v) return false;
+      const until = Number(v);
+      if (Number.isNaN(until)) return false;
+      return Date.now() < until;
+    } catch {
+      return false;
     }
   }
 
