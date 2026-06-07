@@ -14,9 +14,13 @@ export const setupSocket = (httpServer: HttpServer) => {
   });
 
   io.use(async (socket: Socket, next) => {
+    const start = Date.now();
     try {
+      console.log(`[SOCKET] handshake start id=${socket.id} addr=${socket.handshake.address} time=${new Date().toISOString()}`);
       const token = socket.handshake.auth.token;
+      console.log(`[SOCKET] handshake tokenPresent=${!!token} id=${socket.id}`);
       if (!token) {
+        console.log(`[SOCKET] handshake missing token id=${socket.id}`);
         return next(new Error('Authentication required'));
       }
 
@@ -26,15 +30,22 @@ export const setupSocket = (httpServer: HttpServer) => {
       // skip the prisma.user lookup by default. Enable DB verification by setting
       // SOCKET_VERIFY_DB=true in the environment if strict checking is required.
       if (process.env.SOCKET_VERIFY_DB === 'true') {
+        const dbStart = Date.now();
         const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+        const dbDuration = Date.now() - dbStart;
+        console.log(`[SOCKET] DB verify duration=${dbDuration}ms id=${socket.id} userId=${decoded.userId}`);
         if (!user || !user.isActive || user.isBanned) {
+          console.log(`[SOCKET] DB verify failed id=${socket.id} userId=${decoded.userId}`);
           return next(new Error('User not found or banned'));
         }
       }
 
       (socket as any).userId = decoded.userId;
+      const duration = Date.now() - start;
+      console.log(`[SOCKET] handshake success id=${socket.id} userId=${decoded.userId} duration=${duration}ms`);
       next();
     } catch (error) {
+      console.error(`[SOCKET] handshake failed id=${socket.id} err=${(error as Error).message}`);
       next(new Error('Invalid token'));
     }
   });
