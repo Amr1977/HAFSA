@@ -18,6 +18,20 @@ class FrontendLogger {
 
   constructor() {
     this.overrideConsole();
+    // ensure queued logs are attempted to be sent on page unload
+    window.addEventListener('beforeunload', () => {
+      if (this.queue.length === 0) return;
+      const batch = this.queue.splice(0);
+      try {
+        const payload = JSON.stringify(batch);
+        if (navigator && typeof (navigator as any).sendBeacon === 'function') {
+          const blob = new Blob([payload], { type: 'application/json' });
+          (navigator as any).sendBeacon(`${API_BASE}/logs/client`, blob);
+        }
+      } catch (e) {
+        // swallow - best-effort
+      }
+    });
   }
 
   private overrideConsole() {
@@ -80,15 +94,32 @@ class FrontendLogger {
     const batch = this.queue.splice(0);
     try {
       const token = this.getToken();
-      await fetch(`${API_BASE}/logs/client`, {
+      const url = `${API_BASE}/logs/client`;
+      const payload = JSON.stringify(batch);
+
+      // Try sendBeacon for reliable delivery during unload/navigation
+      if (typeof (navigator as any)?.sendBeacon === 'function') {
+        try {
+          const blob = new Blob([payload], { type: 'application/json' });
+          const ok = (navigator as any).sendBeacon(url, blob);
+          if (ok) return;
+        } catch (e) {
+          // ignore and fallback to fetch
+        }
+      }
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const resp = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(batch[0]),
+        headers,
+        body: payload,
       });
-    } catch {
+
+      if (!resp.ok) throw new Error('Failed to send client logs');
+    } catch (err) {
+      // requeue on failure
       this.queue.unshift(...batch);
       if (this.queue.length > 100) this.queue.splice(0, this.queue.length - 100);
     } finally {

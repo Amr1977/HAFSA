@@ -15,29 +15,34 @@ export const clientLogLimiter = rateLimit({
 
 export const ingestClientLog = async (req: AuthRequest, res: Response) => {
   try {
-    const { level, message, stack, url, userAgent, timestamp } = req.body;
+    const payload = req.body;
+    const entries = Array.isArray(payload) ? payload : [payload];
 
-    const logEntry = {
-      client: true,
-      userId: req.userId || 'anonymous',
-      url,
-      userAgent: userAgent || req.headers['user-agent'],
-      timestamp: timestamp || new Date().toISOString(),
-      stack,
-    };
+    for (const entry of entries) {
+      const { level = 'debug', message = '', stack, url, userAgent, timestamp } = entry || {};
 
-    switch (level) {
-      case 'error':
-        logger.error(`[CLIENT] ${message}`, logEntry);
-        break;
-      case 'warn':
-        logger.warn(`[CLIENT] ${message}`, logEntry);
-        break;
-      case 'info':
-        logger.info(`[CLIENT] ${message}`, logEntry);
-        break;
-      default:
-        logger.debug(`[CLIENT] ${message}`, logEntry);
+      const logEntry = {
+        client: true,
+        userId: req.userId || 'anonymous',
+        url,
+        userAgent: userAgent || req.headers['user-agent'],
+        timestamp: timestamp || new Date().toISOString(),
+        stack,
+      };
+
+      switch (level) {
+        case 'error':
+          logger.error(`[CLIENT] ${message}`, logEntry);
+          break;
+        case 'warn':
+          logger.warn(`[CLIENT] ${message}`, logEntry);
+          break;
+        case 'info':
+          logger.info(`[CLIENT] ${message}`, logEntry);
+          break;
+        default:
+          logger.debug(`[CLIENT] ${message}`, logEntry);
+      }
     }
 
     res.json({ ok: true });
