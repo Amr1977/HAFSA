@@ -17,6 +17,8 @@ export default function Login() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [genderConfirmed, setGenderConfirmed] = useState(false);
+  const [showGoogleConfirm, setShowGoogleConfirm] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +46,11 @@ export default function Login() {
   };
 
   const handleGoogle = async () => {
+    setShowGoogleConfirm(true);
+  };
+
+  const confirmGoogleLogin = async () => {
+    setShowGoogleConfirm(false);
     setGoogleLoading(true);
     setError('');
     try {
@@ -56,10 +63,13 @@ export default function Login() {
     }
   };
 
+  const cancelGoogleLogin = () => {
+    setShowGoogleConfirm(false);
+  };
+
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-8 px-4">
       <div className="w-full max-w-md">
-        {/* Brand header */}
         <div className="text-center mb-8">
           <Link to="/" className="text-3xl font-bold text-[#1B4332] dark:text-[#DAA520] font-display tracking-tight">
             عمر
@@ -67,7 +77,6 @@ export default function Login() {
           <p className="text-sm text-[#6B7280] dark:text-gray-400 mt-1">شبكة اجتماعية متكاملة للرجال</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-[#E5E7EB] dark:border-gray-700 p-8 md:p-10 transition-all duration-200">
           <div className="text-center mb-8">
             <div className="w-14 h-14 bg-[#1B4332]/10 dark:bg-[#DAA520]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -88,7 +97,6 @@ export default function Login() {
             </div>
           )}
 
-          {/* Google button */}
           <button onClick={handleGoogle} disabled={googleLoading}
             className="w-full py-3.5 border-2 border-[#E5E7EB] dark:border-gray-600 rounded-xl font-medium flex items-center justify-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-all duration-200 group">
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -102,7 +110,6 @@ export default function Login() {
             </span>
           </button>
 
-          {/* Divider */}
           <div className="relative my-7">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#E5E7EB] dark:border-gray-600" />
@@ -112,7 +119,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-[#374151] dark:text-gray-300 mb-1.5">البريد الإلكتروني</label>
@@ -151,7 +157,19 @@ export default function Login() {
               </div>
             </div>
 
-            <button type="submit" disabled={loading}
+            <div>
+              <label className="block text-sm font-medium text-[#374151] dark:text-gray-300 mb-1.5">تأكيد النوع</label>
+              <button type="button" onClick={() => setGenderConfirmed(true)}
+                className={`w-full py-3 border-2 rounded-xl font-medium transition-all duration-200 ${
+                  genderConfirmed
+                    ? 'border-[#1B4332] bg-[#1B4332]/5 text-[#1B4332]'
+                    : 'border-[#E5E7EB] bg-white text-[#374151]'
+                }`}>
+                أقسم بالله أني رجل
+              </button>
+            </div>
+
+            <button type="submit" disabled={loading || !genderConfirmed}
               className="w-full py-3.5 bg-[#1B4332] dark:bg-[#DAA520] text-white dark:text-[#1B4332] rounded-xl font-semibold hover:bg-[#2D6A4F] dark:hover:bg-[#E6C84A] disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]">
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -165,7 +183,6 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Footer */}
           <p className="mt-7 text-center text-sm text-[#6B7280] dark:text-gray-400">
             ليس لديك حساب؟{' '}
             <Link to="/register" className="text-[#1B4332] dark:text-[#DAA520] font-semibold hover:underline">
@@ -174,6 +191,27 @@ export default function Login() {
           </p>
         </div>
       </div>
+
+      {showGoogleConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-sm w-full p-6">
+            <h3 className="text-lg font-bold text-[#1B4332] dark:text-gray-100 mb-4 text-center">تأكيد الهوية</h3>
+            <p className="text-sm text-[#374151] dark:text-gray-300 mb-6 text-center">
+              أقسم بالله أني رجل، وأتعهد بعدم محاولة التسجيل إن كنت أنثي
+            </p>
+            <div className="flex gap-3">
+              <button onClick={cancelGoogleLogin}
+                className="flex-1 py-2.5 border-2 border-[#E5E7EB] dark:border-gray-600 rounded-xl font-medium text-[#374151] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                لا
+              </button>
+              <button onClick={confirmGoogleLogin}
+                className="flex-1 py-2.5 bg-[#1B4332] dark:bg-[#DAA520] text-white dark:text-[#1B4332] rounded-xl font-medium hover:bg-[#2D6A4F] dark:hover:bg-[#E6C84A] transition-all">
+                نعم
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
