@@ -516,9 +516,18 @@ export const getFollowing = async (req: AuthRequest, res: Response) => {
 export const getUserPosts = async (req: AuthRequest, res: Response) => {
   try {
     const userId = (req.params.userId as string) || req.userId!;
+    const viewerId = req.userId!;
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { isActive: true },
+    });
+    if (!targetUser?.isActive) {
+      return res.json({ posts: [], total: 0, page: 1, totalPages: 0 });
+    }
+
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 20));
-    const viewerId = req.userId!;
     const isOwner = viewerId === userId;
 
     const followExists = isOwner ? false : await prisma.follow.findUnique({
@@ -793,6 +802,7 @@ export const getUserProfile = async (req: AuthRequest, res: Response) => {
         subscriptionPlan: true,
         isVerified: true,
         isOnline: true,
+        isActive: true,
         lastSeenAt: true,
         bio: true,
         tagline: true,
@@ -809,7 +819,7 @@ export const getUserProfile = async (req: AuthRequest, res: Response) => {
         _count: { select: { posts: true, followers: true, following: true } },
       },
     });
-    if (!user || (!user.isVerified && user.id !== req.userId)) {
+    if (!user || (!user.isVerified && user.id !== req.userId) || !user.isActive) {
       return res.status(404).json({ error: 'NOT_FOUND' });
     }
     let isFollowing = false;
@@ -863,6 +873,7 @@ export const searchUsers = async (req: AuthRequest, res: Response) => {
         status: 'APPROVED',
         userId: { notIn: [...new Set(blockedIds)] },
         displayName: { contains: q as string, mode: 'insensitive' },
+        user: { isActive: true },
       },
       take: 20,
       include: {
@@ -896,7 +907,7 @@ export const getSuggestedUsers = async (req: AuthRequest, res: Response) => {
     }).then(blocks => blocks.flatMap(b => [b.blockerId, b.blockedId]).filter(id => id !== req.userId));
     const excludeIds = [...new Set([req.userId!, ...followingIds, ...blockedIds])];
     const fofFollowings = await prisma.follow.findMany({
-      where: { followerId: { in: followingIds }, followingId: { notIn: excludeIds } },
+      where: { followerId: { in: followingIds }, followingId: { notIn: excludeIds }, following: { isActive: true } },
       select: { followingId: true },
       take: 50,
     });
@@ -912,7 +923,7 @@ export const getSuggestedUsers = async (req: AuthRequest, res: Response) => {
     if (userIds.length < 5) {
       const popular = await prisma.follow.groupBy({
         by: ['followingId'],
-        where: { followingId: { notIn: excludeIds } },
+        where: { followingId: { notIn: excludeIds }, following: { isActive: true } },
         _count: { followingId: true },
         orderBy: { _count: { followingId: 'desc' } },
         take: 8,
@@ -921,7 +932,7 @@ export const getSuggestedUsers = async (req: AuthRequest, res: Response) => {
       userIds = [...userIds, ...popularIds].slice(0, 8);
     }
     const profiles = await prisma.profile.findMany({
-      where: { userId: { in: userIds }, status: 'APPROVED' },
+      where: { userId: { in: userIds }, status: 'APPROVED', user: { isActive: true } },
       include: {
         photos: { where: { isPrimary: true }, take: 1 },
         user: { select: { id: true, roles: true, subscriptionPlan: true, isVerified: true, _count: { select: { followers: true } } } },
@@ -1043,6 +1054,7 @@ export const getStoriesFeed = async (req: AuthRequest, res: Response) => {
     const stories = await prisma.story.findMany({
       where: {
         expiresAt: { gt: now },
+        user: { isActive: true },
         OR: [
           { userId: req.userId },
           { privacy: 'PUBLIC' },

@@ -145,8 +145,8 @@ export const exposeBride = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const groom = await prisma.user.findUnique({ where: { id: groomId } });
-    if (!groom) return res.status(404).json({ error: 'NOT_FOUND', message: 'Groom not found' });
+    const groom = await prisma.user.findUnique({ where: { id: groomId, isActive: true } });
+    if (!groom) return res.status(404).json({ error: 'NOT_FOUND', message: 'Groom not found or inactive' });
 
     const exposure = await prisma.brideExposure.upsert({
       where: { brideId_groomId: { brideId, groomId } },
@@ -238,6 +238,7 @@ export const getVisibleBrides = async (req: AuthRequest, res: Response) => {
         },
       },
       status: 'ACTIVE',
+      guardian: { isActive: true },
     };
 
     if (ageMin) where.age = { ...(where.age || {}), gte: parseInt(ageMin as string) };

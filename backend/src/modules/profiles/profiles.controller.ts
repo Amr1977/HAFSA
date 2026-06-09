@@ -96,11 +96,11 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
       where: { id: params.id },
       include: {
         photos: { orderBy: { order: 'asc' } },
-        user: { select: { id: true, isVerified: true, roles: true } },
+        user: { select: { id: true, isVerified: true, roles: true, isActive: true } },
       },
     });
 
-    if (!profile) {
+    if (!profile || !profile.user.isActive) {
       return res.status(404).json({
         error: 'NOT_FOUND',
         messageAr: 'الملف الشخصي غير موجود',

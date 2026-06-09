@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { api } from '../../lib/api';
+import { api, photoUrl } from '../../lib/api';
 import { useAuthStore } from '../../stores/authStore';
 import UserAvatar from '../../components/UserAvatar';
 
@@ -157,7 +157,7 @@ export default function UserPublicProfile() {
             <Link key={post.id} to={`/social/post/${post.id}`} className="block bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-4 hover:border-[var(--color-primary)]/30 transition-colors">
               <p className="text-sm text-[var(--color-text)] line-clamp-3">{post.content}</p>
               {post.mediaUrls?.length > 0 && (
-                <img src={post.mediaUrls[0]} alt="" className="mt-2 w-full h-40 object-cover rounded-lg" />
+                <img src={photoUrl(post.mediaUrls[0])} alt="" className="mt-2 w-full h-40 object-cover rounded-lg" />
               )}
               <div className="flex gap-4 mt-3 text-xs text-[var(--color-muted)]">
                 <span>❤️ {post._count?.likes || 0}</span>

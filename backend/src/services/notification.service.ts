@@ -47,16 +47,6 @@ const sendPushNotification = async (userId: string, payload: NotificationPayload
   }
 };
 
-interface NotificationPayload {
-  userId: string;
-  type: string;
-  titleAr: string;
-  titleEn: string;
-  bodyAr: string;
-  bodyEn: string;
-  data?: any;
-}
-
 export const createNotification = async (payload: NotificationPayload) => {
   try {
     const notification = await prisma.notification.create({

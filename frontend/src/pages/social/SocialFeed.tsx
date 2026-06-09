@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { api } from '../../lib/api';
+import { api, photoUrl, isVideoUrl } from '../../lib/api';
 import { useAuthStore } from '../../stores/authStore';
 import { onNewPostInFeed, emitPostCreated } from '../../lib/socket';
 import { renderRichText } from '../../lib/richText';
@@ -240,8 +240,6 @@ export default function SocialFeed() {
 
   const userName = (p: any) => p.user.profile?.displayName || p.user.roles?.find((r: string) => r !== 'SOCIAL') || p.user.roles?.[0] || '';
 
-  const isVideo = (url: string) => url.startsWith('data:video/');
-
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-[var(--color-primary)] mb-6">
@@ -391,10 +389,10 @@ export default function SocialFeed() {
                     <div className="flex flex-wrap gap-2 mt-2">
                       {editMediaUrls.map((url, i) => (
                         <div key={i} className="relative group">
-                          {url.startsWith('data:video/') ? (
-                            <video src={url} className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
+                          {isVideoUrl(url) ? (
+                            <video src={photoUrl(url)} className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
                           ) : (
-                            <img src={url} alt="" className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
+                            <img src={photoUrl(url)} alt="" className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
                           )}
                           <button onClick={() => removeEditMedia(i)} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             ×
@@ -453,10 +451,10 @@ export default function SocialFeed() {
                 {post.mediaUrls?.length > 0 && (
                   <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: post.mediaUrls.length > 1 ? '1fr 1fr' : '1fr' }}>
                     {post.mediaUrls.map((url: string, i: number) => (
-                      isVideo(url) ? (
-                        <video key={i} src={url} controls className="rounded-lg w-full h-48 object-cover" />
+                      isVideoUrl(url) ? (
+                        <video key={i} src={photoUrl(url)} controls className="rounded-lg w-full h-48 object-cover" />
                       ) : (
-                        <img key={i} src={url} alt="" className="rounded-lg w-full h-48 object-cover cursor-pointer" onClick={(e) => { e.preventDefault(); setViewerImg(url); }} />
+                        <img key={i} src={photoUrl(url)} alt="" className="rounded-lg w-full h-48 object-cover cursor-pointer" onClick={(e) => { e.preventDefault(); setViewerImg(photoUrl(url)); }} />
                       )
                     ))}
                   </div>
@@ -477,10 +475,10 @@ export default function SocialFeed() {
                       {post.sharedPost.mediaUrls?.length > 0 && (
                         <div className="grid gap-1 mt-2" style={{ gridTemplateColumns: post.sharedPost.mediaUrls.length > 1 ? '1fr 1fr' : '1fr' }}>
                           {post.sharedPost.mediaUrls.map((url: string, i: number) => (
-                            isVideo(url) ? (
-                              <video key={i} src={url} controls className="rounded-lg w-full h-24 object-cover" />
+                            isVideoUrl(url) ? (
+                              <video key={i} src={photoUrl(url)} controls className="rounded-lg w-full h-24 object-cover" />
                             ) : (
-                              <img key={i} src={url} alt="" className="rounded-lg w-full h-24 object-cover" />
+                              <img key={i} src={photoUrl(url)} alt="" className="rounded-lg w-full h-24 object-cover" />
                             )
                           ))}
                         </div>

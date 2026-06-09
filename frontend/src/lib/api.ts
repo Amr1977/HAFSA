@@ -8,6 +8,9 @@ export const photoUrl = (url: string | null | undefined): string => {
   return url;
 };
 
+export const isVideoUrl = (url: string): boolean =>
+  url.startsWith('data:video/') || /\.(mp4|webm|ogg|mov)$/i.test(url);
+
 let token: string | null = null;
 
 export const setToken = (t: string | null) => {

@@ -19,6 +19,9 @@ export const browseProfiles = async (req: AuthRequest, res: Response) => {
 
     const where: Prisma.ProfileWhereInput = {
       status: 'APPROVED',
+      user: {
+        isActive: true,
+      },
     };
 
     if (ageMin) where.age = { ...(where.age as any || {}), gte: parseInt(ageMin as string) };
@@ -33,7 +36,7 @@ export const browseProfiles = async (req: AuthRequest, res: Response) => {
     if (quranMemorization) where.quranMemorization = quranMemorization as any;
     if (education) where.education = { contains: education as string, mode: 'insensitive' };
     if (isVerified === 'true') {
-      where.user = { isVerified: true };
+      where.user = { isActive: true, isVerified: true } as any;
     }
 
     let orderBy: Prisma.ProfileOrderByWithRelationInput = {};
@@ -83,11 +86,11 @@ export const getProfileDetail = async (req: AuthRequest, res: Response) => {
       where: { id: params.id },
       include: {
         photos: { orderBy: { order: 'asc' } },
-        user: { select: { isVerified: true, createdAt: true } },
+        user: { select: { isVerified: true, isActive: true, createdAt: true } },
       },
     });
 
-    if (!profile || profile.status !== 'APPROVED') {
+    if (!profile || profile.status !== 'APPROVED' || !profile.user.isActive) {
       return res.status(404).json({
         error: 'NOT_FOUND',
         messageAr: 'الملف الشخصي غير موجود',
@@ -128,6 +131,7 @@ export const browseGroomsForGuardian = async (req: AuthRequest, res: Response) =
       status: 'APPROVED',
       user: {
         roles: { array_contains: 'GROOM' } as any,
+        isActive: true,
       },
     };
 
@@ -172,7 +176,7 @@ export const getAiSuggestions = async (req: AuthRequest, res: Response) => {
     const { wardAge, wardNationality, wardEducation, wardMaritalStatus } = req.query;
 
     const profiles = await prisma.profile.findMany({
-      where: { status: 'APPROVED' },
+      where: { status: 'APPROVED', user: { isActive: true } },
       include: {
         photos: { where: { isApproved: true }, orderBy: { order: 'asc' }, take: 1 },
         user: { select: { isVerified: true } },

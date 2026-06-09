@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { api } from '../../lib/api';
+import { api, photoUrl } from '../../lib/api';
 import UserAvatar from '../../components/UserAvatar';
 
 export default function HashtagFeed() {
@@ -30,7 +30,7 @@ export default function HashtagFeed() {
               <span className="text-sm font-medium text-[var(--color-primary)]">{post.user?.profile?.displayName || 'مستخدم'}</span>
             </div>
             <p className="text-sm text-[var(--color-text)] line-clamp-3">{post.content}</p>
-            {post.mediaUrls?.length > 0 && <img src={post.mediaUrls[0]} alt="" className="mt-2 w-full h-40 object-cover rounded-lg" />}
+            {post.mediaUrls?.length > 0 && <img src={photoUrl(post.mediaUrls[0])} alt="" className="mt-2 w-full h-40 object-cover rounded-lg" />}
           </Link>
         ))}
         {data?.posts?.length === 0 && <div className="text-center py-16 text-[var(--color-muted)]">لا توجد منشورات بهذا الوسم</div>}

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { api } from '../../lib/api';
+import { api, photoUrl, isVideoUrl } from '../../lib/api';
 import { useAuthStore } from '../../stores/authStore';
 import { renderRichText } from '../../lib/richText';
 import ImageViewer from '../../components/ImageViewer';
@@ -186,10 +186,10 @@ export default function PostDetail() {
                 <div className="flex flex-wrap gap-2 mt-2">
                   {editMediaUrls.map((url, i) => (
                     <div key={i} className="relative group">
-                      {url.startsWith('data:video/') ? (
-                        <video src={url} className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
+                      {isVideoUrl(url) ? (
+                        <video src={photoUrl(url)} className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
                       ) : (
-                        <img src={url} alt="" className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
+                        <img src={photoUrl(url)} alt="" className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]" />
                       )}
                       <button onClick={() => removeEditMedia(i)} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         ×
@@ -245,10 +245,10 @@ export default function PostDetail() {
               {post.mediaUrls?.length > 0 && (
                 <div className="grid gap-2 mb-4" style={{ gridTemplateColumns: post.mediaUrls.length > 1 ? '1fr 1fr' : '1fr' }}>
                   {post.mediaUrls.map((url: string, i: number) => (
-                    url.startsWith('data:video/') ? (
-                      <video key={i} src={url} controls className="rounded-lg w-full h-64 object-cover" />
+                    isVideoUrl(url) ? (
+                      <video key={i} src={photoUrl(url)} controls className="rounded-lg w-full h-64 object-cover" />
                     ) : (
-                      <img key={i} src={url} alt="" className="rounded-lg w-full h-64 object-cover cursor-pointer" onClick={() => setViewerImg(url)} />
+                      <img key={i} src={photoUrl(url)} alt="" className="rounded-lg w-full h-64 object-cover cursor-pointer" onClick={() => setViewerImg(photoUrl(url))} />
                     )
                   ))}
                 </div>
@@ -269,10 +269,10 @@ export default function PostDetail() {
                     {post.sharedPost.mediaUrls?.length > 0 && (
                       <div className="grid gap-2 mt-2" style={{ gridTemplateColumns: post.sharedPost.mediaUrls.length > 1 ? '1fr 1fr' : '1fr' }}>
                         {post.sharedPost.mediaUrls.map((url: string, i: number) => (
-                          url.startsWith('data:video/') ? (
-                            <video key={i} src={url} controls className="rounded-lg w-full h-32 object-cover" />
+                          isVideoUrl(url) ? (
+                            <video key={i} src={photoUrl(url)} controls className="rounded-lg w-full h-32 object-cover" />
                           ) : (
-                            <img key={i} src={url} alt="" className="rounded-lg w-full h-32 object-cover" />
+                            <img key={i} src={photoUrl(url)} alt="" className="rounded-lg w-full h-32 object-cover" />
                           )
                         ))}
                       </div>
