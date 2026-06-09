@@ -21,8 +21,13 @@ export const browseProfiles = async (req: AuthRequest, res: Response) => {
       status: 'APPROVED',
       user: {
         isActive: true,
+        roles: { array_contains: 'GROOM' } as any,
       },
     };
+
+    if (req.userId) {
+      where.userId = { not: req.userId };
+    }
 
     if (ageMin) where.age = { ...(where.age as any || {}), gte: parseInt(ageMin as string) };
     if (ageMax) where.age = { ...(where.age as any || {}), lte: parseInt(ageMax as string) };
@@ -176,7 +181,7 @@ export const getAiSuggestions = async (req: AuthRequest, res: Response) => {
     const { wardAge, wardNationality, wardEducation, wardMaritalStatus } = req.query;
 
     const profiles = await prisma.profile.findMany({
-      where: { status: 'APPROVED', user: { isActive: true } },
+      where: { status: 'APPROVED', user: { isActive: true, roles: { array_contains: 'GROOM' } as any } },
       include: {
         photos: { where: { isApproved: true }, orderBy: { order: 'asc' }, take: 1 },
         user: { select: { isVerified: true } },
