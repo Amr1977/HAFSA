@@ -37,6 +37,7 @@ Full social media feature set implemented across all layers:
 - `frontend/src/components/Layout.tsx` — Social nav link
 
 ### Security (Phase 8 - June 2026)
+- `backend/src/modules/browse/browse.controller.ts` — Filter GROOM-only in browse, exclude self-profile, fix AI suggestions
 - `frontend/src/pages/auth/Login.tsx` — Added gender confirmation modal for Google auth (Yes/No)
 - `frontend/src/pages/auth/Register.tsx` — Added gender confirmation modal for Google auth, button confirmation for email
 - Fixed inactive user visibility in `browse.controller.ts`, `social.controller.ts`, `brides.controller.ts`
