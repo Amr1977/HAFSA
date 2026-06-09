@@ -25,6 +25,11 @@ export default function UserPublicProfile() {
     setLoading(true);
     api.social.getUserProfile(userId)
       .then(data => {
+        if (!data || data.isBlocked) {
+          setProfile(null);
+          navigate('/social');
+          return;
+        }
         setProfile(data);
         setFollowing(data.isFollowing);
         setBlocked(data.isBlocked);
