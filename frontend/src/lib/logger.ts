@@ -1,6 +1,9 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
-const LOGS_BASE = API_BASE.endsWith('/api') ? API_BASE.slice(0, -4) : (API_BASE === '/api' ? '' : API_BASE);
+// Anonymous logs endpoint - /logs/ proxies to backend /api/logs/ via nginx
+const LOGS_PUBLIC = '/logs/client/public';
+// Authenticated logs endpoint
+const LOGS_AUTH = `${API_BASE}/logs/client`;
 
 type LogLevel = 'error' | 'warn' | 'info' | 'debug';
 
@@ -26,9 +29,10 @@ class FrontendLogger {
       const batch = this.queue.splice(0);
       try {
         const payload = JSON.stringify(batch);
+        const url = this.getToken() ? LOGS_AUTH : LOGS_PUBLIC;
         if (navigator && typeof (navigator as any).sendBeacon === 'function') {
           const blob = new Blob([payload], { type: 'application/json' });
-          (navigator as any).sendBeacon(`${API_BASE}/logs/client`, blob);
+          (navigator as any).sendBeacon(url, blob);
         }
       } catch (e) {
         // swallow - best-effort
@@ -91,16 +95,13 @@ class FrontendLogger {
 
   private async flush() {
     if (this.flushing || this.queue.length === 0) return;
-    // don't send anonymous logs if backoff active
     const token = this.getToken();
 
     this.flushing = true;
 
     const batch = this.queue.splice(0);
     try {
-      const url = token
-        ? `${API_BASE}/logs/client`
-        : `${LOGS_BASE}/logs/client/public`;
+      const url = token ? LOGS_AUTH : LOGS_PUBLIC;
       const payload = JSON.stringify(batch);
 
       // Try sendBeacon for reliable delivery during unload/navigation

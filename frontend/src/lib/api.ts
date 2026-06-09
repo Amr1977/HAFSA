@@ -1,5 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
-const PHOTO_BASE = API_BASE.replace(/\/api\/?$/, '');
+const PHOTO_BASE = API_BASE.match(/^https?:\/\/[^/]+/)?.[0] || '';
 
 export const photoUrl = (url: string | null | undefined): string => {
   if (!url) return '';

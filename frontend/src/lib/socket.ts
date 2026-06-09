@@ -10,8 +10,13 @@ try {
   if (SOCKET_URL) {
     // If SOCKET_URL is an absolute url, extract pathname
     const u = SOCKET_URL.match(/^https?:\/\/(.+?)(\/.*)?$/);
-    if (u && u[2]) SOCKET_PATH = (u[2].endsWith('/') ? u[2].slice(0, -1) : u[2]) + '/socket.io';
-    else if (SOCKET_URL.startsWith('/')) SOCKET_PATH = (SOCKET_URL.endsWith('/') ? SOCKET_URL.slice(0, -1) : SOCKET_URL) + '/socket.io';
+    if (u && u[2]) {
+      // Strip /api from path if present (socket endpoint is at base path, not /api)
+      const basePath = u[2].replace(/\/api\/?$/, '');
+      SOCKET_PATH = (basePath.endsWith('/') ? basePath.slice(0, -1) : basePath) + '/socket.io';
+    } else if (SOCKET_URL.startsWith('/')) {
+      SOCKET_PATH = (SOCKET_URL.endsWith('/') ? SOCKET_URL.slice(0, -1) : SOCKET_URL) + '/socket.io';
+    }
   }
 } catch (e) {
   SOCKET_PATH = '/socket.io';
@@ -53,7 +58,13 @@ export const connectSocket = () => {
 
   socket.on('connect_error', (error) => {
     try {
-      console.error('Socket connection error:', error?.message || String(error), error);
+      const msg = error?.message || String(error);
+      console.error('Socket connection error:', msg, error);
+      // Log to backend if available
+      if (msg.includes('Invalid namespace') || msg.includes('timeout')) {
+        console.warn('Socket path may be misconfigured. Check VITE_API_URL and nginx proxy config.');
+        console.log('Resolved SOCKET_URL:', SOCKET_URL, 'SOCKET_PATH:', SOCKET_PATH);
+      }
     } catch (e) {
       console.error('Socket connection error (unknown)');
     }
