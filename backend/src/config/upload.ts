@@ -78,6 +78,7 @@ export const uploadStoreImage = multer({
 
 export const deleteFile = (filePath: string) => {
   if (!filePath || filePath.startsWith('http') || filePath.startsWith('data:')) return;
+  if (filePath.includes('..') || filePath.includes('\\')) return;
   const fullPath = filePath.startsWith('/uploads/')
     ? path.join(uploadsBase, '..', filePath)
     : filePath;

@@ -68,7 +68,9 @@ export const listUsers = async (req: AuthRequest, res: Response) => {
     const limitNum = Math.min(50, parseInt(limit as string));
 
     const where: any = {};
-    if (role) where.roles = { array_contains: role } as any;
+    if (role && ['GROOM', 'GUARDIAN', 'SOCIAL', 'ADMIN'].includes(role as string)) {
+      where.roles = { array_contains: role } as any;
+    }
     if (search) {
       where.OR = [
         { email: { contains: search as string, mode: 'insensitive' } },

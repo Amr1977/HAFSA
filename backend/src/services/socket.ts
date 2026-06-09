@@ -6,9 +6,20 @@ import { prisma } from '../config/database';
 let io: Server;
 
 export const setupSocket = (httpServer: HttpServer) => {
+  const frontendUrl = process.env.FRONTEND_URL;
+  const allowedOrigins = frontendUrl
+    ? frontendUrl.split(',').map(s => s.trim())
+    : [];
+
   io = new Server(httpServer, {
     cors: {
-      origin: (process.env.FRONTEND_URL || '*').split(',').map(s => s.trim()),
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+        callback(new Error('Not allowed by CORS'));
+      },
       methods: ['GET', 'POST'],
     },
   });
@@ -24,20 +35,18 @@ export const setupSocket = (httpServer: HttpServer) => {
         return next(new Error('Authentication required'));
       }
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
 
-      // To avoid a DB round-trip on every socket handshake (which can cause timeouts under load),
-      // skip the prisma.user lookup by default. Enable DB verification by setting
-      // SOCKET_VERIFY_DB=true in the environment if strict checking is required.
-      if (process.env.SOCKET_VERIFY_DB === 'true') {
-        const dbStart = Date.now();
-        const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
-        const dbDuration = Date.now() - dbStart;
-        console.log(`[SOCKET] DB verify duration=${dbDuration}ms id=${socket.id} userId=${decoded.userId}`);
-        if (!user || !user.isActive || user.isBanned) {
-          console.log(`[SOCKET] DB verify failed id=${socket.id} userId=${decoded.userId}`);
-          return next(new Error('User not found or banned'));
-        }
+      const dbStart = Date.now();
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+        select: { isActive: true, isBanned: true },
+      });
+      const dbDuration = Date.now() - dbStart;
+      console.log(`[SOCKET] DB verify duration=${dbDuration}ms id=${socket.id} userId=${decoded.userId}`);
+      if (!user || !user.isActive || user.isBanned) {
+        console.log(`[SOCKET] DB verify failed id=${socket.id} userId=${decoded.userId}`);
+        return next(new Error('User not found or banned'));
       }
 
       (socket as any).userId = decoded.userId;
