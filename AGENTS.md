@@ -36,6 +36,18 @@ Full social media feature set implemented across all layers:
 - `frontend/src/App.tsx` — New routes added
 - `frontend/src/components/Layout.tsx` — Social nav link
 
+### Security (Phase 8 - June 2026)
+- `frontend/src/pages/auth/Login.tsx` — Added gender confirmation modal for Google auth (Yes/No)
+- `frontend/src/pages/auth/Register.tsx` — Added gender confirmation modal for Google auth, button confirmation for email
+- Fixed inactive user visibility in `browse.controller.ts`, `social.controller.ts`, `brides.controller.ts`
+- Removed duplicate `NotificationPayload` interface in `notification.service.ts`
+- Added HSTS and security headers in `server.ts`
+- Strengthened Socket.IO CORS (requires `FRONTEND_URL`) and enforced DB verification in `socket.ts`
+- Added file path sanitization in `upload.ts`
+- Added `socialLimiter` for rate limiting in `social.routes.ts`
+- Created `backend/src/services/cleanup.service.ts` for story/post cleanup
+- Fixed frontend logger to use `/logs/client/public` for anonymous users
+
 ## TypeScript Fixes
 - `req.params` values typed as `string | string[]` — use `const x = req.params.x as string` pattern
 - `UserAvatar` `size` prop only accepts `'sm' | 'md' | 'lg'` (no 'xl')
@@ -54,4 +66,4 @@ cd frontend && npm run build
 - **Push code**: `git add . && git commit -m "msg" && git push`
 
 ## Branch
-`fix/client-logs-anon` (working branch)
+`main` (current working branch)
