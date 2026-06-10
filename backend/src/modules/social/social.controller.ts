@@ -488,7 +488,7 @@ export const deleteComment = async (req: AuthRequest, res: Response) => {
 
 export const toggleFollow = async (req: AuthRequest, res: Response) => {
   try {
-    const followingId = id(req);
+    const followingId = req.params.userId as string;
     if (followingId === req.userId) {
       return res.status(400).json({ error: 'SELF_FOLLOW', message: 'Cannot follow yourself' });
     }
