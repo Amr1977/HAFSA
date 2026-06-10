@@ -8,12 +8,11 @@ const SOCKET_URL = API_URL.replace(/\/api\/?$/, '') || '';
 let SOCKET_PATH = '/socket.io';
 try {
   if (SOCKET_URL) {
-    // If SOCKET_URL is an absolute url, extract pathname
     const u = SOCKET_URL.match(/^https?:\/\/(.+?)(\/.*)?$/);
     if (u && u[2]) {
-      // Strip /api from path if present (socket endpoint is at base path, not /api)
-      const basePath = u[2].replace(/\/api\/?$/, '');
-      SOCKET_PATH = (basePath.endsWith('/') ? basePath.slice(0, -1) : basePath) + '/socket.io';
+      // URL already has a path prefix (e.g. /hafsa). socket.io-client appends
+      // path to the URL, so keep it as /socket.io — no prefix duplication needed.
+      SOCKET_PATH = '/socket.io';
     } else if (SOCKET_URL.startsWith('/')) {
       SOCKET_PATH = (SOCKET_URL.endsWith('/') ? SOCKET_URL.slice(0, -1) : SOCKET_URL) + '/socket.io';
     }
