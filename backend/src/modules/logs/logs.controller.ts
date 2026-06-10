@@ -16,7 +16,7 @@ export const clientLogLimiter = rateLimit({
 // Public, stricter limiter for anonymous clients
 export const clientPublicLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 5,
+  max: 30,
   message: {
     error: 'RATE_LIMIT',
     messageAr: 'طلبات كثيرة جداً. يرجى المحاولة بعد دقيقة',

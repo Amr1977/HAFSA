@@ -109,7 +109,7 @@ class FrontendLogger {
       if (typeof (navigator as any)?.sendBeacon === 'function') {
         try {
           const ok = (navigator as any).sendBeacon(url, payload);
-          if (ok) return;
+          if (ok) { this.flushing = false; return; }
         } catch (e) {
           // ignore and fallback to fetch
         }
