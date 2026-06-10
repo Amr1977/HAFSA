@@ -46,7 +46,7 @@ export default function PostCard({ post, currentUserId, onLike, onSave, onShare,
       await onShare(post.id, shareContent || undefined);
       setSharing(false);
       setShareContent('');
-    } finally {
+    } catch {
       setSharingSubmitting(false);
     }
   };

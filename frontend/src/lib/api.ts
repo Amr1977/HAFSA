@@ -226,6 +226,8 @@ export const api = {
     rejectProfile: (id: string) => api.put(`/admin/profiles/${id}/reject`),
     reports: () => api.get('/admin/reports'),
     resolveReport: (id: string) => api.put(`/admin/reports/${id}/resolve`),
+    postReports: (status?: string) => api.get(`/admin/post-reports${status ? `?status=${status}` : ''}`),
+    resolvePostReport: (id: string, action?: string) => api.put(`/admin/post-reports/${id}/resolve`, { action }),
     logs: (params?: string) => api.get(`/admin/logs${params ? `?${params}` : ''}`),
     posts: (params?: string) => api.get(`/admin/posts${params ? `?${params}` : ''}`),
     deletePost: (id: string) => api.delete(`/admin/posts/${id}`),
