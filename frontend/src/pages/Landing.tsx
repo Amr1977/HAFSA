@@ -202,12 +202,6 @@ export default function Landing() {
             >
               {hasGuardian ? t('browse.title') : hasGroom ? t('profile.my') : 'المنشورات'}
             </Link>
-            <Link
-              to="/social"
-              className="px-6 py-3 border border-[#DAA520] text-[#DAA520] rounded-xl text-base font-medium hover:bg-[#DAA520]/10 transition-colors"
-            >
-              المنشورات
-            </Link>
           </div>
         </div>
 

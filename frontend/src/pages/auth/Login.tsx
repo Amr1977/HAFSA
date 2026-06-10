@@ -34,7 +34,9 @@ export default function Login() {
       localStorage.setItem('auth_token', result.accessToken);
       const user = await api.auth.getMe();
       login(result.accessToken, user);
-      navigate('/');
+      if (user.roles?.includes('GROOM')) navigate('/groom-dashboard');
+      else if (user.roles?.includes('GUARDIAN')) navigate('/guardian-dashboard');
+      else navigate('/social');
     } catch (err: any) {
       const msg = err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential'
         ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
@@ -54,8 +56,10 @@ export default function Login() {
     setGoogleLoading(true);
     setError('');
     try {
-      await signInWithGoogle();
-      navigate('/');
+      const user = await signInWithGoogle();
+      if (user.roles?.includes('GROOM')) navigate('/groom-dashboard');
+      else if (user.roles?.includes('GUARDIAN')) navigate('/guardian-dashboard');
+      else navigate('/social');
     } catch (err: any) {
       setError(err.message || 'فشل تسجيل الدخول عبر Google');
     } finally {

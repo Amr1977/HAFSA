@@ -79,7 +79,7 @@ const notificationLink = (n: any): string | null => {
     case 'profile_view':
     case 'profile_approved':
     case 'profile_rejected': return '/profile/my';
-    case 'new_follower': return null;
+    case 'new_follower': return n.data?.followerId ? `/social/user/${n.data.followerId}` : null;
     default: return null;
   }
 };

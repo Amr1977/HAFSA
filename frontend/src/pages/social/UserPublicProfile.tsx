@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api, photoUrl } from '../../lib/api';
 import { useAuthStore } from '../../stores/authStore';
 import UserAvatar from '../../components/UserAvatar';
+import PostCard from '../../components/PostCard';
+import PostCardSkeleton from '../../components/PostCardSkeleton';
 
 export default function UserPublicProfile() {
   const { userId } = useParams<{ userId: string }>();
@@ -38,13 +40,15 @@ export default function UserPublicProfile() {
       .finally(() => setLoading(false));
   }, [userId]);
 
-  useEffect(() => {
+  const loadPosts = () => {
     if (!userId) return;
     setPostsLoading(true);
     api.social.getUserPosts(userId)
       .then(data => setPosts(data.posts || []))
       .finally(() => setPostsLoading(false));
-  }, [userId]);
+  };
+
+  useEffect(() => { loadPosts(); }, [userId]);
 
   const handleFollow = async () => {
     await api.social.toggleFollow(userId!);
@@ -61,6 +65,56 @@ export default function UserPublicProfile() {
     setMenuOpen(false);
   };
 
+  const handleLike = async (postId: string) => {
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+    const isLiked = !!(post.likes?.[0]);
+    await api.social.toggleLike(postId);
+    setPosts(prev => prev.map(p =>
+      p.id === postId ? {
+        ...p,
+        likes: isLiked ? [] : [{ userId: me?.id }],
+        _count: { ...p._count, likes: isLiked ? p._count.likes - 1 : p._count.likes + 1 },
+      } : p
+    ));
+  };
+
+  const handleSave = async (postId: string) => {
+    const res = await api.social.toggleSave(postId);
+    setPosts(prev => prev.map(p =>
+      p.id === postId ? { ...p, saves: res.saved ? [{ userId: me?.id }] : [] } : p
+    ));
+  };
+
+  const handleShare = async (postId: string, content?: string) => {
+    await api.social.sharePost(postId, content);
+    loadPosts();
+  };
+
+  const handleDelete = async (postId: string) => {
+    if (!window.confirm('هل أنت متأكد من حذف هذا المنشور؟')) return;
+    await api.social.deletePost(postId);
+    setPosts(prev => prev.filter(p => p.id !== postId));
+  };
+
+  const handlePin = async (postId: string) => {
+    await api.social.togglePin(postId);
+    setPosts(prev => prev.map(p =>
+      p.id === postId ? { ...p, isPinned: !p.isPinned } : p
+    ));
+  };
+
+  const handleReport = async (postId: string) => {
+    const reason = window.prompt('سبب الإبلاغ:');
+    if (!reason) return;
+    await api.social.reportPost(postId, reason);
+    alert('تم إرسال الإبلاغ، شكراً لك');
+  };
+
+  const handleCopyLink = (postId: string) => {
+    navigator.clipboard.writeText(`${window.location.origin}/social/post/${postId}`);
+  };
+
   if (loading) return <div className="text-center py-16 text-[var(--color-muted)]">جاري التحميل...</div>;
   if (!profile) return null;
 
@@ -69,6 +123,7 @@ export default function UserPublicProfile() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      {/* Profile card */}
       <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6 mb-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
@@ -152,24 +207,28 @@ export default function UserPublicProfile() {
         </div>
       </div>
 
+      {/* Posts */}
       {postsLoading ? (
-        <div className="text-center py-8 text-[var(--color-muted)]">جاري التحميل...</div>
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => <PostCardSkeleton key={i} />)}
+        </div>
       ) : posts.length === 0 ? (
         <div className="text-center py-16 text-[var(--color-muted)]">لا توجد منشورات بعد</div>
       ) : (
         <div className="space-y-4">
           {posts.map((post: any) => (
-            <Link key={post.id} to={`/social/post/${post.id}`} className="block bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-4 hover:border-[var(--color-primary)]/30 transition-colors">
-              <p className="text-sm text-[var(--color-text)] line-clamp-3">{post.content}</p>
-              {post.mediaUrls?.length > 0 && (
-                <img src={photoUrl(post.mediaUrls[0])} alt="" className="mt-2 w-full h-40 object-cover rounded-lg" />
-              )}
-              <div className="flex gap-4 mt-3 text-xs text-[var(--color-muted)]">
-                <span>❤️ {post._count?.likes || 0}</span>
-                <span>💬 {post._count?.comments || 0}</span>
-                <span className="mr-auto">{new Date(post.createdAt).toLocaleDateString('ar-EG')}</span>
-              </div>
-            </Link>
+            <PostCard
+              key={post.id}
+              post={post}
+              currentUserId={me?.id}
+              onLike={handleLike}
+              onSave={handleSave}
+              onShare={handleShare}
+              onDelete={handleDelete}
+              onPin={handlePin}
+              onReport={handleReport}
+              onCopyLink={handleCopyLink}
+            />
           ))}
         </div>
       )}

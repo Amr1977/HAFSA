@@ -168,7 +168,7 @@ export const notifyPostComment = async (postOwnerId: string, commenterName: stri
   });
 };
 
-export const notifyNewFollower = async (followedUserId: string, followerName: string) => {
+export const notifyNewFollower = async (followedUserId: string, followerName: string, followerId: string) => {
   return createNotification({
     userId: followedUserId,
     type: 'new_follower',
@@ -176,7 +176,7 @@ export const notifyNewFollower = async (followedUserId: string, followerName: st
     titleEn: 'New Follower',
     bodyAr: `بدأ ${followerName} بمتابعتك`,
     bodyEn: `${followerName} started following you`,
-    data: { followerName },
+    data: { followerName, followerId },
   });
 };
 
