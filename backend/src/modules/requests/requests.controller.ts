@@ -57,7 +57,7 @@ export const sendRequest = async (req: AuthRequest, res: Response) => {
     }
 
     const existing = await prisma.contactRequest.findUnique({
-      where: { senderId_profileId: { senderId: req.userId!, profileId } },
+      where: { senderId_profileId_brideId: { senderId: req.userId!, profileId, brideId: brideId || null } },
     });
     if (existing) {
       return res.status(409).json({
