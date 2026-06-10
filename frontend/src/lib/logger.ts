@@ -30,8 +30,16 @@ class FrontendLogger {
       const batch = this.queue.splice(0);
       try {
         const payload = JSON.stringify(batch);
-        const url = this.getToken() ? LOGS_AUTH : LOGS_PUBLIC;
-        if (navigator && typeof (navigator as any).sendBeacon === 'function') {
+        const token = this.getToken();
+        const url = token ? LOGS_AUTH : LOGS_PUBLIC;
+        if (token) {
+          fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: payload,
+            keepalive: true,
+          });
+        } else if (typeof (navigator as any)?.sendBeacon === 'function') {
           (navigator as any).sendBeacon(url, payload);
         }
       } catch (e) {
@@ -104,9 +112,8 @@ class FrontendLogger {
       const url = token ? LOGS_AUTH : LOGS_PUBLIC;
       const payload = JSON.stringify(batch);
 
-      // Try sendBeacon for reliable delivery during unload/navigation
-      // Use raw string (text/plain) to avoid CORS preflight for cross-origin requests
-      if (typeof (navigator as any)?.sendBeacon === 'function') {
+      // sendBeacon can't send Authorization header, so skip for authed users
+      if (!token && typeof (navigator as any)?.sendBeacon === 'function') {
         try {
           const ok = (navigator as any).sendBeacon(url, payload);
           if (ok) { this.flushing = false; return; }
