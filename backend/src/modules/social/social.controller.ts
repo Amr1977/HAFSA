@@ -499,7 +499,7 @@ export const toggleFollow = async (req: AuthRequest, res: Response) => {
     } else {
       await prisma.follow.create({ data: { followerId: req.userId!, followingId } });
       const name = await getUserDisplayName(req.userId!);
-      notifyNewFollower(followingId, name);
+      await notifyNewFollower(followingId, name);
       res.json({ following: true });
     }
   } catch (error) {

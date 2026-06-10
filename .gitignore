@@ -14,3 +14,4 @@ hafsa_prompt.md
 frontend/.firebase/
 .secrets/
 *_service_key.json
+scripts/.analyzer-state.json

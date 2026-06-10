@@ -188,7 +188,7 @@ const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }
     socket.on('disconnect', async () => {
       try {
         await prisma.user.update({ where: { id: userId }, data: { isOnline: false, lastSeenAt: new Date() } });
-        notifyFollowers(userId, 'user_offline', { userId, lastSeenAt: new Date() });
+        await notifyFollowers(userId, 'user_offline', { userId, lastSeenAt: new Date() });
       } catch (err) {
         console.error(`[SOCKET] Failed to set offline status for userId=${userId}:`, err);
       }
@@ -198,7 +198,7 @@ const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }
     (async () => {
       try {
         await prisma.user.update({ where: { id: userId }, data: { isOnline: true, lastSeenAt: new Date() } });
-        notifyFollowers(userId, 'user_online', { userId });
+        await notifyFollowers(userId, 'user_online', { userId });
       } catch (err) {
         console.error(`[SOCKET] Failed to set online status for userId=${userId}:`, err);
       }
