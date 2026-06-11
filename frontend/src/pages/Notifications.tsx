@@ -35,6 +35,12 @@ const notificationIcon = (type: string) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
         </svg>
       );
+    case 'comment_reply':
+      return (
+        <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+        </svg>
+      );
     case 'new_follower':
       return (
         <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +81,8 @@ const notificationLink = (n: any): string | null => {
     case 'contact_request': return '/requests/received';
     case 'request_accepted': return '/messages';
     case 'post_like':
-    case 'post_comment': return n.data?.postId ? `/social/post/${n.data.postId}` : null;
+    case 'post_comment':
+    case 'comment_reply': return n.data?.postId ? `/social/post/${n.data.postId}` : null;
     case 'profile_view':
     case 'profile_approved':
     case 'profile_rejected': return '/profile/my';
