@@ -279,7 +279,11 @@
     "writeComment": "اكتب تعليقاً...",
     "commentButton": "تعليق",
     "noComments": "لا توجد تعليقات بعد. كن أول من يعلق!",
-    "delete": "حذف"
+    "delete": "حذف",
+    "reply": "رد",
+    "writeReply": "اكتب رداً...",
+    "viewAllReplies": "عرض الردود كلها ({count})",
+    "likeComment": "إعجاب"
   },
   "common": {
     "loading": "جار التحميل...",

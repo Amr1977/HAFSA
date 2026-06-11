@@ -254,7 +254,11 @@
     "writeComment": "Écrire un commentaire...",
     "commentButton": "Commenter",
     "noComments": "Pas encore de commentaires. Soyez le premier !",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "reply": "Répondre",
+    "writeReply": "Écrire une réponse...",
+    "viewAllReplies": "Voir toutes les réponses ({count})",
+    "likeComment": "J'aime"
   },
   "common": {
     "loading": "Chargement...",

@@ -24,7 +24,7 @@ export default function PostDetail() {
   const [sharing, setSharing] = useState(false);
   const [shareContent, setShareContent] = useState('');
   const [sharingSubmitting, setSharingSubmitting] = useState(false);
-  const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
+  const [replyTargetId, setReplyTargetId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [replying, setReplying] = useState(false);
   const editInputRef = useRef<HTMLTextAreaElement>(null);
@@ -68,6 +68,13 @@ export default function PostDetail() {
     setPost({ ...post, comments: post.comments.filter((c: any) => c.id !== commentId), _count: { ...post._count, comments: post._count.comments - 1 } });
   };
 
+  const findAndUpdateComment = (items: any[], targetId: string, updater: (item: any) => any): any[] =>
+    items.map((item: any) => {
+      if (item.id === targetId) return updater(item);
+      if (item.replies?.length > 0) return { ...item, replies: findAndUpdateComment(item.replies, targetId, updater) };
+      return item;
+    });
+
   const handleCommentLike = async (commentId: string) => {
     if (!post) return;
     const snapshot = post;
@@ -75,8 +82,7 @@ export default function PostDetail() {
       if (!prev) return prev;
       return {
         ...prev,
-        comments: prev.comments.map((c: any) => {
-          if (c.id !== commentId) return c;
+        comments: findAndUpdateComment(prev.comments, commentId, (c) => {
           const liked = c.likes?.length > 0;
           return {
             ...c,
@@ -90,74 +96,108 @@ export default function PostDetail() {
     catch { setPost(snapshot); }
   };
 
-  const handleReplyLike = async (commentId: string, replyId: string) => {
-    if (!post) return;
-    const snapshot = post;
-    setPost((prev: any) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        comments: prev.comments.map((c: any) => {
-          if (c.id !== commentId) return c;
-          return {
-            ...c,
-            replies: c.replies?.map((r: any) => {
-              if (r.id !== replyId) return r;
-              const liked = r.likes?.length > 0;
-              return {
-                ...r,
-                likes: liked ? [] : [{ userId: user?.id }],
-                _count: { ...r._count, likes: liked ? r._count.likes - 1 : r._count.likes + 1 },
-              };
-            }),
-          };
-        }),
-      };
-    });
-    try { await api.social.toggleCommentLike(replyId); }
-    catch { setPost(snapshot); }
-  };
-
-  const handleReplySubmit = async (commentId: string) => {
+  const handleReplySubmit = async (targetId: string) => {
     if (!replyText.trim() || !post) return;
     setReplying(true);
     try {
-      const reply = await api.social.addReply(post.id, commentId, replyText);
+      const reply = await api.social.addReply(post.id, targetId, replyText);
       setPost((prev: any) => {
         if (!prev) return prev;
         return {
           ...prev,
-          comments: prev.comments.map((c: any) => {
-            if (c.id !== commentId) return c;
-            return {
-              ...c,
-              _count: { ...c._count, replies: (c._count?.replies || 0) + 1 },
-              replies: [...(c.replies || []), reply],
-            };
-          }),
+          comments: findAndUpdateComment(prev.comments, targetId, (c) => ({
+            ...c,
+            _count: { ...c._count, replies: (c._count?.replies || 0) + 1 },
+            replies: [...(c.replies || []), reply],
+          })),
         };
       });
       setReplyText('');
-      setReplyToCommentId(null);
+      setReplyTargetId(null);
     } catch (e) { console.error('Reply error:', e); }
     finally { setReplying(false); }
   };
 
-  const loadMoreReplies = async (commentId: string) => {
+  const loadMoreReplies = async (targetId: string) => {
     if (!post) return;
     try {
-      const res: any = await api.social.getReplies(post.id, commentId);
+      const res: any = await api.social.getReplies(post.id, targetId);
       setPost((prev: any) => {
         if (!prev) return prev;
         return {
           ...prev,
-          comments: prev.comments.map((c: any) => {
-            if (c.id !== commentId) return c;
-            return { ...c, replies: res.replies || [] };
-          }),
+          comments: findAndUpdateComment(prev.comments, targetId, (c) => ({
+            ...c,
+            replies: res.replies || [],
+          })),
         };
       });
     } catch (e) { console.error('Load replies error:', e); }
+  };
+
+  const renderCommentThread = (item: any, depth: number = 0) => {
+    const maxDepth = 5;
+    const isTopLevel = depth === 0;
+    return (
+      <div key={item.id} className={`flex ${isTopLevel ? 'gap-3' : 'gap-2'}`}>
+        <UserAvatar
+          photo={item.user?.avatarUrl || item.user?.profile?.photos?.[0]?.url}
+          size="sm"
+          roles={item.user?.roles}
+          subscriptionPlan={item.user?.subscriptionPlan}
+        />
+        <div className="flex-1 min-w-0">
+          <div className={`${isTopLevel ? 'bg-gray-50 dark:bg-gray-700 rounded-lg p-3' : 'bg-gray-50 dark:bg-gray-700 rounded-lg p-2'}`}>
+            <p className={`font-semibold text-[var(--color-primary)] ${isTopLevel ? 'text-sm' : 'text-xs'}`}>{userName(item)}</p>
+            <p className={`text-[var(--color-text)] mt-0.5 whitespace-pre-wrap break-words ${isTopLevel ? 'text-sm' : 'text-xs'}`}>{item.content}</p>
+          </div>
+          <div className="flex items-center gap-3 mt-1 px-1">
+            <span className="text-xs text-[var(--color-muted)]">{new Date(item.createdAt).toLocaleDateString('ar-SA')}</span>
+            <button onClick={() => handleCommentLike(item.id)} className={`flex items-center gap-1 text-xs transition-colors ${item.likes?.length > 0 ? 'text-red-500' : 'text-[var(--color-muted)] hover:text-red-500'}`}>
+              <svg className="w-3.5 h-3.5" fill={item.likes?.length > 0 ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              {item._count.likes || 0}
+            </button>
+            <button onClick={() => setReplyTargetId(replyTargetId === item.id ? null : item.id)} className="text-xs text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors">
+              {t('social.reply')}
+            </button>
+            {item.userId === user?.id && (
+              <button onClick={() => handleDeleteComment(item.id)} className="text-xs text-red-400 hover:text-red-600">{t('social.delete')}</button>
+            )}
+          </div>
+
+          {replyTargetId === item.id && (
+            <div className="flex gap-2 mt-2 px-1">
+              <input
+                type="text"
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                placeholder={t('social.writeReply')}
+                className="flex-1 px-3 py-1.5 border border-[var(--color-border)] rounded-lg text-xs focus:outline-none focus:border-[var(--color-primary)]"
+                onKeyDown={(e) => e.key === 'Enter' && handleReplySubmit(item.id)}
+              />
+              <button onClick={() => handleReplySubmit(item.id)} disabled={replying || !replyText.trim()}
+                className="px-3 py-1.5 bg-[var(--color-primary)] text-white rounded-lg text-xs font-medium hover:bg-[var(--color-primary-light)] disabled:opacity-50"
+              >
+                {replying ? '...' : t('common.send')}
+              </button>
+            </div>
+          )}
+
+          {item.replies?.length > 0 && depth < maxDepth && (
+            <div className="mt-2 space-y-2 pr-3 border-r-2 border-[var(--color-border)]">
+              {item.replies.map((reply: any) => renderCommentThread(reply, depth + 1))}
+            </div>
+          )}
+          {(item._count?.replies > (item.replies?.length || 0) || depth >= maxDepth) && item._count?.replies > 0 && (
+            <button onClick={() => loadMoreReplies(item.id)} className="text-xs text-[var(--color-primary)] hover:underline mt-1">
+              {t('social.viewAllReplies', { count: item._count.replies })}
+            </button>
+          )}
+        </div>
+      </div>
+    );
   };
 
   const startEdit = () => {
@@ -467,89 +507,7 @@ export default function PostDetail() {
           <p className="text-sm text-[var(--color-muted)] text-center py-4">{t('social.noComments')}</p>
         ) : (
           <div className="space-y-4">
-            {post.comments.map((comment: any) => (
-              <div key={comment.id} className="flex gap-3">
-                <UserAvatar
-                  photo={comment.user?.avatarUrl || comment.user?.profile?.photos?.[0]?.url}
-                  size="sm"
-                  roles={comment.user?.roles}
-                  subscriptionPlan={comment.user?.subscriptionPlan}
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                    <p className="text-sm font-semibold text-[var(--color-primary)]">{userName(comment)}</p>
-                    <p className="text-sm text-[var(--color-text)] mt-1 whitespace-pre-wrap break-words">{comment.content}</p>
-                  </div>
-                  <div className="flex items-center gap-3 mt-1 px-1">
-                    <span className="text-xs text-[var(--color-muted)]">{new Date(comment.createdAt).toLocaleDateString('ar-SA')}</span>
-                    <button onClick={() => handleCommentLike(comment.id)} className={`flex items-center gap-1 text-xs transition-colors ${comment.likes?.length > 0 ? 'text-red-500' : 'text-[var(--color-muted)] hover:text-red-500'}`}>
-                      <svg className="w-3.5 h-3.5" fill={comment.likes?.length > 0 ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                      {comment._count.likes || 0}
-                    </button>
-                    <button onClick={() => setReplyToCommentId(replyToCommentId === comment.id ? null : comment.id)} className="text-xs text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors">
-                      {t('social.reply') || 'رد'}
-                    </button>
-                    {comment.userId === user?.id && (
-                      <button onClick={() => handleDeleteComment(comment.id)} className="text-xs text-red-400 hover:text-red-600">{t('social.delete')}</button>
-                    )}
-                  </div>
-
-                  {replyToCommentId === comment.id && (
-                    <div className="flex gap-2 mt-2 px-1">
-                      <input
-                        type="text"
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        placeholder={t('social.writeReply') || 'اكتب رداً...'}
-                        className="flex-1 px-3 py-1.5 border border-[var(--color-border)] rounded-lg text-xs focus:outline-none focus:border-[var(--color-primary)]"
-                        onKeyDown={(e) => e.key === 'Enter' && handleReplySubmit(comment.id)}
-                      />
-                      <button onClick={() => handleReplySubmit(comment.id)} disabled={replying || !replyText.trim()}
-                        className="px-3 py-1.5 bg-[var(--color-primary)] text-white rounded-lg text-xs font-medium hover:bg-[var(--color-primary-light)] disabled:opacity-50"
-                      >
-                        {replying ? '...' : t('social.send') || 'إرسال'}
-                      </button>
-                    </div>
-                  )}
-
-                  {comment.replies?.length > 0 && (
-                    <div className="mt-2 space-y-2 pr-3 border-r-2 border-[var(--color-border)]">
-                      {comment.replies.map((reply: any) => (
-                        <div key={reply.id} className="flex gap-2">
-                          <UserAvatar
-                            photo={reply.user?.avatarUrl || reply.user?.profile?.photos?.[0]?.url}
-                            size="sm"
-                            roles={reply.user?.roles}
-                            subscriptionPlan={reply.user?.subscriptionPlan}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2">
-                              <p className="text-xs font-semibold text-[var(--color-primary)]">{userName(reply)}</p>
-                              <p className="text-xs text-[var(--color-text)] mt-0.5 whitespace-pre-wrap break-words">{reply.content}</p>
-                            </div>
-                            <div className="flex items-center gap-2 mt-0.5 px-1">
-                              <button onClick={() => handleReplyLike(comment.id, reply.id)} className={`flex items-center gap-0.5 text-xs transition-colors ${reply.likes?.length > 0 ? 'text-red-500' : 'text-[var(--color-muted)] hover:text-red-500'}`}>
-                                <svg className="w-3 h-3" fill={reply.likes?.length > 0 ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                                {reply._count.likes || 0}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {comment._count.replies > 3 && (
-                        <button onClick={() => loadMoreReplies(comment.id)} className="text-xs text-[var(--color-primary)] hover:underline">
-                          {t('social.viewAllReplies') || `عرض الردود كلها (${comment._count.replies})`}
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+            {post.comments.map((comment: any) => renderCommentThread(comment))}
           </div>
         )}
       </div>

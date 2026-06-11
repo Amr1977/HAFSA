@@ -279,7 +279,11 @@
     "writeComment": "Write a comment...",
     "commentButton": "Comment",
     "noComments": "No comments yet. Be the first to comment!",
-    "delete": "Delete"
+    "delete": "Delete",
+    "reply": "Reply",
+    "writeReply": "Write a reply...",
+    "viewAllReplies": "View all replies ({count})",
+    "likeComment": "Like"
   },
   "common": {
     "loading": "Loading...",

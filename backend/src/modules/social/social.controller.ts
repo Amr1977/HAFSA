@@ -292,12 +292,19 @@ export const getComments = async (req: AuthRequest, res: Response) => {
           _count: { select: { replies: true, likes: true } },
           ...(req.userId ? { likes: { where: { userId: req.userId }, take: 1 } } : {}),
           replies: {
-            take: 3,
             orderBy: { createdAt: 'asc' },
             include: {
               user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
-              _count: { select: { likes: true } },
+              _count: { select: { replies: true, likes: true } },
               ...(req.userId ? { likes: { where: { userId: req.userId }, take: 1 } } : {}),
+              replies: {
+                orderBy: { createdAt: 'asc' },
+                include: {
+                  user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
+                  _count: { select: { replies: true, likes: true } },
+                  ...(req.userId ? { likes: { where: { userId: req.userId }, take: 1 } } : {}),
+                },
+              },
             },
           },
         },

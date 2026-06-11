@@ -254,7 +254,11 @@
     "writeComment": "تبصرہ لکھیں...",
     "commentButton": "تبصرہ کریں",
     "noComments": "ابھی تک کوئی تبصرہ نہیں۔ پہلا تبصرہ کریں!",
-    "delete": "حذف کریں"
+    "delete": "حذف کریں",
+    "reply": "جواب دیں",
+    "writeReply": "جواب لکھیں...",
+    "viewAllReplies": "تمام جوابات دیکھیں ({count})",
+    "likeComment": "پسند"
   },
   "common": {
     "loading": "لوڈ ہو رہا ہے...",
