@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api, photoUrl, isVideoUrl } from '../../lib/api';
 import { useAuthStore } from '../../stores/authStore';
@@ -9,6 +9,7 @@ import UserAvatar from '../../components/UserAvatar';
 
 export default function PostDetail() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const { user } = useAuthStore();
   const { t } = useTranslation();
   const [post, setPost] = useState<any>(null);
@@ -29,6 +30,7 @@ export default function PostDetail() {
   const [replying, setReplying] = useState(false);
   const editInputRef = useRef<HTMLTextAreaElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
+  const scrolledToComment = useRef(false);
 
   useEffect(() => {
     if (!id) return;
@@ -41,6 +43,17 @@ export default function PostDetail() {
       setPost((prev: any) => prev ? { ...prev, comments: res.comments || [] } : prev);
     }).catch((err) => console.error('Fetch comments error:', err));
   }, [id, post ? post.id : null]);
+
+  const commentId = searchParams.get('comment');
+  useEffect(() => {
+    if (!commentId || scrolledToComment.current) return;
+    const el = document.getElementById(`comment-${commentId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('ring-2', 'ring-[var(--color-primary)]', 'rounded-lg');
+      scrolledToComment.current = true;
+    }
+  }, [commentId, post?.comments]);
 
   const handleLike = async () => {
     if (!post) return;
@@ -139,7 +152,7 @@ export default function PostDetail() {
     const maxDepth = 5;
     const isTopLevel = depth === 0;
     return (
-      <div key={item.id} className={`flex ${isTopLevel ? 'gap-3' : 'gap-2'}`}>
+      <div key={item.id} id={`comment-${item.id}`} className={`flex ${isTopLevel ? 'gap-3' : 'gap-2'}`}>
         <UserAvatar
           photo={item.user?.avatarUrl || item.user?.profile?.photos?.[0]?.url}
           size="sm"

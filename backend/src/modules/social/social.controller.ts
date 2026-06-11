@@ -454,7 +454,7 @@ export const addComment = async (req: AuthRequest, res: Response) => {
     });
     if (post.userId !== req.userId) {
       const name = await getUserDisplayName(req.userId!);
-      notifyPostComment(post.userId, name, postId);
+      notifyPostComment(post.userId, name, postId, comment.id);
     }
     res.status(201).json(comment);
   } catch (error) {
@@ -700,6 +700,18 @@ export const toggleCommentLike = async (req: AuthRequest, res: Response) => {
       return res.json({ liked: false });
     } else {
       await prisma.postCommentLike.create({ data: { commentId, userId: req.userId! } });
+      if (comment.userId !== req.userId) {
+        const name = await getUserDisplayName(req.userId!);
+        createNotification({
+          userId: comment.userId,
+          type: 'comment_like',
+          titleAr: 'إعجاب بتعليقك',
+          titleEn: 'Comment Liked',
+          bodyAr: `أعجب ${name} بتعليقك`,
+          bodyEn: `${name} liked your comment`,
+          data: { postId: comment.postId, commentId },
+        });
+      }
       return res.json({ liked: true });
     }
   } catch (error) {

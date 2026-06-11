@@ -156,7 +156,7 @@ export const notifyPostLike = async (postOwnerId: string, likerName: string, pos
   });
 };
 
-export const notifyPostComment = async (postOwnerId: string, commenterName: string, postId: string) => {
+export const notifyPostComment = async (postOwnerId: string, commenterName: string, postId: string, commentId?: string) => {
   return createNotification({
     userId: postOwnerId,
     type: 'post_comment',
@@ -164,7 +164,7 @@ export const notifyPostComment = async (postOwnerId: string, commenterName: stri
     titleEn: 'New Comment',
     bodyAr: `علق ${commenterName} على منشورك`,
     bodyEn: `${commenterName} commented on your post`,
-    data: { commenterName, postId },
+    data: { commenterName, postId, commentId },
   });
 };
 
