@@ -26,7 +26,7 @@ export default function HashtagFeed() {
         {(data?.posts || []).map((post: any) => (
           <Link key={post.id} to={`/social/post/${post.id}`} className="block bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-4">
             <div className="flex items-center gap-2 mb-3">
-              <UserAvatar photo={post.user?.profile?.photos?.[0]?.url} size="sm" roles={post.user?.roles} subscriptionPlan={post.user?.subscriptionPlan} />
+              <UserAvatar photo={post.user?.avatarUrl || post.user?.profile?.photos?.[0]?.url} size="sm" roles={post.user?.roles} subscriptionPlan={post.user?.subscriptionPlan} />
               <span className="text-sm font-medium text-[var(--color-primary)]">{post.user?.profile?.displayName || 'مستخدم'}</span>
             </div>
             <p className="text-sm text-[var(--color-text)] line-clamp-3">{post.content}</p>

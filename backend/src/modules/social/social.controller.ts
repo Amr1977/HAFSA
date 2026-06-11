@@ -49,7 +49,7 @@ const canView = async (post: { id: string; userId: string; privacy: string }, vi
 };
 
 const postInclude = (userId: string) => ({
-  user: { select: { id: true, roles: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
+  user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
   _count: { select: { likes: true, comments: true, saves: true } },
   ...(userId ? { likes: { where: { userId }, take: 1 }, saves: { where: { userId }, take: 1 } } : {}),
   sharedPost: {
@@ -60,7 +60,7 @@ const postInclude = (userId: string) => ({
       createdAt: true,
       userId: true,
       privacy: true,
-      user: { select: { id: true, roles: true, subscriptionPlan: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
+      user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
     },
   },
   hashtags: { include: { hashtag: { select: { tag: true } } } },
@@ -288,14 +288,14 @@ export const getComments = async (req: AuthRequest, res: Response) => {
         skip,
         take: limit,
         include: {
-          user: { select: { id: true, roles: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
+          user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
           _count: { select: { replies: true, likes: true } },
           ...(req.userId ? { likes: { where: { userId: req.userId }, take: 1 } } : {}),
           replies: {
             take: 3,
             orderBy: { createdAt: 'asc' },
             include: {
-              user: { select: { id: true, roles: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
+              user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
               _count: { select: { likes: true } },
               ...(req.userId ? { likes: { where: { userId: req.userId }, take: 1 } } : {}),
             },
@@ -443,7 +443,7 @@ export const addComment = async (req: AuthRequest, res: Response) => {
     }
     const comment = await prisma.postComment.create({
       data: { postId, userId: req.userId!, content },
-      include: { user: { select: { id: true, roles: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } } },
+      include: { user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } } },
     });
     if (post.userId !== req.userId) {
       const name = await getUserDisplayName(req.userId!);
@@ -508,7 +508,7 @@ export const getFollowers = async (req: AuthRequest, res: Response) => {
     const [followers, total] = await Promise.all([
       prisma.follow.findMany({
         where: { followingId: userId },
-        include: { follower: { select: { id: true, roles: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } } },
+        include: { follower: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } } },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
@@ -530,7 +530,7 @@ export const getFollowing = async (req: AuthRequest, res: Response) => {
     const [following, total] = await Promise.all([
       prisma.follow.findMany({
         where: { followerId: userId },
-        include: { following: { select: { id: true, roles: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } } },
+        include: { following: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } } },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
@@ -631,7 +631,7 @@ export const addReply = async (req: AuthRequest, res: Response) => {
     const reply = await prisma.postComment.create({
       data: { postId, userId: req.userId!, content: content.trim(), parentId: commentId },
       include: {
-        user: { select: { id: true, roles: true, subscriptionPlan: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
+        user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
         _count: { select: { likes: true } },
       },
     });
@@ -666,7 +666,7 @@ export const getReplies = async (req: AuthRequest, res: Response) => {
         skip: (page - 1) * limit,
         take: limit,
         include: {
-          user: { select: { id: true, roles: true, subscriptionPlan: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
+          user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
           _count: { select: { likes: true } },
           ...(req.userId ? { likes: { where: { userId: req.userId }, take: 1 } } : {}),
         },
@@ -911,7 +911,7 @@ export const searchUsers = async (req: AuthRequest, res: Response) => {
       take: 20,
       include: {
         photos: { where: { isPrimary: true }, take: 1 },
-        user: { select: { id: true, roles: true, subscriptionPlan: true, isOnline: true, isVerified: true } },
+        user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isOnline: true, isVerified: true } },
       },
     });
     const followingSet = new Set(
@@ -968,7 +968,7 @@ export const getSuggestedUsers = async (req: AuthRequest, res: Response) => {
       where: { userId: { in: userIds }, status: 'APPROVED', user: { isActive: true } },
       include: {
         photos: { where: { isPrimary: true }, take: 1 },
-        user: { select: { id: true, roles: true, subscriptionPlan: true, isVerified: true, _count: { select: { followers: true } } } },
+        user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isVerified: true, _count: { select: { followers: true } } } },
       },
       take: 8,
     });
@@ -1095,7 +1095,7 @@ export const getStoriesFeed = async (req: AuthRequest, res: Response) => {
         ],
       },
       include: {
-        user: { select: { id: true, roles: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
+        user: { select: { id: true, roles: true, avatarUrl: true, subscriptionPlan: true, isOnline: true, profile: { select: { displayName: true, photos: { where: { isPrimary: true }, take: 1 } } } } },
         _count: { select: { views: true } },
         ...(req.userId ? { views: { where: { userId: req.userId }, take: 1 } } : {}),
       },

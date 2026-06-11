@@ -378,7 +378,7 @@ export default function SocialFeed() {
               <div className="flex items-center justify-between mb-3">
                 <Link to={post.user.id === currentUserId ? '/profile/my' : `/social/user/${post.user.id}`} className="flex items-center gap-3">
                     <UserAvatar
-                      photo={post.user.profile?.photos?.[0]?.url}
+                      photo={post.user.avatarUrl || post.user.profile?.photos?.[0]?.url}
                       size="lg"
                       roles={post.user.roles}
                       subscriptionPlan={post.user.subscriptionPlan}
@@ -518,7 +518,7 @@ export default function SocialFeed() {
                     <Link to={`/social/post/${post.sharedPost.id}`} className="block">
                       <div className="flex items-center gap-2 mb-2">
                         <UserAvatar
-                          photo={post.sharedPost.user?.profile?.photos?.[0]?.url}
+                          photo={post.sharedPost.user?.avatarUrl || post.sharedPost.user?.profile?.photos?.[0]?.url}
                           size="sm"
                           roles={post.sharedPost.user?.roles}
                           subscriptionPlan={post.sharedPost.user?.subscriptionPlan}

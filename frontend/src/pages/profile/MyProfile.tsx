@@ -322,7 +322,7 @@ export default function MyProfile() {
                 <div className="flex items-center justify-between mb-4">
                   <Link to={`/profile/my`} className="flex items-center gap-3">
                     <UserAvatar
-                      photo={post.user?.profile?.photos?.[0]?.url}
+                      photo={post.user?.avatarUrl || post.user?.profile?.photos?.[0]?.url}
                       size="md"
                       roles={post.user?.roles}
                       subscriptionPlan={post.user?.subscriptionPlan}
@@ -395,7 +395,7 @@ export default function MyProfile() {
                     <div className="bg-[var(--color-bg)] rounded-xl border border-[var(--color-border)] p-4 mb-4">
                       <div className="flex items-center gap-2 mb-2">
                         <UserAvatar
-                          photo={post.sharedPost.user?.profile?.photos?.[0]?.url}
+                          photo={post.sharedPost.user?.avatarUrl || post.sharedPost.user?.profile?.photos?.[0]?.url}
                           size="sm"
                           roles={post.sharedPost.user?.roles}
                           subscriptionPlan={post.sharedPost.user?.subscriptionPlan}
