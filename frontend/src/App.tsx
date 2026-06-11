@@ -116,7 +116,7 @@ export default function App() {
         <Route path="social/user/:userId" element={<ProtectedRoute><UserPublicProfile /></ProtectedRoute>} />
         <Route path="social/hashtag/:tag" element={<ProtectedRoute><HashtagFeed /></ProtectedRoute>} />
         <Route path="social/people" element={<ProtectedRoute><PeopleSearch /></ProtectedRoute>} />
-        <Route path="social/post/:id" element={<PostDetail />} />
+        <Route path="social/post/:id" element={<ProtectedRoute><PostDetail /></ProtectedRoute>} />
         <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="settings/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />

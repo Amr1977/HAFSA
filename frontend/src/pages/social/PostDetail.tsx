@@ -32,6 +32,13 @@ export default function PostDetail() {
     api.social.getPost(id).then(setPost).catch(() => setPost(null)).finally(() => setLoading(false));
   }, [id]);
 
+  useEffect(() => {
+    if (!id || !post) return;
+    api.social.getComments(id).then((res: any) => {
+      setPost((prev: any) => prev ? { ...prev, comments: res.comments || [] } : prev);
+    }).catch((err) => console.error('Fetch comments error:', err));
+  }, [id, post ? post.id : null]);
+
   const handleLike = async () => {
     if (!post) return;
     await api.social.toggleLike(post.id);
