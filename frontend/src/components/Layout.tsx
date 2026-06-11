@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../stores/authStore';
 import { useTheme } from '../stores/themeStore';
 import { api } from '../lib/api';
 import { onNewNotification } from '../lib/socket';
+import { APP_VERSION } from '../lib/version';
 import UserAvatar from './UserAvatar';
 
 export default function Layout() {
@@ -14,8 +15,6 @@ export default function Layout() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [appVersion, setAppVersion] = useState<string | null>(null);
-  const versionFetched = useRef(false);
 
   useEffect(() => {
     if (!isAuthenticated) { setUnreadCount(0); return; }
@@ -33,12 +32,6 @@ export default function Layout() {
   useEffect(() => {
     setUnreadCount(0);
   }, [location.pathname === '/notifications']);
-
-  useEffect(() => {
-    if (versionFetched.current) return;
-    versionFetched.current = true;
-    api.version.get().then((res: any) => setAppVersion(res.version)).catch(() => setAppVersion('—'));
-  }, []);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -110,7 +103,7 @@ export default function Layout() {
                   {t('app.name')}
                 </span>
                 <span className="text-[10px] text-[var(--color-muted)] font-mono tracking-wider" dir="ltr">
-                  v{appVersion ?? '—'}
+                  v{APP_VERSION}
                 </span>
               </Link>
             </div>
@@ -363,7 +356,7 @@ export default function Layout() {
       <footer className="border-t border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between text-xs text-[var(--color-muted)]">
           <span>© {new Date().getFullYear()} {t('app.name')}</span>
-          <span className="font-mono" dir="ltr">v{appVersion ?? '—'}</span>
+          <span className="font-mono" dir="ltr">v{APP_VERSION}</span>
         </div>
       </footer>
     </div>

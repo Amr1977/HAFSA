@@ -317,11 +317,6 @@ export const api = {
       api.post(`/service-requests/${id}/offers`, data),
   },
 
-  // Version
-  version: {
-    get: () => api.get('/version'),
-  },
-
   // Search
   search: {
     global: (q: string, type?: string) =>
