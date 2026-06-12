@@ -10,7 +10,7 @@ export const signInWithGoogle = async (roles?: string[]) => {
   const result = await signInWithPopup(auth, provider);
   const firebaseUser = result.user;
 
-  const res: any = await api.post('/auth/register', {
+  const res: any = await api.post('/auth/login', {
     firebaseUid: firebaseUser.uid,
     email: firebaseUser.email,
     roles: roles || ['SOCIAL'],

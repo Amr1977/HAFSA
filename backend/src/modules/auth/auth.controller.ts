@@ -29,6 +29,8 @@ const formatUser = (user: any) => ({
   subscriptionExpiry: user.subscriptionExpiry ?? null,
   language: user.language,
   avatarUrl: user.avatarUrl ?? null,
+  onboardingCompleted: user.onboardingCompleted ?? false,
+  onboardingStep: user.onboardingStep ?? null,
 });
 
 export const register = async (req: Request, res: Response) => {
@@ -236,6 +238,7 @@ export const getMe = async (req: AuthRequest, res: Response) => {
         isVerified: true, subscriptionPlan: true, subscriptionExpiry: true,
         language: true, isActive: true, isBanned: true, bio: true, tagline: true,
         websiteUrl: true, avatarUrl: true, isOnline: true, createdAt: true,
+        onboardingCompleted: true, onboardingStep: true,
         profile: { include: { photos: { orderBy: { order: 'asc' }, take: 1 } } },
       },
     });
@@ -265,9 +268,64 @@ export const getMe = async (req: AuthRequest, res: Response) => {
       websiteUrl: user.websiteUrl,
       isOnline: user.isOnline,
       createdAt: user.createdAt,
+      onboardingCompleted: user.onboardingCompleted ?? false,
+      onboardingStep: user.onboardingStep ?? null,
     });
   } catch (error) {
     console.error('Get me error:', error);
     return res.status(500).json({ error: 'INTERNAL', message: 'Failed to get user' });
+  }
+};
+
+export const login = async (req: Request, res: Response) => {
+  return register(req, res);
+};
+
+export const getOnboardingStatus = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { onboardingCompleted: true, onboardingStep: true, roles: true },
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'NOT_FOUND', message: 'User not found' });
+    }
+
+    const roles = user.roles as string[];
+    const steps: string[] = [];
+    if (roles.includes('GROOM') && !user.onboardingCompleted) steps.push('profile_setup');
+    if (roles.includes('GUARDIAN') && !user.onboardingCompleted) steps.push('bride_creation');
+    if (!user.onboardingCompleted) steps.push('first_post');
+
+    return res.json({
+      onboardingCompleted: user.onboardingCompleted,
+      currentStep: user.onboardingStep || (steps[0] || null),
+      pendingSteps: steps,
+    });
+  } catch (error) {
+    console.error('Get onboarding status error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to get onboarding status' });
+  }
+};
+
+export const updateOnboarding = async (req: AuthRequest, res: Response) => {
+  try {
+    const { step, completed } = req.body;
+    const data: any = {};
+    if (step) data.onboardingStep = step;
+    if (completed === true) data.onboardingCompleted = true;
+
+    const user = await prisma.user.update({
+      where: { id: req.userId },
+      data,
+    });
+
+    return res.json({
+      onboardingCompleted: user.onboardingCompleted,
+      onboardingStep: user.onboardingStep,
+    });
+  } catch (error) {
+    console.error('Update onboarding error:', error);
+    return res.status(500).json({ error: 'INTERNAL', message: 'Failed to update onboarding' });
   }
 };

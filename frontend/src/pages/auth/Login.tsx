@@ -26,7 +26,7 @@ export default function Login() {
     setError('');
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
-      const result = await api.post('/auth/register', {
+      const result = await api.post('/auth/login', {
         firebaseUid: cred.user.uid,
         email: cred.user.email,
       });

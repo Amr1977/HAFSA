@@ -134,6 +134,8 @@ model User {
   avatarUrl         String?
   lastSeenAt        DateTime?
   isOnline          Boolean          @default(false)
+  onboardingCompleted Boolean        @default(false)
+  onboardingStep    String?
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
