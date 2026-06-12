@@ -131,7 +131,7 @@ export default function App() {
         <Route path="admin/feedback" element={<ProtectedRoute roles={['ADMIN']}><AdminFeedback /></ProtectedRoute>} />
         <Route path="admin/subscriptions" element={<ProtectedRoute roles={['ADMIN']}><AdminSubscriptions /></ProtectedRoute>} />
         <Route path="admin/donations" element={<ProtectedRoute roles={['ADMIN']}><AdminDonations /></ProtectedRoute>} />
-        <Route path="donate" element={<ProtectedRoute><Donate /></ProtectedRoute>} />
+        <Route path="donate" element={<Donate />} />
         <Route path="guardian/brides" element={<ProtectedRoute roles={['GUARDIAN', 'ADMIN']}><BrideList /></ProtectedRoute>} />
         <Route path="guardian/brides/new" element={<ProtectedRoute roles={['GUARDIAN', 'ADMIN']}><BrideForm /></ProtectedRoute>} />
         <Route path="guardian/brides/:id/edit" element={<ProtectedRoute roles={['GUARDIAN', 'ADMIN']}><BrideForm /></ProtectedRoute>} />

@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../stores/authStore';
 import { api } from '../lib/api';
 
 const PAYMENT_NUMBER = '01094450141';
@@ -8,6 +10,7 @@ const USDT_WALLET = 'TGokJ43uzZvxwMAAsPaAtFmakZ1iQr4WTS';
 
 export default function Donate() {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuthStore();
   const [paymentMethod, setPaymentMethod] = useState<'INSTAPAY' | 'VODAFONE_CASH' | 'USDT_TRC20'>('INSTAPAY');
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
@@ -85,6 +88,28 @@ export default function Donate() {
         ساهم في دعم المنصة وتطويرها لخدمة المجتمع الإسلامي
       </p>
 
+      {!isAuthenticated && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-[#E5E7EB] dark:border-gray-700 p-6 text-center">
+          <div className="w-16 h-16 bg-[#DAA520]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-[#DAA520]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m0 0v2m0-2h2m-2 0H10m12.5-4.5A2.5 2.5 0 0118 15a2.5 2.5 0 01-4.5 1.5M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-bold text-[#1B4332] dark:text-[#DAA520] mb-2">ساهم في دعم المنصة</h2>
+          <p className="text-sm text-[#6B7280] dark:text-gray-400 mb-6">يرجى تسجيل الدخول أو إنشاء حساب لإرسال تبرع</p>
+          <Link
+            to="/register"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#DAA520] text-[#1B4332] rounded-xl font-bold hover:bg-[#F5E6B8] transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+            تسجيل الدخول / إنشاء حساب
+          </Link>
+        </div>
+      )}
+
+      {isAuthenticated && (
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-[#E5E7EB] dark:border-gray-700 p-6">
         {/* Payment details */}
         <div className="bg-gradient-to-br from-[#1B4332] to-[#2D6A4F] dark:from-gray-700 dark:to-gray-800 rounded-lg p-5 mb-6 text-center">
@@ -275,6 +300,7 @@ export default function Donate() {
           سيتم مراجعة طلب التبرع يدوياً من قبل الإدارة
         </p>
       </div>
+      )}
 
       {/* Network warning modal */}
       {showNetworkWarning && (
